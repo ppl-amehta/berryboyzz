@@ -213,7 +213,7 @@ export const StoryPhaseOverlay: React.FC<StoryPhaseOverlayProps> = ({ onExploreC
           <h2 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
             This is what{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-purple-300 to-amber-300">
-              ₹2,800/kg
+              ₹2,500/kg
             </span>{' '}
             looks like on a luxury shelf.
           </h2>

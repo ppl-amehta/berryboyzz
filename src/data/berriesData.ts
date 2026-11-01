@@ -14,7 +14,7 @@ export const BERRIES_DATA: BerryVariety[] = [
       accent: 'text-rose-400',
     },
     tagline: 'The Crown Jewel of Controlled Environment Berry Agro-Assets',
-    description: 'Imported Primocane cultivars engineered for high-density CEA polyhouses in Pune and Satara foothills. Yields firm, velvety aggregate drupelets with explosive sweet-tart aromatic profiles.',
+    description: 'Imported Primocane cultivars engineered for high-density CEA polyhouses in Pune and Satara foothills. Yields firm, velvety aggregate drupelets with explosive sweet-tart aromatic profiles. Annual harvest twice every year.',
     
     commercialDensity: '3,800 - 4,200 plants / acre (T-Trellis High Wire)',
     spacing: '1.8m inter-row × 0.45m intra-plant',
@@ -33,8 +33,8 @@ export const BERRIES_DATA: BerryVariety[] = [
       'Daily morning harvest protocol at pink-red firm maturity index before ambient temperature exceeds 24°C',
     ],
 
-    harvestCycleDays: 'First commercial flush at 95 days post-transplant; 24-week continuous harvest window',
-    yieldPerPlantGrams: 1650,
+    harvestCycleDays: 'Bi-annual harvest: Every 6 months (1.6 kg/harvest = 3.2 kg/year per plant)',
+    yieldPerPlantGrams: 3200, // 1.6 kg / harvest x 2 flushes = 3.2 kg / plant / year
     flushesPerYear: 2,
     punnetWholesalePriceINR: 195, // 125g B2B
     punnetRetailPriceINR: 320, // 125g D2C
@@ -76,7 +76,7 @@ export const BERRIES_DATA: BerryVariety[] = [
       accent: 'text-purple-400',
     },
     tagline: 'High-Anthocyanin Obsidian Giant with Exceptional Post-Harvest Rigidity',
-    description: 'Thornless, ultra-vigorous canes adapted to Satara plateau micro-climates. Produces massive, glossy aggregate drupelets exceeding 8 grams each with intense antioxidant density.',
+    description: 'Thornless, ultra-vigorous canes adapted to Satara plateau micro-climates. Produces massive, glossy aggregate drupelets exceeding 8 grams each with intense antioxidant density. Yields 1.6 kg per harvest twice a year.',
     
     commercialDensity: '3,200 - 3,500 plants / acre (Rotating Cross-Arm Trellis)',
     spacing: '2.2m inter-row × 0.6m intra-plant',
@@ -95,8 +95,8 @@ export const BERRIES_DATA: BerryVariety[] = [
       'Immediate field pre-cooling to 4°C within 45 minutes of harvest to preserve cell turgidity',
     ],
 
-    harvestCycleDays: '110 days to first picking; fruiting span of 18 continuous weeks',
-    yieldPerPlantGrams: 2200,
+    harvestCycleDays: 'Bi-annual harvest: 1.6 kg / harvest (3.2 kg / plant / year across 2 seasonal flushes)',
+    yieldPerPlantGrams: 3200,
     flushesPerYear: 2,
     punnetWholesalePriceINR: 210, // 125g B2B
     punnetRetailPriceINR: 350, // 125g D2C
@@ -137,8 +137,8 @@ export const BERRIES_DATA: BerryVariety[] = [
       bg: 'bg-indigo-950/20',
       accent: 'text-indigo-400',
     },
-    tagline: 'Extreme Brix Heritage Cultivar with Ancient Royal Pedigree',
-    description: 'Long exotic finger-length mulberries reaching up to 10cm. Extremely high sugar accumulation (up to 21° Brix) with zero tannin bitterness. Premium delicacy in high-end culinary gastronomy.',
+    tagline: 'Extreme Brix Heritage Cultivar · ₹80 (100g) / ₹80 (200g)',
+    description: 'Long exotic finger-length mulberries reaching up to 10cm. Extremely high sugar accumulation (up to 21° Brix) with zero tannin bitterness. Premium delicacy in high-end culinary gastronomy. Packaged at ₹80 for 100g / 200g punnets.',
     
     commercialDensity: '1,200 - 1,500 plants / acre (Intense Espalier Hedgerow)',
     spacing: '2.5m inter-row × 1.2m intra-plant',
@@ -157,11 +157,11 @@ export const BERRIES_DATA: BerryVariety[] = [
       'Gentle hand-plucking with cotton surgical gloves to prevent drupelet rupture',
     ],
 
-    harvestCycleDays: 'First harvest 120 days post-establishment; 3 distinct annual flushes',
-    yieldPerPlantGrams: 3400,
-    flushesPerYear: 3,
-    punnetWholesalePriceINR: 175, // 125g B2B
-    punnetRetailPriceINR: 280, // 125g D2C
+    harvestCycleDays: 'Bi-annual flush cycle; 1.6 kg per harvest = 3.2 kg / plant annually',
+    yieldPerPlantGrams: 3200,
+    flushesPerYear: 2,
+    punnetWholesalePriceINR: 80, // ₹80 per 100g / 200g unit
+    punnetRetailPriceINR: 80, // Direct farm pack: ₹80 (100g/200g)
     b2bSupplyChannels: ['Fine Dining Chef Tasting Menus (Mumbai / Goa / Delhi)', 'Artisanal Gelaterias', 'Ayurvedic Botanical Extractors'],
 
     thousandPlantSetupCapex: 390000,
@@ -200,7 +200,7 @@ export const BERRIES_DATA: BerryVariety[] = [
       accent: 'text-red-400',
     },
     tagline: 'Tabletop Hydroponic Perfection in the Mahabaleshwar-Satara Belt',
-    description: 'Elevated gutter hydroponic strawberries cultivating dense, uniform conical berries with deep red core saturation, superior firmness, and elevated Brix levels outperforming standard field varieties.',
+    description: 'Elevated gutter hydroponic strawberries cultivating dense, uniform conical berries with deep red core saturation, superior firmness, and elevated Brix levels outperforming standard field varieties. High-density commercial setup.',
     
     commercialDensity: '24,000 - 28,000 plants / acre (Elevated Tabletop Gutters)',
     spacing: '1.0m gutter spacing × 0.15m plant spacing',
@@ -219,9 +219,9 @@ export const BERRIES_DATA: BerryVariety[] = [
       'Single-layer calyx-intact harvest directly into export punnets to eliminate secondary handling',
     ],
 
-    harvestCycleDays: '65 days post-transplant; 26 continuous picking weeks (Oct to April)',
-    yieldPerPlantGrams: 650,
-    flushesPerYear: 1, // Long 6-month continuous harvest
+    harvestCycleDays: 'Bi-annual cycle: 65 days to first picking; two productive commercial flushes',
+    yieldPerPlantGrams: 1600, // 800g x 2
+    flushesPerYear: 2,
     punnetWholesalePriceINR: 110, // 125g B2B
     punnetRetailPriceINR: 180, // 125g D2C
     b2bSupplyChannels: ['Premium Supermarkets & Q-Commerce Dark Stores (Blinkit / Zepto Premium)', 'Artisanal Bakery & Patisserie Chains', 'Direct Farm Gate Tourists'],
@@ -261,8 +261,8 @@ export const BERRIES_DATA: BerryVariety[] = [
       bg: 'bg-blue-950/20',
       accent: 'text-blue-400',
     },
-    tagline: 'The Apex Asset: High-Margin Global Superfruit Precision Agriculture',
-    description: 'The highest margin berry crop globally. Cultivated in 35-liter aerated grow bags with acidic coir substrate and RO fertigation. Produces firm, powder-bloomed berries with crunchy skin and sweet bursting juice.',
+    tagline: 'The Apex Asset: 2.5 kg / Plant Mature Yield After 36 Months',
+    description: 'The highest margin berry crop globally. Cultivated in 35-liter aerated grow bags with acidic coir substrate and RO fertigation. Produces firm, powder-bloomed berries with crunchy skin. Reaches full mature yield of 2.5 kg per plant after 36 months.',
     
     commercialDensity: '2,800 - 3,200 plants / acre (Containerized CEA Grow-Bags)',
     spacing: '2.4m row spacing × 0.75m plant spacing',
@@ -281,8 +281,8 @@ export const BERRIES_DATA: BerryVariety[] = [
       'Hand-sorting for intact silver-blue epicuticular waxy bloom (the key freshness indicator)',
     ],
 
-    harvestCycleDays: 'Perennial bush: Yield scales progressively over Years 2 to 7 (15-year asset lifespan)',
-    yieldPerPlantGrams: 2800, // Year 3+ mature bush
+    harvestCycleDays: 'Bi-annual flushes: Scales to mature yield of 2.5 kg/plant after 36 months (15-year asset lifespan)',
+    yieldPerPlantGrams: 2500, // Explicitly 2.5 kg/plant after 36 months
     flushesPerYear: 2,
     punnetWholesalePriceINR: 280, // 125g B2B
     punnetRetailPriceINR: 450, // 125g D2C

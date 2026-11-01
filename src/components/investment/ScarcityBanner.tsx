@@ -31,7 +31,7 @@ export const ScarcityBanner: React.FC = () => {
               <span>OPPORTUNITY COST COMPARISON:</span>
             </div>
             <div className="text-xl font-bold font-mono text-stone-900 dark:text-white">
-              ₹1,54,000 <span className="text-xs text-stone-500 dark:text-zinc-400 font-normal">/ acre / month</span>
+              ₹2,50,000 <span className="text-xs text-stone-500 dark:text-zinc-400 font-normal">/ acre / month CEA</span>
             </div>
             <p className="text-[11px] text-stone-500 dark:text-zinc-400 leading-normal">
               Estimated unrealized harvest revenue on uncultivated land vs precision Primocane greenhouse cultivation.

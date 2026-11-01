@@ -48,11 +48,11 @@ describe('Domain Data Integrity & Handwritten Notes Coverage', () => {
     });
   });
 
-  it('covers all 4 investment tiers up to the ₹40,000,000 (₹4Cr) 50-Acre flagship', () => {
+  it('covers all 4 investment tiers up to the ₹400,000,000 (₹40 Cr) 50-Acre flagship', () => {
     expect(INVESTMENT_TIERS).toHaveLength(4);
     const institutionalTier = INVESTMENT_TIERS.find((t) => t.id === 'tier-4-your-land-our-farm');
     expect(institutionalTier).toBeDefined();
-    expect(institutionalTier?.rawCapitalINR).toBe(40000000);
+    expect(institutionalTier?.rawCapitalINR).toBe(400000000);
   });
 
   it('covers all 5 experiential farm tours and workshops', () => {

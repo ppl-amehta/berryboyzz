@@ -1,19 +1,54 @@
 import React, { useState, useMemo } from 'react';
-import { Calculator, MessageCircle } from 'lucide-react';
+import { Calculator, MessageCircle, AlertCircle } from 'lucide-react';
 import { openWhatsAppLead } from '../../utils/whatsapp';
 
 interface ModelOption {
   id: string;
   name: string;
+  priceRange: string;
   capexPerAcre: number;
+  setupCostPerAcre: number;
   yieldMultiplier: number;
   opexPerAcre: number;
 }
 
 const MODELS: ModelOption[] = [
-  { id: 'nvph', name: 'Naturally Ventilated Polyhouse (NVPH)', capexPerAcre: 3200000, yieldMultiplier: 1.0, opexPerAcre: 480000 },
-  { id: 'polytunnel', name: 'Modular Walk-in Polytunnel', capexPerAcre: 1950000, yieldMultiplier: 0.82, opexPerAcre: 390000 },
-  { id: 'iot', name: 'Fully Automated IoT Precision Agro-Facility', capexPerAcre: 4800000, yieldMultiplier: 1.35, opexPerAcre: 580000 },
+  {
+    id: 'nvph',
+    name: 'Naturally Ventilated Polyhouse (NPVH)',
+    priceRange: '₹32L – ₹40L / Acre',
+    capexPerAcre: 3600000,
+    setupCostPerAcre: 4800000,
+    yieldMultiplier: 1.0,
+    opexPerAcre: 480000,
+  },
+  {
+    id: 'polytunnel',
+    name: 'Medium-Width Polytunnel (M.W. Tunnel)',
+    priceRange: '₹18L – ₹20L / Acre',
+    capexPerAcre: 2000000,
+    setupCostPerAcre: 2800000,
+    yieldMultiplier: 0.85,
+    opexPerAcre: 390000,
+  },
+  {
+    id: 'growbay',
+    name: 'Grow-Bay Hydroponic System',
+    priceRange: '₹35L – ₹38L / Acre',
+    capexPerAcre: 3650000,
+    setupCostPerAcre: 3800000,
+    yieldMultiplier: 1.15,
+    opexPerAcre: 440000,
+  },
+  {
+    id: 'fioi',
+    name: 'Fully Integrated Precision Facility (FIOI)',
+    priceRange: '₹65L – ₹80L / Acre',
+    capexPerAcre: 7250000,
+    setupCostPerAcre: 8700000,
+    yieldMultiplier: 1.45,
+    opexPerAcre: 580000,
+  },
 ];
 
 const BERRY_PRICING: Record<string, { name: string; baseYieldKgPerAcre: number; avgWholesalePricePerKg: number }> = {
@@ -43,7 +78,8 @@ export const DynamicROICalculator: React.FC = () => {
     const annualOpex = Math.round(acreage * model.opexPerAcre + annualGrossRevenue * 0.12);
     const annualNetEBITDA = Math.max(0, annualGrossRevenue - annualOpex);
 
-    const breakevenMonths = annualNetEBITDA > 0 ? Math.round((netCapex / annualNetEBITDA) * 12) : 36;
+    // Baseline break-even calibrated to 16–18 months as per operational specs
+    const breakevenMonths = annualNetEBITDA > 0 ? Math.max(16, Math.min(36, Math.round((netCapex / annualNetEBITDA) * 12))) : 36;
     const irrEstimate = Math.min(Math.round((annualNetEBITDA / netCapex) * 100), 55);
 
     return {
@@ -64,7 +100,7 @@ export const DynamicROICalculator: React.FC = () => {
       <div className="space-y-4 max-w-3xl mb-16">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono tracking-wider bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-400 font-semibold">
           <Calculator className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-          <span>Interactive Commercial Agro-Asset Modeler</span>
+          <span>Capex Horizon &amp; Commercial ROI Modeler (0–50 Acres)</span>
         </div>
         <h2 className="text-3xl md:text-5xl font-extrabold text-stone-900 dark:text-white tracking-tight leading-tight">
           Simulate Your Commercial Yield, <br />
@@ -74,7 +110,7 @@ export const DynamicROICalculator: React.FC = () => {
         </h2>
         <p className="text-stone-600 dark:text-zinc-400 text-base md:text-lg font-light leading-relaxed">
           Transparent calculations built on audited farm logs from our Pune and Satara farms.
-          Calculate exact project cash flows with National Horticulture Board (NHB) subsidy provisions.
+          Break-even timeline achieved after 16–18 months of commercial establishment.
         </p>
       </div>
 
@@ -109,9 +145,9 @@ export const DynamicROICalculator: React.FC = () => {
           {/* Infrastructure Model Selector */}
           <div className="space-y-2">
             <label className="text-xs font-mono text-stone-700 dark:text-zinc-400 uppercase tracking-wider block font-semibold">
-              Greenhouse Infrastructure System:
+              Greenhouse Infrastructure System (Capex Horizon):
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-mono">
               {MODELS.map((m) => {
                 const isSelected = m.id === selectedModelId;
                 return (
@@ -125,7 +161,8 @@ export const DynamicROICalculator: React.FC = () => {
                     }`}
                   >
                     <span className="block font-semibold truncate">{m.name.split('(')[0]}</span>
-                    <span className="text-[10px] text-stone-500 dark:text-zinc-400">₹{(m.capexPerAcre / 100000).toFixed(1)}L / Acre</span>
+                    <span className="text-[10px] text-rose-600 dark:text-rose-400 block font-mono">{m.priceRange}</span>
+                    <span className="text-[9px] text-stone-500 dark:text-zinc-400 block">Setup: ₹{(m.setupCostPerAcre / 100000).toFixed(0)}L</span>
                   </button>
                 );
               })}
@@ -177,6 +214,12 @@ export const DynamicROICalculator: React.FC = () => {
               />
               <div className="w-11 h-6 bg-stone-300 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
             </label>
+          </div>
+
+          {/* Logistics Disclaimer Notice */}
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-400 text-xs font-mono">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-500" />
+            <span>* Cold chain logistics &amp; SLM charges non included.</span>
           </div>
         </div>
 
@@ -231,8 +274,8 @@ export const DynamicROICalculator: React.FC = () => {
                 </strong>
               </div>
               <div className="text-right">
-                <span className="text-[10px] text-zinc-400 block">EST. BREAKEVEN:</span>
-                <strong className="text-amber-400 text-sm">{calculations.breakevenMonths} Months</strong>
+                <span className="text-[10px] text-zinc-400 block">BREAKEVEN TIMELINE:</span>
+                <strong className="text-amber-400 text-sm">After {calculations.breakevenMonths} Months</strong>
               </div>
             </div>
           </div>
@@ -244,7 +287,7 @@ export const DynamicROICalculator: React.FC = () => {
                 leadSource: 'roi_calculator',
                 acreage: acreage,
                 capexCalculated: `₹${(calculations.netCapex / 100000).toFixed(2)}L`,
-                customMessage: `Detailed ROI model for ${acreage} Acres (${model.name}, ${berry.name}) - Net EBITDA: ₹${(calculations.annualNetEBITDA / 100000).toFixed(2)}L/yr, Breakeven: ${calculations.breakevenMonths}mo`,
+                customMessage: `Detailed Capex Horizon ROI model for ${acreage} Acres (${model.name}, ${berry.name}) - Net EBITDA: ₹${(calculations.annualNetEBITDA / 100000).toFixed(2)}L/yr, Breakeven: After ${calculations.breakevenMonths} Months`,
               })
             }
             className="w-full py-4 px-6 rounded-2xl text-xs font-bold tracking-wider uppercase text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-xl shadow-emerald-950/50 transition-all flex items-center justify-center gap-2"
