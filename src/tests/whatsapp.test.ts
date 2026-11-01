@@ -3,7 +3,7 @@ import { buildWhatsAppUrl, generateLeadCode, BERRYBOYZZ_WHATSAPP_NUMBER } from '
 
 describe('WhatsApp Integration Engine (Frontier Deep Link Standards)', () => {
   it('strictly adheres to E.164 digits-only format with no plus or punctuation', () => {
-    expect(BERRYBOYZZ_WHATSAPP_NUMBER).toBe('919822188800');
+    expect(BERRYBOYZZ_WHATSAPP_NUMBER).toBe('918888681136');
     expect(/^\d+$/.test(BERRYBOYZZ_WHATSAPP_NUMBER)).toBe(true);
     expect(BERRYBOYZZ_WHATSAPP_NUMBER.startsWith('+')).toBe(false);
   });
@@ -18,7 +18,7 @@ describe('WhatsApp Integration Engine (Frontier Deep Link Standards)', () => {
 
   it('correctly constructs and single-encodes deep URLs for Hero lead', () => {
     const url = buildWhatsAppUrl({ leadSource: 'hero' });
-    expect(url.startsWith('https://wa.me/919822188800?text=')).toBe(true);
+    expect(url.startsWith('https://wa.me/918888681136?text=')).toBe(true);
     expect(url).not.toContain(' ');
     expect(url).not.toContain('%2520'); // No double-encoding
   });

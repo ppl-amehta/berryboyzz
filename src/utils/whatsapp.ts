@@ -7,7 +7,7 @@
  * - Synchronous handler generation to avoid iOS Safari popup blocker suppression
  */
 
-export const BERRYBOYZZ_WHATSAPP_NUMBER = '919822188800'; // Official Pune / Satara Desk (digits-only)
+export const BERRYBOYZZ_WHATSAPP_NUMBER = '918888681136'; // Official Pune / Satara Desk (digits-only)
 
 export interface WhatsAppLeadPayload {
   leadSource: 'hero' | 'berry_modal' | 'roi_calculator' | 'syndicate_tier' | 'tour_booking' | 'concierge_handoff' | 'quick_dock';
