@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "vite dev",
+    "build": "vite build",
     "preview": "vite preview",
     "start": "node --env-file=.env server.mjs",
     "meta:cli": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs",
@@ -22,6 +22,10 @@
     "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
+    "@lucide/svelte": "^1.66.0",
+    "@sveltejs/adapter-vercel": "^5.5.0",
+    "@sveltejs/kit": "^2.20.0",
+    "@sveltejs/vite-plugin-svelte": "^5.1.1",
     "@tailwindcss/vite": "^4.0.0",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
@@ -30,6 +34,8 @@
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^29.1.1",
+    "lucide-svelte": "^1.0.1",
+    "svelte": "^5.57.3",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.3",
     "vite": "^6.1.0",
