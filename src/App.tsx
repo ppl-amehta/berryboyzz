@@ -3,6 +3,7 @@ import { useTheme } from './hooks/useTheme';
 import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
 import { HyperrealStoryStage } from './components/visual-story/HyperrealStoryStage';
+import { StoryScrubberRail } from './components/visual-story/StoryScrubberRail';
 import { TelemetryTicker } from './components/visual-story/TelemetryTicker';
 import { BerryShowcase } from './components/berries/BerryShowcase';
 import { CEAInfrastructure } from './components/agronomy/CEAInfrastructure';
@@ -67,8 +68,36 @@ export const App: React.FC = () => {
     };
   }, []);
 
+  // IntersectionObserver to sync active phase precisely as each card scrolls into the center
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            const match = id.match(/phase-card-(\d+)/);
+            if (match) {
+              const idx = parseInt(match[1], 10);
+              setCurrentPhaseIndex(idx);
+            }
+          }
+        });
+      },
+      { rootMargin: '-20% 0px -40% 0px', threshold: 0.1 }
+    );
+
+    const cards = document.querySelectorAll('[id^="phase-card-"]');
+    cards.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, []);
+
   const handleSelectPhase = useCallback((phaseIndex: number) => {
     setCurrentPhaseIndex(phaseIndex);
+    const el = document.getElementById(`phase-card-${phaseIndex}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }, []);
 
   const handleSkipToCore = useCallback(() => {
@@ -106,9 +135,15 @@ export const App: React.FC = () => {
         </p>
       </section>
 
-      {/* Dedicated Hyperreal Scrollytelling Stage */}
+      {/* Dedicated Hyperreal Vertical Scrollytelling Stage */}
       <div ref={storyContainerRef} className="relative z-10">
         <HyperrealStoryStage
+          currentPhaseIndex={currentPhaseIndex}
+          progress={scrollProgress}
+          onSelectPhase={handleSelectPhase}
+          onSkipToCore={handleSkipToCore}
+        />
+        <StoryScrubberRail
           currentPhaseIndex={currentPhaseIndex}
           progress={scrollProgress}
           onSelectPhase={handleSelectPhase}
