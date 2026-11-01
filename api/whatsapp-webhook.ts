@@ -1,13 +1,12 @@
 /**
- * Edge Serverless Webhook Handler for Meta WhatsApp Cloud API
+ * Self-Contained Edge Serverless Webhook Handler for Meta WhatsApp Cloud API
+ * Deployed to Vercel at: https://berryboyzz.vercel.app/api/whatsapp-webhook
+ * 
  * Handles:
  * 1. GET: Verification handshake challenge from Meta
  * 2. POST: Inbound messages, button clicks, and automated AI dispatch
  */
 
-import { WhatsAppCloudApiService, WhatsAppConfig } from '../src/services/whatsapp-cloud-api';
-
-// Safe environment loader with fallback to process.env or Vite runtime
 const getEnv = (key: string, defaultValue = ''): string => {
   if (typeof process !== 'undefined' && process.env && process.env[key]) {
     return process.env[key]!;
@@ -15,82 +14,138 @@ const getEnv = (key: string, defaultValue = ''): string => {
   return defaultValue;
 };
 
+export interface WhatsAppConfig {
+  phoneNumberId: string;
+  businessAccountId?: string;
+  accessToken: string;
+  verifyToken: string;
+  appSecret?: string;
+  apiVersion?: string;
+}
+
 export const getWhatsAppConfig = (): WhatsAppConfig => ({
-  phoneNumberId: getEnv('WHATSAPP_PHONE_NUMBER_ID', 'YOUR_PHONE_NUMBER_ID'),
+  phoneNumberId: getEnv('WHATSAPP_PHONE_NUMBER_ID', '1022955353865818'),
   businessAccountId: getEnv('WHATSAPP_BUSINESS_ACCOUNT_ID', ''),
-  accessToken: getEnv('WHATSAPP_ACCESS_TOKEN', 'YOUR_META_PERMANENT_TOKEN'),
+  accessToken: getEnv('WHATSAPP_ACCESS_TOKEN', ''),
   verifyToken: getEnv('WHATSAPP_VERIFY_TOKEN', 'berryboyzz_webhook_verify_token_2026'),
   appSecret: getEnv('WHATSAPP_APP_SECRET', ''),
   apiVersion: getEnv('WHATSAPP_API_VERSION', 'v21.0'),
 });
 
-export async function handleWhatsAppWebhook(req: {
-  method: string;
-  query: Record<string, string | undefined>;
-  body: any;
-}): Promise<{ status: number; body: any; headers?: Record<string, string> }> {
+async function postToMeta(config: WhatsAppConfig, endpoint: string, data: any): Promise<any> {
+  const url = `https://graph.facebook.com/${config.apiVersion || 'v21.0'}/${config.phoneNumberId}${endpoint}`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${config.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error(`[Meta API Error ${response.status}]:`, err);
+    }
+    return await response.json();
+  } catch (err: any) {
+    console.error('[Meta Request Failed]:', err.message);
+  }
+}
+
+async function dispatchDrBerryboyReply(config: WhatsAppConfig, from: string, senderName: string, text: string) {
+  const textLower = text.toLowerCase();
+
+  // 1. ROI / Financial inquiry
+  if (textLower.includes('roi') || textLower.includes('calculator') || textLower.includes('cost') || textLower.includes('capex')) {
+    const roiPayload = {
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to: from.replace(/\D/g, ''),
+      type: 'text',
+      text: {
+        preview_url: false,
+        body: `📊 *Berryboyzz™ 1-Acre Precision Model*\n\n• Annual Yield: 12,000 kg Grade-A Primocane\n• Annual Revenue: ₹72.00 Lakhs (@ ₹600/kg B2B off-take)\n• Annual OPEX: ₹18.50 Lakhs (fertigation, energy, labor)\n• Net EBITDA: ₹53.50 Lakhs/yr (~74% operational margin)\n• NHB Capital Subsidy: Up to 50% (~₹56L cap)\n\nReply *PROSPECTUS* for the full investment term sheet.`,
+      },
+    };
+    return postToMeta(config, '/messages', roiPayload);
+  }
+
+  // 2. Default interactive greeting
+  const greetingPayload = {
+    messaging_product: 'whatsapp',
+    recipient_type: 'individual',
+    to: from.replace(/\D/g, ''),
+    type: 'interactive',
+    interactive: {
+      type: 'button',
+      header: { type: 'text', text: 'Berryboyzz™ Precision Agronomy Desk' },
+      body: {
+        text: `Welcome ${senderName}! I am Dr. Berryboy AI, Chief Agronomy Intelligence for Berryboyzz™.\n\nOur precision polyhouse ecosystem across Pune & Satara produces certified European Primocane berries with guaranteed commercial off-take contracts.\n\nHow can our agronomists assist you?`,
+      },
+      footer: { text: 'Pune · Satara · Maharashtra' },
+      action: {
+        buttons: [
+          { type: 'reply', reply: { id: 'btn_roi', title: '📈 View 1-Acre ROI' } },
+          { type: 'reply', reply: { id: 'btn_tour', title: '🚜 Book Farm Tour' } },
+          { type: 'reply', reply: { id: 'btn_agronomist', title: '👨‍🌾 Talk to Expert' } },
+        ],
+      },
+    },
+  };
+
+  return postToMeta(config, '/messages', greetingPayload);
+}
+
+// Serverless Handler
+export default async function handler(req: any, res: any) {
   const config = getWhatsAppConfig();
-  const service = new WhatsAppCloudApiService(config);
 
   // 1. Meta Webhook Verification Handshake (GET)
   if (req.method === 'GET') {
-    const mode = req.query['hub.mode'] || null;
-    const token = req.query['hub.verify_token'] || null;
-    const challenge = req.query['hub.challenge'] || null;
+    const query = req.query || {};
+    const mode = query['hub.mode'] || null;
+    const token = query['hub.verify_token'] || null;
+    const challenge = query['hub.challenge'] || null;
 
-    const result = service.verifyWebhookChallenge(mode, token, challenge);
-    return {
-      status: result.status,
-      body: result.body,
-      headers: { 'Content-Type': 'text/plain' },
-    };
+    if (mode === 'subscribe' && token === config.verifyToken) {
+      console.log('✅ Meta Webhook challenge verified on Vercel!');
+      res.setHeader('Content-Type', 'text/plain');
+      return res.status(200).send(challenge || '');
+    }
+
+    console.warn('❌ Verification token mismatch:', { mode, token });
+    return res.status(403).send('Forbidden: Verification token mismatch');
   }
 
-  // 2. Incoming Event / Message Webhook (POST)
+  // 2. Inbound Message Webhook (POST)
   if (req.method === 'POST') {
+    // Acknowledge Meta immediately to avoid retry timeout
+    res.status(200).json({ status: 'EVENT_RECEIVED' });
+
     try {
-      const messages = service.parseWebhookPayload(req.body);
+      const payload = req.body || {};
+      const entry = payload.entry?.[0];
+      const change = entry?.changes?.[0]?.value;
+      const messages = change?.messages;
+      const contact = change?.contacts?.[0];
 
-      // Asynchronously process each message with Dr. Berryboy autonomous matrix
-      for (const msg of messages) {
-        console.log(`[WhatsApp Webhook] Inbound from ${msg.from} (${msg.senderName}): "${msg.text}"`);
-        await service.generateAutoReply(msg);
+      if (messages && messages.length > 0) {
+        for (const msg of messages) {
+          const from = msg.from;
+          const senderName = contact?.profile?.name || 'Valued Partner';
+          const msgText = msg.text?.body || msg.interactive?.button_reply?.title || '';
+
+          console.log(`[Vercel Webhook] Inbound from ${from} (${senderName}): "${msgText}"`);
+          await dispatchDrBerryboyReply(config, from, senderName, msgText);
+        }
       }
-
-      // Meta requires immediate HTTP 200 acknowledgment to avoid retry backoff
-      return {
-        status: 200,
-        body: { status: 'EVENT_RECEIVED' },
-      };
     } catch (err: any) {
-      console.error('[WhatsApp Webhook] Processing error:', err);
-      // Still return 200 to prevent Meta webhook disabling due to 500 loops
-      return {
-        status: 200,
-        body: { status: 'ERROR_LOGGED', error: err.message },
-      };
+      console.error('[Vercel Webhook Error]:', err.message);
     }
+    return;
   }
 
-  return {
-    status: 405,
-    body: { error: 'Method Not Allowed' },
-  };
-}
-
-// Default export for Vercel Serverless Functions
-export default async function handler(req: any, res: any) {
-  const response = await handleWhatsAppWebhook({
-    method: req.method,
-    query: req.query || {},
-    body: req.body,
-  });
-
-  if (response.headers) {
-    for (const [key, val] of Object.entries(response.headers)) {
-      res.setHeader(key, val);
-    }
-  }
-
-  return res.status(response.status).send(response.body);
+  return res.status(405).json({ error: 'Method Not Allowed' });
 }
