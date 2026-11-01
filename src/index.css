@@ -84,6 +84,135 @@ html.dark .bg-grid-pattern {
     linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
+/* ==============================================================================
+ * SPATIAL DEPTH & MULTI-LAYERED PARALLAX ENGINE (Phone Lockscreen / Home Parity)
+ * Zero layout thrash: All layer offsets derived from 7 root CSS custom properties.
+ * ============================================================================== */
+.spatial-stage-root {
+  perspective: 1200px;
+  isolation: isolate;
+  contain: layout style;
+  --sd: 0px;
+  --tx3d: 0deg;
+  --ty3d: 0deg;
+  --coc-b: 0;
+  --coc-f: 6;
+  --pxn: 0.5;
+  --pyn: 0.5;
+  --lx: calc(var(--pxn) * 100%);
+  --ly: calc(var(--pyn) * 100%);
+}
+
+.spatial-layer {
+  position: absolute;
+  inset: -8%;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translate3d(
+    calc((var(--pxn) - 0.5) * var(--ax, 0px)),
+    calc(var(--sd) * (var(--s, 1) - 1)),
+    0
+  );
+  pointer-events: none;
+}
+
+/* Layer 0: Deep Atmospheric Ambient Light Rays */
+.spatial-lyr-rays {
+  --s: 0.15;
+  --ax: -16px;
+  z-index: 0;
+  opacity: 0.65;
+  mix-blend-mode: multiply;
+  background: radial-gradient(
+    70% 50% at var(--lx) var(--ly),
+    rgba(251, 191, 36, 0.22) 0%,
+    rgba(244, 63, 94, 0.12) 45%,
+    transparent 80%
+  );
+  filter: blur(calc(var(--coc-b) * 1px + 12px));
+}
+
+html.dark .spatial-lyr-rays {
+  mix-blend-mode: screen;
+  opacity: 0.55;
+  background: radial-gradient(
+    70% 50% at var(--lx) var(--ly),
+    rgba(244, 63, 94, 0.28) 0%,
+    rgba(147, 51, 234, 0.18) 40%,
+    transparent 75%
+  );
+  filter: blur(calc(var(--coc-b) * 1px + 16px));
+}
+
+/* Layer 2: Midground Focal Stage (Anchor, Razor Sharp 0 Blur, 3D Tilt) */
+.spatial-focal-viewport {
+  --s: 1.0;
+  --ax: 12px;
+  z-index: 10;
+  transform-style: preserve-3d;
+  transform: perspective(1200px) rotateY(var(--ty3d)) rotateX(var(--tx3d)) scale(1.04);
+  transition: transform 0.08s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+/* Layer 3: Foreground Floating Spatial Objects (Macro Bokeh Plane) */
+.spatial-fg-bokeh {
+  --s: 1.65;
+  --ax: 32px;
+  z-index: 20;
+  filter: blur(calc(var(--coc-f) * 1px));
+  pointer-events: none;
+}
+
+/* Layer 4: Interactive Glass Card with Dynamic Specular Highlight */
+.spatial-specular-card {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+}
+
+.spatial-specular-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    110% 90% at var(--lx) calc(var(--ly) - 15%),
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.05) 45%,
+    transparent 70%
+  );
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+}
+
+html.dark .spatial-specular-card::after {
+  background: radial-gradient(
+    110% 90% at var(--lx) calc(var(--ly) - 15%),
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    transparent 75%
+  );
+}
+
+/* Thermal Governor Tier Fallbacks */
+.tier-mid .spatial-fg-bokeh {
+  filter: blur(calc(var(--coc-f) * 0.6px));
+}
+
+.tier-lo .spatial-specular-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.tier-lo .spatial-fg-bokeh {
+  filter: blur(3px);
+}
+
+.tier-lo .spatial-lyr-rays {
+  filter: blur(10px);
+}
+
 .font-mono-num {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;

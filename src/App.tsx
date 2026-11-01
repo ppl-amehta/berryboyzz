@@ -19,27 +19,36 @@ export const App: React.FC = () => {
   const [scrollProgress, setScrollProgress] = useState<number>(0);
   const storyContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Passive, non-blocking scroll measurement for the scrollytelling stage
+  // Zero-layout-thrash passive scroll measurement (cached bounds via ResizeObserver)
   useEffect(() => {
-    let ticking = false;
+    let cachedTop = 0;
+    let cachedTotal = 1000;
 
+    const measureBounds = () => {
+      const container = storyContainerRef.current;
+      if (container) {
+        const rect = container.getBoundingClientRect();
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        cachedTop = rect.top + scrollTop;
+        cachedTotal = Math.max(container.offsetHeight - window.innerHeight, 1);
+      }
+    };
+
+    measureBounds();
+    const ro = new ResizeObserver(measureBounds);
+    if (storyContainerRef.current) ro.observe(storyContainerRef.current);
+
+    let ticking = false;
     const onScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          const container = storyContainerRef.current;
-          if (container) {
-            const rect = container.getBoundingClientRect();
-            const totalScrollable = container.offsetHeight - window.innerHeight;
-            if (totalScrollable > 0) {
-              const currentScrolled = -rect.top;
-              const p = Math.min(Math.max(currentScrolled / totalScrollable, 0), 1);
-              setScrollProgress(p);
+          const scrollY = window.scrollY || document.documentElement.scrollTop;
+          const currentScrolled = scrollY - cachedTop;
+          const p = Math.min(Math.max(currentScrolled / cachedTotal, 0), 1);
+          setScrollProgress(p);
 
-              // Map p (0.0 to 1.0) to 7 phases
-              const phaseIdx = Math.min(Math.floor(p * 7), 6);
-              setCurrentPhaseIndex(phaseIdx);
-            }
-          }
+          const phaseIdx = Math.min(Math.floor(p * 7), 6);
+          setCurrentPhaseIndex(phaseIdx);
           ticking = false;
         });
         ticking = true;
@@ -47,9 +56,14 @@ export const App: React.FC = () => {
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', measureBounds, { passive: true });
     onScroll();
 
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', measureBounds);
+      ro.disconnect();
+    };
   }, []);
 
   const handleSelectPhase = useCallback((phaseIndex: number) => {

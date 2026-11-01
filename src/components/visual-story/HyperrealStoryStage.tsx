@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { FastForward, ArrowDown, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
+import { FastForward, ArrowDown, Sparkles, Layers, Eye, Compass, Move3d } from 'lucide-react';
 
 export interface StoryPhaseContent {
   index: number;
@@ -122,11 +122,190 @@ export const HyperrealStoryStage: React.FC<HyperrealStoryStageProps> = ({
   onSkipToCore,
 }) => {
   const activePhase = HYPERREAL_PHASES[currentPhaseIndex] || HYPERREAL_PHASES[0];
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const [gyroEnabled, setGyroEnabled] = useState(false);
+  const [activeTier, setActiveTier] = useState<'hi' | 'mid' | 'lo'>('hi');
+
+  // Single rAF state ref (Zero layout reads in loop)
+  const state = useRef({
+    sy: 0,
+    syT: 0,
+    px: 0.5,
+    py: 0.5,
+    pxt: 0.5,
+    pyt: 0.5,
+    tx: 0,
+    ty: 0,
+    txt: 0,
+    tyt: 0,
+    ema: 8,
+    tier: 0, // 0 = hi, 1 = mid, 2 = lo
+    visible: true,
+  });
+
+  const bounds = useRef({ top: 0, bottom: 1000 });
+
+  // Geometry measurement strictly on mount and resize via ResizeObserver
+  const measure = useCallback(() => {
+    if (!stageRef.current) return;
+    const parent = stageRef.current.parentElement || stageRef.current;
+    const rect = parent.getBoundingClientRect();
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    bounds.current = {
+      top: rect.top + scrollTop,
+      bottom: rect.bottom + scrollTop - window.innerHeight,
+    };
+  }, []);
+
+  // Request gyroscope permission on iOS Safari if requested
+  const requestGyro = useCallback(async () => {
+    if (typeof (DeviceOrientationEvent as any)?.requestPermission === 'function') {
+      try {
+        const response = await (DeviceOrientationEvent as any).requestPermission();
+        if (response === 'granted') {
+          setGyroEnabled(true);
+        }
+      } catch (err) {
+        console.warn('Gyroscope permission was denied or not supported:', err);
+      }
+    } else {
+      setGyroEnabled(true);
+    }
+  }, []);
+
+  // Spatial compositing loop (1 rAF tick, 7 setProperty calls, zero layout thrashing)
+  useEffect(() => {
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (stageRef.current) ro.observe(stageRef.current);
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        state.current.visible = entry.isIntersecting;
+      },
+      { rootMargin: '20% 0px' }
+    );
+    if (stageRef.current) io.observe(stageRef.current);
+
+    // Passive input listeners
+    const onScroll = () => {
+      state.current.syT = window.scrollY;
+    };
+
+    const onPointerMove = (e: MouseEvent | TouchEvent) => {
+      const clientX = 'touches' in e ? e.touches[0]?.clientX ?? window.innerWidth / 2 : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0]?.clientY ?? window.innerHeight / 2 : e.clientY;
+      state.current.pxt = Math.min(Math.max(clientX / window.innerWidth, 0), 1);
+      state.current.pyt = Math.min(Math.max(clientY / window.innerHeight, 0), 1);
+    };
+
+    const onDeviceOrientation = (e: DeviceOrientationEvent) => {
+      if (e.gamma !== null && e.beta !== null) {
+        // Clamped tilt mapping (-15deg to +15deg mapped to 0..1)
+        const normX = Math.min(Math.max((e.gamma + 15) / 30, 0), 1);
+        const normY = Math.min(Math.max((e.beta - 30) / 40, 0), 1);
+        state.current.pxt = normX;
+        state.current.pyt = normY;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('mousemove', onPointerMove, { passive: true });
+    window.addEventListener('touchmove', onPointerMove, { passive: true });
+
+    if (gyroEnabled) {
+      window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
+    }
+
+    let rafId = 0;
+    let lastTime = performance.now();
+
+    const tick = (now: number) => {
+      rafId = requestAnimationFrame(tick);
+      const s = state.current;
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
+
+      if (!s.visible || document.hidden || !stageRef.current) return;
+
+      // Exponential damping: lerp(v, target, dt)
+      const damp = 1 - Math.exp(-12 * dt);
+      s.sy += (s.syT - s.sy) * damp;
+      s.px += (s.pxt - s.px) * damp;
+      s.py += (s.pyt - s.py) * damp;
+
+      // Velocity yaw momentum coupled to scroll velocity (clamp to +/- 3.5 deg)
+      const velocityYaw = Math.min(Math.max(((s.syT - s.sy) / (dt || 0.016)) * 0.0025, -3.5), 3.5);
+
+      // 3D Perspective Tilt targets
+      s.txt = (s.px - 0.5) * 10 + velocityYaw; // Yaw angle (deg)
+      s.tyt = -(s.py - 0.5) * 8; // Pitch angle (deg)
+
+      s.tx += (s.txt - s.tx) * damp;
+      s.ty += (s.tyt - s.ty) * damp;
+
+      // Thermal & frame-time governor (Exponential Moving Average)
+      const frameDelta = now - ((state.current as any).lastTickTime || now);
+      (state.current as any).lastTickTime = now;
+      s.ema = s.ema * 0.9 + frameDelta * 0.1;
+
+      if (s.ema > 14 && s.tier < 1) {
+        s.tier = 1;
+        setActiveTier('mid');
+      } else if (s.ema > 18 && s.tier < 2) {
+        s.tier = 2;
+        setActiveTier('lo');
+      }
+
+      // Normalized stage progress
+      const totalSpan = Math.max(bounds.current.bottom - bounds.current.top, 1);
+      const stageP = Math.min(Math.max((s.sy - bounds.current.top) / totalSpan, 0), 1);
+
+      // Dynamic Depth-of-Field Circle-of-Confusion
+      const cocBg = Math.min(24 * stageP, 24); // Atmospheric progressive background defocus (0 -> 24px)
+      const cocFg = (s.tier === 2 ? 3 : 6) + Math.abs(velocityYaw) * 0.5; // Foreground bokeh with focus pull breath
+
+      // THE SINGLE COMPOSITOR WRITE: 7 CSS variables derived by all planes
+      const style = stageRef.current.style;
+      style.setProperty('--sd', `${-(s.sy - bounds.current.top)}px`);
+      style.setProperty('--ty3d', `${s.tx.toFixed(3)}deg`);
+      style.setProperty('--tx3d', `${s.ty.toFixed(3)}deg`);
+      style.setProperty('--coc-b', `${cocBg.toFixed(2)}`);
+      style.setProperty('--coc-f', `${cocFg.toFixed(2)}`);
+      style.setProperty('--pxn', `${s.px.toFixed(4)}`);
+      style.setProperty('--pyn', `${s.py.toFixed(4)}`);
+    };
+
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      ro.disconnect();
+      io.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('mousemove', onPointerMove);
+      window.removeEventListener('touchmove', onPointerMove);
+      if (gyroEnabled) {
+        window.removeEventListener('deviceorientation', onDeviceOrientation);
+      }
+    };
+  }, [measure, gyroEnabled]);
 
   return (
-    <section className="relative w-full py-12 md:py-20 px-4 sm:px-8 max-w-7xl mx-auto">
-      {/* Chapter Index Quick-Tabs Header */}
-      <div className="flex items-center justify-between gap-4 pb-8 border-b border-stone-200 dark:border-zinc-800">
+    <section
+      ref={stageRef}
+      className={`spatial-stage-root relative w-full py-8 md:py-16 px-4 sm:px-8 max-w-7xl mx-auto overflow-visible ${
+        activeTier === 'mid' ? 'tier-mid' : activeTier === 'lo' ? 'tier-lo' : 'tier-hi'
+      }`}
+    >
+      {/* =========================================================================
+       * LAYER 0: Deep Atmospheric Ambient Light Rays & Chromatic Aura (d = -850)
+       * Moves at 0.15x speed with progressive atmospheric defocus blur
+       * ========================================================================= */}
+      <div className="spatial-layer spatial-lyr-rays" aria-hidden="true" />
+
+      {/* Chapter Index & Hardware Spatial Controller Bar */}
+      <div className="relative z-30 flex items-center justify-between gap-4 pb-6 border-b border-stone-200/80 dark:border-zinc-800/80">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
           {HYPERREAL_PHASES.map((p) => {
             const isActive = p.index === currentPhaseIndex;
@@ -136,7 +315,7 @@ export const HyperrealStoryStage: React.FC<HyperrealStoryStageProps> = ({
                 onClick={() => onSelectPhase(p.index)}
                 className={`px-3 py-1.5 rounded-full text-xs font-mono tracking-wider transition-all whitespace-nowrap flex items-center gap-1.5 ${
                   isActive
-                    ? 'bg-rose-500 text-white font-semibold shadow-md shadow-rose-500/20'
+                    ? 'bg-rose-500 text-white font-semibold shadow-md shadow-rose-500/25 scale-105'
                     : 'bg-stone-200/60 dark:bg-zinc-800/80 text-stone-600 dark:text-zinc-400 hover:text-stone-900 dark:hover:text-white'
                 }`}
               >
@@ -146,21 +325,39 @@ export const HyperrealStoryStage: React.FC<HyperrealStoryStageProps> = ({
           })}
         </div>
 
-        <button
-          onClick={onSkipToCore}
-          className="hidden sm:flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono text-stone-700 dark:text-zinc-300 bg-stone-200/70 dark:bg-zinc-800/80 hover:bg-rose-500 hover:text-white transition-all shadow-sm flex-shrink-0"
-        >
-          <span>Skip to Numbers & Specs</span>
-          <FastForward className="w-3.5 h-3.5" />
-        </button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Spatial 3D / Gyro Affordance (Mobile & Desktop) */}
+          <button
+            onClick={requestGyro}
+            title="Spatial Lockscreen 3D Parallax Active"
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono border transition-all ${
+              gyroEnabled
+                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-semibold'
+                : 'bg-stone-200/60 dark:bg-zinc-800/80 border-stone-300 dark:border-zinc-700 text-stone-600 dark:text-zinc-300'
+            }`}
+          >
+            <Move3d className="w-3.5 h-3.5 text-rose-500" />
+            <span>Spatial Parallax 120Hz</span>
+          </button>
+
+          <button
+            onClick={onSkipToCore}
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono text-stone-700 dark:text-zinc-300 bg-stone-200/70 dark:bg-zinc-800/80 hover:bg-rose-500 hover:text-white transition-all shadow-sm flex-shrink-0"
+          >
+            <span>Skip to Specs</span>
+            <FastForward className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
-      {/* Main Dual-Zone Showcase (Hyperreal Photo on Left, Clean Protected Card on Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-10">
-        {/* Left: Hyperrealistic Photographic Stage (7 Cols) */}
+      {/* Main Dual-Zone Showcase (Spatial 3D Viewport on Left, Frosted Glass Card on Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-8 relative z-20">
+        {/* Left: Multi-Layered Spatial Photographic Viewport (7 Cols) */}
         <div className="lg:col-span-7 relative">
-          <div className="relative aspect-[4/3] sm:aspect-[16/11] rounded-3xl overflow-hidden shadow-2xl border border-stone-200/80 dark:border-zinc-700/80 bg-stone-900 group">
-            {/* Photographic Frames Crossfade Stack */}
+          <div className="spatial-focal-viewport relative aspect-[4/3] sm:aspect-[16/11] rounded-3xl overflow-hidden shadow-2xl border border-stone-200/90 dark:border-zinc-700/80 bg-stone-950 group">
+            {/* =========================================================================
+             * LAYER 2: Midground Focal Stage (Anchor, Razor Sharp 0 Blur, 3D Gyro Tilt)
+             * ========================================================================= */}
             {HYPERREAL_PHASES.map((phase) => {
               const isCurrent = phase.index === currentPhaseIndex;
               return (
@@ -174,23 +371,70 @@ export const HyperrealStoryStage: React.FC<HyperrealStoryStageProps> = ({
                     src={phase.imageSrc}
                     alt={phase.altText}
                     className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-                    loading="eager"
+                    fetchPriority={phase.index === 0 ? 'high' : 'auto'}
+                    decoding="async"
+                    loading={phase.index === 0 ? 'eager' : 'lazy'}
                   />
                   {/* Subtle vignette scrim to guarantee contrast */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
                 </div>
               );
             })}
 
+            {/* =========================================================================
+             * LAYER 3: Foreground Floating Spatial Objects (Macro Bokeh Plane, d = +650)
+             * Moves faster at 1.65x speed with dynamic circle-of-confusion bokeh blur
+             * ========================================================================= */}
+            <div className="spatial-layer spatial-fg-bokeh pointer-events-none" aria-hidden="true">
+              {/* Luminous refracted water dewdrop lens */}
+              <div
+                className="absolute top-[18%] left-[22%] w-10 h-10 rounded-full bg-gradient-to-br from-white/70 via-rose-300/30 to-transparent border border-white/40 shadow-lg"
+                style={{
+                  transform: 'translate3d(calc(var(--pxn) * 20px), calc(var(--pyn) * 15px), 0)',
+                }}
+              />
+              {/* Pollinator bumblebee silhouette floating near flower bloom during phase 3 & 4 */}
+              {(currentPhaseIndex === 3 || currentPhaseIndex === 4) && (
+                <div
+                  className="absolute bottom-[28%] right-[18%] flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-[10px] font-mono text-amber-200"
+                  style={{
+                    transform: 'translate3d(calc((1 - var(--pxn)) * 35px), calc((1 - var(--pyn)) * 25px), 0)',
+                  }}
+                >
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                  <span>Bumblebee Pollination Plane</span>
+                </div>
+              )}
+              {/* Floating golden pollen / solar flare bokeh dots */}
+              <div
+                className="absolute top-[42%] right-[12%] w-6 h-6 rounded-full bg-rose-400/40 border border-rose-300/30"
+                style={{
+                  transform: 'translate3d(calc(var(--pxn) * -18px), calc(var(--pyn) * 20px), 0)',
+                }}
+              />
+              <div
+                className="absolute bottom-[16%] left-[32%] w-8 h-8 rounded-full bg-amber-400/30 border border-amber-300/30"
+                style={{
+                  transform: 'translate3d(calc(var(--pxn) * 25px), calc(var(--pyn) * -16px), 0)',
+                }}
+              />
+            </div>
+
             {/* Floating Lens Telemetry Badge */}
-            <div className="absolute top-4 left-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white text-[11px] font-mono">
+            <div className="absolute top-4 left-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white text-[11px] font-mono shadow-md">
               <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-              <span>{activePhase.label} · LIVE STAGE</span>
+              <span>{activePhase.label} · 100MP MACRO STAGE</span>
+            </div>
+
+            {/* Dynamic Tilt Coordinate Pill */}
+            <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-mono text-zinc-300">
+              <Eye className="w-3 h-3 text-rose-400" />
+              <span>Focal σ: 0.0px</span>
             </div>
 
             {/* Bottom Photo Caption */}
-            <div className="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between text-[11px] font-mono text-zinc-200 bg-black/50 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/10">
-              <span className="truncate">{activePhase.altText}</span>
+            <div className="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between text-[11px] font-mono text-zinc-200 bg-black/55 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 shadow-lg">
+              <span className="truncate max-w-[70%]">{activePhase.altText}</span>
               <span className="text-amber-300 font-semibold ml-2 flex-shrink-0">
                 {activePhase.metricValue}
               </span>
@@ -198,10 +442,10 @@ export const HyperrealStoryStage: React.FC<HyperrealStoryStageProps> = ({
           </div>
         </div>
 
-        {/* Right: High-Contrast Opaque Protected Story Card (5 Cols) */}
-        <div className="lg:col-span-5 relative z-20">
-          <div className="p-7 sm:p-9 rounded-3xl bg-white/95 dark:bg-[#121622]/95 backdrop-blur-2xl border border-stone-200/90 dark:border-zinc-800 shadow-2xl space-y-6">
-            {/* Stage Badge */}
+        {/* Right: Layer 4 — Pinned Interactive Frosted Glass Card with Specular Light Tracking (5 Cols) */}
+        <div className="lg:col-span-5 relative z-30">
+          <div className="spatial-specular-card p-7 sm:p-9 rounded-3xl bg-white/95 dark:bg-[#121622]/95 border border-stone-200/95 dark:border-zinc-800 shadow-2xl space-y-6">
+            {/* Stage Badge with Specular Glow */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono tracking-wider bg-rose-500/10 border border-rose-500/25 text-rose-600 dark:text-rose-400 font-medium">
               <Sparkles className="w-3.5 h-3.5" />
               <span>{activePhase.badge}</span>
@@ -212,13 +456,13 @@ export const HyperrealStoryStage: React.FC<HyperrealStoryStageProps> = ({
               {activePhase.headline}
             </h2>
 
-            {/* Humanistic Friendly Explanation */}
+            {/* Humanistic Plain-English Explanation */}
             <p className="text-sm sm:text-base text-stone-600 dark:text-zinc-300 font-light leading-relaxed">
               {activePhase.plainEnglishExplanation}
             </p>
 
             {/* Technical Agronomic Footnote (Elite signaling without intimidation) */}
-            <div className="p-3.5 rounded-xl bg-stone-100/80 dark:bg-zinc-900/80 border border-stone-200 dark:border-zinc-800/80 text-xs font-mono text-stone-700 dark:text-zinc-300">
+            <div className="p-3.5 rounded-xl bg-stone-100/90 dark:bg-zinc-900/90 border border-stone-200 dark:border-zinc-800/80 text-xs font-mono text-stone-700 dark:text-zinc-300">
               <span className="text-rose-600 dark:text-rose-400 font-semibold block mb-1">
                 AGRONOMIST AUDIT NOTE:
               </span>
@@ -243,14 +487,14 @@ export const HyperrealStoryStage: React.FC<HyperrealStoryStageProps> = ({
                 {activePhase.index < 6 ? (
                   <button
                     onClick={() => onSelectPhase(activePhase.index + 1)}
-                    className="px-4 py-1.5 rounded-lg text-xs font-mono font-semibold bg-rose-600 hover:bg-rose-500 text-white shadow transition-colors"
+                    className="px-4 py-1.5 rounded-lg text-xs font-mono font-semibold bg-rose-600 hover:bg-rose-500 text-white shadow-md transition-all active:scale-95"
                   >
                     Next Phase →
                   </button>
                 ) : (
                   <button
                     onClick={onSkipToCore}
-                    className="px-4 py-1.5 rounded-lg text-xs font-mono font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow transition-colors flex items-center gap-1.5"
+                    className="px-4 py-1.5 rounded-lg text-xs font-mono font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition-all active:scale-95 flex items-center gap-1.5"
                   >
                     <span>View Pricing & Specs</span>
                     <ArrowDown className="w-3.5 h-3.5" />
