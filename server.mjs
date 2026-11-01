@@ -12,6 +12,7 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,9 +20,11 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
 const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID || '1022955353865818';
-const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN || '';
-const WHATSAPP_VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'berryboyzz_webhook_verify_token_2026';
-const WHATSAPP_API_VERSION = process.env.WHATSAPP_API_VERSION || 'v21.0';
+const WHATSAPP_ACCESS_TOKEN = process.env.META_SYSTEM_USER_TOKEN || process.env.WHATSAPP_ACCESS_TOKEN || '';
+const WHATSAPP_VERIFY_TOKEN = process.env.META_WEBHOOK_VERIFY_TOKEN || process.env.WHATSAPP_VERIFY_TOKEN || 'berryboyzz_webhook_verify_token_2026';
+const WHATSAPP_API_VERSION = process.env.META_API_VERSION || process.env.WHATSAPP_API_VERSION || 'v21.0';
+const META_APP_SECRET = process.env.META_APP_SECRET || process.env.WHATSAPP_APP_SECRET || '';
+const INSTAGRAM_ACCOUNT_ID = process.env.INSTAGRAM_ACCOUNT_ID || '17841400012345678';
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -55,6 +58,37 @@ async function postToMeta(endpoint, data) {
   } catch (e) {
     console.error('[Meta Fetch Failed]:', e.message);
   }
+}
+
+async function postToInstagram(endpoint, data) {
+  const url = `https://graph.facebook.com/${WHATSAPP_API_VERSION}/${INSTAGRAM_ACCOUNT_ID}${endpoint}`;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error(`[Meta IG API Error ${res.status}]:`, err);
+    }
+    return await res.json();
+  } catch (e) {
+    console.error('[Meta IG Fetch Failed]:', e.message);
+  }
+}
+
+function verifySignature(rawBody, headerSignature) {
+  if (!META_APP_SECRET) return true;
+  if (!headerSignature || !headerSignature.startsWith('sha256=')) return false;
+  const expected = headerSignature.slice('sha256='.length);
+  const hash = crypto.createHmac('sha256', META_APP_SECRET).update(rawBody, 'utf-8').digest('hex');
+  const bufA = Buffer.from(expected, 'hex');
+  const bufB = Buffer.from(hash, 'hex');
+  return bufA.length === bufB.length && crypto.timingSafeEqual(bufA, bufB);
 }
 
 async function handleAutoReply(message) {
@@ -100,8 +134,8 @@ const server = http.createServer(async (req, res) => {
     return res.end('OK\n');
   }
 
-  // 2. WhatsApp Webhook Handshake (GET)
-  if (pathname === '/api/whatsapp-webhook' && req.method === 'GET') {
+  // 2. Meta Webhook Handshake (GET) for WhatsApp & Instagram
+  if ((pathname === '/api/whatsapp-webhook' || pathname === '/api/meta-webhook') && req.method === 'GET') {
     const mode = reqUrl.searchParams.get('hub.mode');
     const token = reqUrl.searchParams.get('hub.verify_token');
     const challenge = reqUrl.searchParams.get('hub.challenge');
@@ -117,29 +151,57 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // 3. WhatsApp Inbound Messages (POST)
-  if (pathname === '/api/whatsapp-webhook' && req.method === 'POST') {
+  // 3. Meta Inbound Webhook Events (POST) for WhatsApp & Instagram
+  if ((pathname === '/api/whatsapp-webhook' || pathname === '/api/meta-webhook') && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
+      const signature = req.headers['x-hub-signature-256'];
+      if (!verifySignature(body, signature)) {
+        console.warn('❌ Webhook rejected: Invalid HMAC signature in X-Hub-Signature-256');
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: 'Unauthorized: Invalid signature' }));
+      }
+
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ status: 'EVENT_RECEIVED' }));
 
       try {
         const payload = JSON.parse(body || '{}');
-        const entry = payload.entry?.[0];
-        const change = entry?.changes?.[0]?.value;
-        const messages = change?.messages;
-        const contact = change?.contacts?.[0];
 
-        if (messages && messages.length > 0) {
-          for (const msg of messages) {
-            const senderName = contact?.profile?.name || 'Valued Partner';
-            const msgText = msg.text?.body || msg.interactive?.button_reply?.title || '';
-            await handleAutoReply({
-              from: msg.from,
-              senderName,
-              text: msgText,
+        // Handle WhatsApp events
+        if (payload.object === 'whatsapp_business_account' || payload.entry?.[0]?.changes?.[0]?.value?.messages) {
+          const entry = payload.entry?.[0];
+          const change = entry?.changes?.[0]?.value;
+          const messages = change?.messages;
+          const contact = change?.contacts?.[0];
+
+          if (messages && messages.length > 0) {
+            for (const msg of messages) {
+              const senderName = contact?.profile?.name || 'Valued Partner';
+              const msgText = msg.text?.body || msg.interactive?.button_reply?.title || '';
+              await handleAutoReply({
+                from: msg.from,
+                senderName,
+                text: msgText,
+              });
+            }
+          }
+        }
+
+        // Handle Instagram events
+        if (payload.object === 'instagram') {
+          const entry = payload.entry?.[0];
+          const messagingItem = entry?.messaging?.[0];
+          if (messagingItem && messagingItem.sender?.id) {
+            const senderId = messagingItem.sender.id;
+            const text = messagingItem.message?.text || '';
+            console.log(`[Dr. Berryboy AI] Processing Instagram DM from ${senderId}: "${text}"`);
+            await postToInstagram('/messages', {
+              recipient: { id: senderId },
+              message: {
+                text: `Welcome to Berryboyzz™ Frontier Agriculture! Dr. Berryboy AI here.\n\nOur precision polyhouse model in Pune & Satara generates ₹53.5L/acre net EBITDA. Reply ROI or TOUR to learn more!`,
+              },
             });
           }
         }
