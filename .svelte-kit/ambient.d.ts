@@ -112,8 +112,6 @@ declare module '$env/static/private' {
 	export const AGY_BROWSER_ACTIVE_PORT_FILE: string;
 	export const npm_node_execpath: string;
 	export const npm_config_prefix: string;
-	export const TEST: string;
-	export const VITEST: string;
 	export const NODE_ENV: string;
 }
 
@@ -232,8 +230,6 @@ declare module '$env/dynamic/private' {
 		AGY_BROWSER_ACTIVE_PORT_FILE: string;
 		npm_node_execpath: string;
 		npm_config_prefix: string;
-		TEST: string;
-		VITEST: string;
 		NODE_ENV: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
