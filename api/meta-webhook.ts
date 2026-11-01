@@ -35,8 +35,8 @@ export const getMetaWebhookConfig = (): MetaWebhookConfig => ({
   verifyToken: getEnv('META_WEBHOOK_VERIFY_TOKEN', getEnv('WHATSAPP_VERIFY_TOKEN', 'berryboyzz_webhook_verify_token_2026')),
   appSecret: getEnv('META_APP_SECRET', getEnv('WHATSAPP_APP_SECRET', '')),
   whatsapp: {
-    phoneNumberId: getEnv('WHATSAPP_PHONE_NUMBER_ID', '1022955353865818'),
-    businessAccountId: getEnv('WHATSAPP_BUSINESS_ACCOUNT_ID', ''),
+    phoneNumberId: getEnv('WHATSAPP_PHONE_NUMBER_ID', '1127117767143751'),
+    businessAccountId: getEnv('WHATSAPP_BUSINESS_ACCOUNT_ID', '986204240417120'),
     accessToken: getEnv('META_SYSTEM_USER_TOKEN', getEnv('WHATSAPP_ACCESS_TOKEN', '')),
     verifyToken: getEnv('META_WEBHOOK_VERIFY_TOKEN', 'berryboyzz_webhook_verify_token_2026'),
     apiVersion: getEnv('META_API_VERSION', 'v21.0'),

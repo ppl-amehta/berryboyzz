@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "start": "node --env-file=.env server.mjs"
+    "start": "node --env-file=.env server.mjs",
+    "meta:cli": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs",
+    "meta:audit": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs audit",
+    "meta:simulate": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs simulate",
+    "test": "vitest run"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
@@ -21,6 +25,7 @@
     "@tailwindcss/vite": "^4.0.0",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
+    "@types/node": "^26.6.6",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",

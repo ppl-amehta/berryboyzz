@@ -12,7 +12,8 @@ describe('Meta Webhook Engine', () => {
     verifyToken: 'berryboyzz_webhook_verify_token_2026',
     appSecret: 'test_meta_app_secret_998877',
     whatsapp: {
-      phoneNumberId: '1022955353865818',
+      phoneNumberId: '1127117767143751',
+      businessAccountId: '986204240417120',
       accessToken: 'EAAG_WA_MOCK_TOKEN',
       verifyToken: 'berryboyzz_webhook_verify_token_2026',
     },
@@ -75,7 +76,7 @@ describe('Meta Webhook Engine', () => {
               field: 'messages',
               value: {
                 messaging_product: 'whatsapp',
-                metadata: { phone_number_id: '1022955353865818' },
+                metadata: { phone_number_id: '1127117767143751' },
                 contacts: [{ profile: { name: 'Vikram Joshi' }, wa_id: '919822188800' }],
                 messages: [
                   {

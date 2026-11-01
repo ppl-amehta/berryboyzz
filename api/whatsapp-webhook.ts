@@ -24,8 +24,8 @@ export interface WhatsAppConfig {
 }
 
 export const getWhatsAppConfig = (): WhatsAppConfig => ({
-  phoneNumberId: getEnv('WHATSAPP_PHONE_NUMBER_ID', '1022955353865818'),
-  businessAccountId: getEnv('WHATSAPP_BUSINESS_ACCOUNT_ID', ''),
+  phoneNumberId: getEnv('WHATSAPP_PHONE_NUMBER_ID', '1127117767143751'),
+  businessAccountId: getEnv('WHATSAPP_BUSINESS_ACCOUNT_ID', '986204240417120'),
   accessToken: getEnv('WHATSAPP_ACCESS_TOKEN', ''),
   verifyToken: getEnv('WHATSAPP_VERIFY_TOKEN', 'berryboyzz_webhook_verify_token_2026'),
   appSecret: getEnv('WHATSAPP_APP_SECRET', ''),

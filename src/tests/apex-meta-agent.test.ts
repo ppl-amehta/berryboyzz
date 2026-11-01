@@ -8,7 +8,8 @@ import {
 describe('ApexMetaAgent', () => {
   const mockConfig: ApexAgentConfig = {
     whatsapp: {
-      phoneNumberId: '1022955353865818',
+      phoneNumberId: '1127117767143751',
+      businessAccountId: '986204240417120',
       accessToken: 'EAAG_WA_TEST_TOKEN',
       verifyToken: 'test_verify_token',
     },
