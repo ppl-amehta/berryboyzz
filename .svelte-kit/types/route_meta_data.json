@@ -1,5 +1,19 @@
 {
 	"/": [
 		"src/routes/+layout.ts"
+	],
+	"/cultivars": [
+		"src/routes/+layout.ts"
+	],
+	"/cultivars/[slug]": [
+		"src/routes/cultivars/[slug]/+page.ts",
+		"src/routes/+layout.ts"
+	],
+	"/tours": [
+		"src/routes/+layout.ts"
+	],
+	"/tours/[slug]": [
+		"src/routes/tours/[slug]/+page.ts",
+		"src/routes/+layout.ts"
 	]
 }
