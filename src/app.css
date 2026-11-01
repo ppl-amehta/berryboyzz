@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
@@ -14,12 +16,22 @@
     --text-muted: #6B6661;
   }
 
+  .dark {
+    --bg-porcelain: #0C0A09;
+    --card-surface: #141210;
+    --card-border: #282420;
+    --text-primary: #FAF9F6;
+    --text-secondary: #D4CEBF;
+    --text-muted: #9E9689;
+  }
+
   body {
     background-color: var(--bg-porcelain);
     color: var(--text-primary);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   h1, h2, h3, .font-editorial {
@@ -46,6 +58,12 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #B8B0A2;
   }
+  .dark ::-webkit-scrollbar-thumb {
+    background: #38332E;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #4E4741;
+  }
 }
 
 /* Editorial Sunlit Estate Cards & Badges */
@@ -56,9 +74,20 @@
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.dark .estate-card {
+  background-color: #141210;
+  border-color: #282420;
+  box-shadow: 0 4px 25px -2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 .estate-card:hover {
   border-color: #D4CEBF;
   box-shadow: 0 12px 30px -4px rgba(26, 22, 21, 0.08), 0 2px 6px rgba(26, 22, 21, 0.03);
+}
+
+.dark .estate-card:hover {
+  border-color: #443E38;
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .estate-card-warm {
@@ -66,11 +95,50 @@
   border: 1px solid #E4DFC8;
 }
 
+.dark .estate-card-warm {
+  background-color: #181513;
+  border-color: #332D28;
+}
+
 /* Hairline borders and dividers */
 .border-estate {
   border-color: #E8E4DC;
 }
+.dark .border-estate {
+  border-color: #282420;
+}
 
 .bg-estate-subtle {
   background-color: #F5F2EB;
+}
+.dark .bg-estate-subtle {
+  background-color: #1A1715;
+}
+
+/* Mid-Opacity Glassy Blur Panel Material (Eliminates Visual Crosstalk) */
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(232, 228, 220, 0.85);
+  box-shadow: 0 20px 40px -12px rgba(26, 22, 21, 0.08), 0 2px 8px rgba(26, 22, 21, 0.03);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .glass-panel {
+  background-color: rgba(20, 18, 16, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(48, 43, 39, 0.85);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.glass-panel:hover {
+  border-color: rgba(212, 206, 191, 1);
+  box-shadow: 0 24px 50px -12px rgba(26, 22, 21, 0.12);
+}
+
+.dark .glass-panel:hover {
+  border-color: rgba(68, 62, 56, 1);
+  box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.75);
 }

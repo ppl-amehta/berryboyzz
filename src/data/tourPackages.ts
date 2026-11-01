@@ -1,4 +1,4 @@
-import { FarmTourPackage } from '../types/farm';
+import type { FarmTourPackage } from '../types/farm';
 
 export const TOUR_PACKAGES: FarmTourPackage[] = [
   {

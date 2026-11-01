@@ -1,4 +1,4 @@
-import { CommercialModel, BiologicalOSStep, InvestmentTier } from '../types/farm';
+import type { CommercialModel, BiologicalOSStep, InvestmentTier } from '../types/farm';
 
 export const COMMERCIAL_MODELS: CommercialModel[] = [
   {

@@ -48,31 +48,32 @@
     </button>
   {:else}
     <!-- Expanded Drawer -->
-    <div class="estate-card w-80 sm:w-96 rounded-3xl p-5 bg-white border-[#E8E4DC] shadow-2xl space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-[#E8E4DC]">
+    <div class="glass-panel w-80 sm:w-96 rounded-3xl p-5 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-[#E8E4DC] dark:border-[#282420]">
         <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 flex items-center justify-center">
             <Sparkles class="w-4 h-4" />
           </div>
           <div>
-            <h4 class="text-xs font-bold uppercase tracking-wider text-[#1A1615]">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-[#1A1615] dark:text-[#FAF9F6]">
               Agronomy Concierge
             </h4>
-            <span class="text-[10px] text-[#6B6661] block -mt-0.5">
+            <span class="text-[10px] text-[#6B6661] dark:text-[#9E9689] block -mt-0.5">
               Instant routing to senior grower
             </span>
           </div>
         </div>
         <button
           onclick={() => (isOpen = false)}
-          class="p-1.5 rounded-lg hover:bg-[#F5F2EB] text-[#6B6661] transition-colors"
+          class="p-1.5 rounded-lg hover:bg-[#F5F2EB] dark:hover:bg-[#1E1A17] text-[#6B6661] dark:text-[#9E9689] transition-colors"
+          aria-label="Close Concierge"
         >
           <X class="w-4 h-4" />
         </button>
       </div>
 
       <div class="space-y-2">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-[#6B6661] block">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-[#6B6661] dark:text-[#9E9689] block">
           Select Your Inquiring Profile:
         </span>
         {#each PERSONAS as persona}
@@ -84,22 +85,22 @@
             target="_blank"
             rel="noopener noreferrer"
             onclick={() => (isOpen = false)}
-            class="w-full text-left p-3 rounded-2xl border border-[#E8E4DC] hover:border-emerald-700 hover:bg-[#FAF9F6] transition-all flex items-center justify-between group cursor-pointer"
+            class="w-full text-left p-3 rounded-2xl border border-[#E8E4DC] dark:border-[#282420] hover:border-emerald-700 dark:hover:border-emerald-500 hover:bg-white/80 dark:hover:bg-[#1E1A17]/80 bg-white/50 dark:bg-[#0C0A09]/50 transition-all flex items-center justify-between group cursor-pointer"
           >
             <div>
-              <strong class="text-xs font-bold text-[#1A1615] group-hover:text-emerald-900 block">
+              <strong class="text-xs font-bold text-[#1A1615] dark:text-[#FAF9F6] group-hover:text-emerald-900 dark:group-hover:text-emerald-400 block">
                 {persona.title}
               </strong>
-              <span class="text-[11px] text-[#6B6661] block mt-0.5">
+              <span class="text-[11px] text-[#6B6661] dark:text-[#9E9689] block mt-0.5">
                 {persona.subtitle}
               </span>
             </div>
-            <ChevronRight class="w-4 h-4 text-[#8C867E] group-hover:text-emerald-800 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+            <ChevronRight class="w-4 h-4 text-[#8C867E] dark:text-[#6B6661] group-hover:text-emerald-800 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
           </a>
         {/each}
       </div>
 
-      <div class="pt-2 text-center text-[10px] text-[#8C867E]">
+      <div class="pt-2 text-center text-[10px] text-[#8C867E] dark:text-[#7A746D]">
         Direct line to Berryboyzz Satara Agronomy Operations (+91 88886 81136)
       </div>
     </div>

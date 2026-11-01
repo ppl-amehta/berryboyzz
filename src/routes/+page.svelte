@@ -4,6 +4,7 @@
   import StoryPhaseOverlay from '$components/StoryPhaseOverlay.svelte';
   import TelemetryTicker from '$components/TelemetryTicker.svelte';
   import ScarcityBanner from '$components/ScarcityBanner.svelte';
+  import PostStoryBackdrop from '$components/PostStoryBackdrop.svelte';
   import BerryShowcase from '$components/BerryShowcase.svelte';
   import CEAInfrastructure from '$components/CEAInfrastructure.svelte';
   import DynamicROICalculator from '$components/DynamicROICalculator.svelte';
@@ -16,6 +17,7 @@
 
   let scrollProgress = $state(0);
   let currentPhaseIndex = $state(0);
+  let activeSectionId = $state('cultivars');
   let storyContainer: HTMLDivElement | null = $state(null);
 
   onMount(() => {
@@ -41,7 +43,40 @@
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+
+    // Section IntersectionObserver to sync background image transitions
+    const sectionIds = [
+      'cultivars',
+      'commercial-models',
+      'roi-calculator',
+      'investment-tiers',
+      'biological-os',
+      'farm-tours',
+    ];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            activeSectionId = entry.target.id;
+          }
+        });
+      },
+      {
+        rootMargin: '-20% 0px -40% 0px',
+        threshold: 0.1,
+      }
+    );
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      observer.disconnect();
+    };
   });
 </script>
 
@@ -57,7 +92,7 @@
 <ScarcityBanner />
 
 <!-- Scrollytelling Hero Container -->
-<div bind:this={storyContainer} class="relative h-[450vh] bg-[#FAF9F6]">
+<div bind:this={storyContainer} class="relative h-[450vh] bg-[#FAF9F6] dark:bg-[#0C0A09] transition-colors duration-500">
   <!-- Fixed Procedural Canvas Engine -->
   {#if scrollProgress < 0.98}
     <MorphogenesisCanvas progress={scrollProgress} />
@@ -67,16 +102,16 @@
   <!-- Intro Hero Billboard (First Screen) -->
   <div class="h-screen flex items-center justify-center px-4 relative z-10 pointer-events-none">
     <div class="max-w-3xl text-center space-y-6 pointer-events-auto">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-sm">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 shadow-sm backdrop-blur-sm">
         <Sprout class="w-3.5 h-3.5" />
         <span>Precision Superfruit Agro-Assets · Satara & Pune</span>
       </div>
 
-      <h1 class="font-serif text-5xl sm:text-7xl font-bold tracking-tight text-[#1A1615] leading-[1.08]">
+      <h1 class="font-serif text-5xl sm:text-7xl font-bold tracking-tight text-[#1A1615] dark:text-[#FAF9F6] leading-[1.08]">
         Engineering the Superfruit Economy.
       </h1>
 
-      <p class="text-base sm:text-xl text-[#4A4643] leading-relaxed max-w-2xl mx-auto">
+      <p class="text-base sm:text-xl text-[#4A4643] dark:text-[#D4CEBF] leading-relaxed max-w-2xl mx-auto">
         Transforming rural Maharashtra into India's premier controlled-environment berry powerhouse. High-anthocyanin genetics yielding twice annually with guaranteed cold-chain off-take.
       </p>
 
@@ -93,23 +128,26 @@
 
         <a
           href="#cultivars"
-          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-wider bg-white hover:bg-[#F5F2EB] text-[#1A1615] border border-[#E8E4DC] transition-all"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-wider bg-white/90 dark:bg-[#1C1816]/90 hover:bg-[#F5F2EB] dark:hover:bg-[#28221D] text-[#1A1615] dark:text-[#FAF9F6] border border-[#E8E4DC] dark:border-[#332D28] backdrop-blur-md transition-all"
         >
           <span>Explore 5 Cultivars</span>
           <ChevronRight class="w-4 h-4" />
         </a>
       </div>
 
-      <div class="pt-12 text-[#6B6661] text-xs flex items-center justify-center gap-2 animate-bounce">
-        <ArrowDown class="w-3.5 h-3.5 text-emerald-800" />
+      <div class="pt-12 text-[#6B6661] dark:text-[#9E9689] text-xs flex items-center justify-center gap-2 animate-bounce">
+        <ArrowDown class="w-3.5 h-3.5 text-emerald-800 dark:text-emerald-400" />
         <span class="uppercase tracking-widest font-semibold text-[10px]">Scroll Down to Witness 7-Phase Living Morphogenesis</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Main Section Deck -->
-<div class="relative z-10 bg-[#FAF9F6]">
+<!-- Main Section Deck with PostStoryBackdrop -->
+<div class="relative z-10 bg-transparent">
+  <!-- Crossfading Sticky Background Engine -->
+  <PostStoryBackdrop activeSection={activeSectionId} />
+
   <!-- Cultivar Showcase -->
   <BerryShowcase />
 

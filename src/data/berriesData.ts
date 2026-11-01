@@ -1,4 +1,4 @@
-import { BerryVariety } from '../types/berry';
+import type { BerryVariety } from '../types/berry';
 
 export const BERRIES_DATA: BerryVariety[] = [
   {
