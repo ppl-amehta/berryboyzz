@@ -21,10 +21,10 @@
 
 <section id="farm-tours" class="py-24 px-4 sm:px-6 lg:px-8 bg-transparent border-t border-[#E8E4DC]/80 dark:border-[#282420]/80 relative">
   <div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
+    <!-- Header (Loaded on Pareto Liquid Glass Panel to eliminate crosstalk) -->
+    <div class="glass-panel rounded-3xl p-6 sm:p-8 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="max-w-2xl">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 mb-3 backdrop-blur-sm">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 mb-3 backdrop-blur-sm">
           <Clock class="w-3.5 h-3.5" />
           <span>Experiential Agro-Tourism</span>
         </div>
@@ -68,7 +68,7 @@
             </p>
           </div>
 
-          <div class="space-y-2.5 pt-3 text-xs text-[#262320] dark:text-[#E6E2DD]">
+          <div class="glass-subpanel rounded-2xl p-5 space-y-2.5 text-xs text-[#262320] dark:text-[#E6E2DD]">
             {#each harvestTour.includes.slice(0, 5) as inc}
               <div class="flex items-start gap-2.5">
                 <CheckCircle2 class="w-4 h-4 text-emerald-800 dark:text-emerald-400 shrink-0 mt-0.5" />
@@ -101,7 +101,7 @@
       <article class="glass-panel rounded-3xl p-8 sm:p-10 flex flex-col justify-between border-emerald-700/60 dark:border-emerald-600/60 ring-1 ring-emerald-700/20">
         <div class="space-y-5">
           <div class="flex items-center justify-between">
-            <span class="px-3 py-1 rounded-md text-[10px] font-mono font-bold tracking-wider uppercase bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+            <span class="px-3 py-1 rounded-md text-[10px] font-mono font-bold tracking-wider uppercase bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
               {studyTour.duration} Intensive Masterclass
             </span>
             <span class="font-mono-num text-lg font-bold text-emerald-800 dark:text-emerald-400">
@@ -118,7 +118,7 @@
             </p>
           </div>
 
-          <div class="space-y-2.5 pt-3 text-xs text-[#262320] dark:text-[#E6E2DD]">
+          <div class="glass-subpanel rounded-2xl p-5 space-y-2.5 text-xs text-[#262320] dark:text-[#E6E2DD]">
             {#each studyTour.includes.slice(0, 5) as inc}
               <div class="flex items-start gap-2.5">
                 <CheckCircle2 class="w-4 h-4 text-emerald-800 dark:text-emerald-400 shrink-0 mt-0.5" />

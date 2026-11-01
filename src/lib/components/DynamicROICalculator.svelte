@@ -105,18 +105,18 @@
   );
 </script>
 
-<section id="roi-calculator" class="py-24 px-4 sm:px-6 lg:px-8 bg-transparent border-t border-[#E8E4DC]/80 dark:border-[#282420]/80 relative">
+<section id="roi-calculator" class="py-24 px-4 sm:px-6 lg:px-8 bg-transparent relative">
   <div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="max-w-3xl mb-14">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 mb-3 backdrop-blur-sm">
+    <!-- Header on Liquid Glass -->
+    <div class="max-w-3xl mb-12 glass-panel rounded-3xl p-6 sm:p-8">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-emerald-100/90 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border border-emerald-300/80 dark:border-emerald-800/80 mb-3 backdrop-blur-sm">
         <Calculator class="w-3.5 h-3.5" />
         <span>Capex Horizon & Yield Engine</span>
       </div>
-      <h2 class="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-[#1A1615] dark:text-[#FAF9F6] mb-4">
+      <h2 class="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-[#1A1615] dark:text-[#FAF9F6] mb-3">
         Interactive Commercial ROI Modeler
       </h2>
-      <p class="text-sm sm:text-base text-[#4A4643] dark:text-[#D4CEBF] leading-relaxed">
+      <p class="text-sm sm:text-base text-[#2E2824] dark:text-[#D4CEBF] leading-relaxed">
         Dynamically simulate deployed capital, National Horticulture Board (NHB) subsidies, seasonal harvest revenue, and net EBITDA for CEA farms in Pune and Satara.
       </p>
     </div>
@@ -131,7 +131,7 @@
               Land Parcel Size
             </label>
             <span class="font-mono-num text-xl font-bold text-emerald-800 dark:text-emerald-400">
-              {acreage} <span class="text-xs font-sans font-medium text-[#6B6661] dark:text-[#9E9689]">Acres</span>
+              {acreage} <span class="text-xs font-sans font-medium text-[#575049] dark:text-[#A8A196]">Acres</span>
             </span>
           </div>
           <input
@@ -141,9 +141,9 @@
             max="10"
             step="0.5"
             bind:value={acreage}
-            class="w-full h-2 bg-[#E8E4DC] dark:bg-[#282420] rounded-lg appearance-none cursor-pointer accent-emerald-800"
+            class="w-full h-2 bg-black/10 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-emerald-800"
           />
-          <div class="flex justify-between text-[11px] text-[#6B6661] dark:text-[#9E9689]">
+          <div class="flex justify-between text-[11px] text-[#575049] dark:text-[#A8A196]">
             <span>0.5 Acre (Pilot)</span>
             <span>2.5 Acres (Commercial standard)</span>
             <span>10 Acres (Syndicate)</span>
@@ -160,14 +160,14 @@
               <button
                 type="button"
                 onclick={() => (selectedModelId = m.id)}
-                class="p-4 rounded-2xl text-left border transition-all cursor-pointer {selectedModelId === m.id ? 'bg-[#F4F9F4] dark:bg-emerald-950/40 border-emerald-700 dark:border-emerald-600 shadow-sm' : 'bg-white/80 dark:bg-[#1E1A17]/80 border-[#E8E4DC] dark:border-[#2E2824] hover:border-[#D4CEBF] dark:hover:border-[#443E38]'}"
+                class="p-4 rounded-2xl text-left border transition-all cursor-pointer {selectedModelId === m.id ? 'bg-emerald-800/10 dark:bg-emerald-950/40 border-emerald-700 dark:border-emerald-600 shadow-sm' : 'glass-subpanel text-[#1A1615] dark:text-[#FAF9F6] hover:border-emerald-700/40'}"
               >
                 <div class="flex justify-between items-start mb-1">
                   <strong class="text-xs font-bold {selectedModelId === m.id ? 'text-emerald-950 dark:text-emerald-200' : 'text-[#1A1615] dark:text-[#FAF9F6]'} block">
                     {m.name}
                   </strong>
                 </div>
-                <div class="text-[11px] font-mono text-[#6B6661] dark:text-[#9E9689]">
+                <div class="text-[11px] font-mono text-[#575049] dark:text-[#A8A196]">
                   Range: {m.priceRange}
                 </div>
                 <div class="text-[10px] text-emerald-800 dark:text-emerald-400 font-semibold mt-1">
@@ -188,7 +188,7 @@
               <button
                 type="button"
                 onclick={() => (selectedBerryKey = key)}
-                class="p-3 rounded-xl text-center border text-xs font-medium transition-all cursor-pointer {selectedBerryKey === key ? 'bg-emerald-800 text-white border-emerald-800 shadow-sm' : 'bg-white/80 dark:bg-[#1E1A17]/80 text-[#1A1615] dark:text-[#FAF9F6] border-[#E8E4DC] dark:border-[#2E2824] hover:border-[#D4CEBF] dark:hover:border-[#443E38]'}"
+                class="p-3 rounded-xl text-center border text-xs font-medium transition-all cursor-pointer {selectedBerryKey === key ? 'bg-emerald-800 text-white border-emerald-800 shadow-sm' : 'glass-subpanel text-[#1A1615] dark:text-[#FAF9F6] hover:border-emerald-700/40'}"
               >
                 {val.name.split(' ')[0]}
               </button>
@@ -197,12 +197,12 @@
         </div>
 
         <!-- Subsidy Toggle -->
-        <div class="flex items-center justify-between p-4 rounded-2xl bg-[#F5F2EB]/80 dark:bg-[#1E1A17]/80 border border-[#E8E4DC] dark:border-[#2E2824]">
+        <div class="flex items-center justify-between p-4 rounded-2xl glass-subpanel">
           <div class="space-y-0.5">
             <span class="text-xs font-bold text-[#1A1615] dark:text-[#FAF9F6] block">
               National Horticulture Board (NHB) Subsidy
             </span>
-            <span class="text-[11px] text-[#6B6661] dark:text-[#9E9689] block">
+            <span class="text-[11px] text-[#575049] dark:text-[#A8A196] block">
               40% subsidy on eligible CEA capital expenditures (capped at ₹40L)
             </span>
           </div>
@@ -217,7 +217,7 @@
         </div>
 
         <!-- Mandatory Disclaimer -->
-        <div class="p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/50 text-[11px] text-amber-900 dark:text-amber-200 flex items-start gap-2.5">
+        <div class="p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/90 dark:border-amber-900/60 text-[11px] text-amber-900 dark:text-amber-200 flex items-start gap-2.5 backdrop-blur-xs">
           <AlertCircle class="w-4 h-4 shrink-0 text-amber-800 dark:text-amber-400 mt-0.5" />
           <span>
             <strong>Mandatory Notice:</strong> Cold chain logistics & SLM charges not included in base capex. Projections assume strict adherence to Berryboyzz fertigation and climate SOPs.
@@ -227,8 +227,8 @@
 
       <!-- Financial Projections Card (5 cols) -->
       <div class="lg:col-span-5 glass-panel rounded-3xl p-6 sm:p-8 space-y-6">
-        <div class="pb-4 border-b border-[#E8E4DC]/80 dark:border-[#282420]/80">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-[#6B6661] dark:text-[#9E9689] block mb-1">
+        <div class="pb-4 border-b border-white/60 dark:border-white/10">
+          <span class="text-[10px] uppercase font-bold tracking-wider text-[#575049] dark:text-[#A8A196] block mb-1">
             Financial Output · {acreage} Acres
           </span>
           <h3 class="font-serif text-2xl font-bold text-[#1A1615] dark:text-[#FAF9F6]">
@@ -237,15 +237,15 @@
         </div>
 
         <div class="space-y-3.5 text-xs">
-          <div class="flex justify-between items-center py-2 border-b border-[#F0ECE1] dark:border-[#282420]">
-            <span class="text-[#6B6661] dark:text-[#9E9689]">Gross Turnkey Capex:</span>
+          <div class="flex justify-between items-center py-2 border-b border-white/40 dark:border-white/5">
+            <span class="text-[#575049] dark:text-[#A8A196]">Gross Turnkey Capex:</span>
             <strong class="font-mono-num text-sm text-[#1A1615] dark:text-[#FAF9F6]">
               ₹{(calculations.rawCapex / 100000).toFixed(2)} Lakhs
             </strong>
           </div>
 
           {#if includeSubsidy && calculations.eligibleSubsidy > 0}
-            <div class="flex justify-between items-center py-2 border-b border-[#F0ECE1] dark:border-[#282420] text-emerald-800 dark:text-emerald-400">
+            <div class="flex justify-between items-center py-2 border-b border-white/40 dark:border-white/5 text-emerald-800 dark:text-emerald-400">
               <span>Est. NHB Capital Subsidy:</span>
               <strong class="font-mono-num text-sm">
                 - ₹{(calculations.eligibleSubsidy / 100000).toFixed(2)} Lakhs
@@ -253,7 +253,7 @@
             </div>
           {/if}
 
-          <div class="flex justify-between items-center p-3.5 rounded-xl bg-[#F5F2EB]/80 dark:bg-[#1E1A17]/80 border border-[#E8E4DC] dark:border-[#282420]">
+          <div class="flex justify-between items-center p-3.5 rounded-xl glass-subpanel">
             <span class="font-semibold text-[#1A1615] dark:text-[#FAF9F6]">Net Deployed Capital:</span>
             <strong class="font-mono-num text-base font-bold text-emerald-900 dark:text-emerald-300">
               ₹{(calculations.netCapex / 100000).toFixed(2)} Lakhs
@@ -261,14 +261,14 @@
           </div>
 
           <div class="grid grid-cols-2 gap-3 pt-2">
-            <div class="p-3.5 rounded-xl bg-white/70 dark:bg-[#0C0A09]/70 border border-[#E8E4DC] dark:border-[#282420]">
-              <span class="text-[10px] uppercase font-bold text-[#6B6661] dark:text-[#9E9689] block mb-1">Annual Yield</span>
+            <div class="p-3.5 rounded-xl glass-subpanel">
+              <span class="text-[10px] uppercase font-bold text-[#575049] dark:text-[#A8A196] block mb-1">Annual Yield</span>
               <strong class="font-mono-num text-sm text-[#1A1615] dark:text-[#FAF9F6]">
                 {calculations.annualYieldKg.toLocaleString('en-IN')} kg
               </strong>
             </div>
-            <div class="p-3.5 rounded-xl bg-white/70 dark:bg-[#0C0A09]/70 border border-[#E8E4DC] dark:border-[#282420]">
-              <span class="text-[10px] uppercase font-bold text-[#6B6661] dark:text-[#9E9689] block mb-1">Gross Revenue</span>
+            <div class="p-3.5 rounded-xl glass-subpanel">
+              <span class="text-[10px] uppercase font-bold text-[#575049] dark:text-[#A8A196] block mb-1">Gross Revenue</span>
               <strong class="font-mono-num text-sm text-emerald-800 dark:text-emerald-400">
                 ₹{(calculations.annualGrossRevenue / 100000).toFixed(2)}L / yr
               </strong>
@@ -276,10 +276,10 @@
           </div>
 
           <!-- Highlight Box -->
-          <div class="p-4 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 space-y-3">
+          <div class="p-4 rounded-2xl bg-emerald-100/80 dark:bg-emerald-950/50 border border-emerald-300/80 dark:border-emerald-800/80 space-y-3 backdrop-blur-xs">
             <div class="flex justify-between items-center">
               <div>
-                <span class="text-[10px] uppercase font-bold tracking-wider text-emerald-800 dark:text-emerald-400 block">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-emerald-900 dark:text-emerald-400 block">
                   Est. Net Annual EBITDA:
                 </span>
                 <strong class="font-mono-num text-xl font-bold text-emerald-950 dark:text-emerald-200">
@@ -287,7 +287,7 @@
                 </strong>
               </div>
               <div class="text-right">
-                <span class="text-[10px] uppercase font-bold text-[#6B6661] dark:text-[#9E9689] block">Break-Even:</span>
+                <span class="text-[10px] uppercase font-bold text-[#575049] dark:text-[#A8A196] block">Break-Even:</span>
                 <strong class="font-mono-num text-sm font-bold text-emerald-800 dark:text-emerald-400">
                   After {calculations.breakevenMonths} Months
                 </strong>

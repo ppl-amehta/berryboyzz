@@ -65,27 +65,30 @@
   {#each BACKDROPS as bd (bd.id)}
     {@const isActive = activeSection === bd.id}
     <div
-      class="absolute inset-0 transition-all duration-1000 ease-out {isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'}"
+      class="absolute inset-0 transition-opacity duration-1000 ease-in-out {isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
     >
-      <!-- High-Resolution Image -->
+      <!-- Rich High-Resolution Photographic Canvas (Vivid, Not Bleached or Washed Out) -->
       <img
         src={bd.image}
         alt={bd.alt}
-        class="w-full h-full object-cover object-center filter saturate-[0.85] contrast-[1.05]"
+        class="w-full h-full object-cover object-center filter saturate-[1.12] contrast-[1.06] brightness-[0.98] dark:brightness-[0.72]"
         loading="lazy"
         decoding="async"
       />
 
-      <!-- Color Ambient Accent Glow -->
-      <div class="absolute inset-0 bg-gradient-to-br {bd.ambientTint} dark:{bd.darkTint} mix-blend-multiply"></div>
+      <!-- Subtle Ambient Lighting Film (Adds Atmospheric Depth Without Washing Out Details) -->
+      <div class="absolute inset-0 bg-black/10 dark:bg-black/35 pointer-events-none"></div>
 
-      <!-- Scrim Overlay for Supreme Contrast (Prevents Visual & Text Crosstalk) -->
+      <!-- Color Ambient Accent Glow -->
+      <div class="absolute inset-0 bg-gradient-to-br {bd.ambientTint} dark:{bd.darkTint} mix-blend-overlay opacity-40 pointer-events-none"></div>
+
+      <!-- Top & Bottom Feathering (Seamless Entry from Morphogenesis Canvas & Exit to Footer) -->
       <div
-        class="absolute inset-0 bg-gradient-to-b from-[#FAF9F6]/90 via-[#FAF9F6]/82 to-[#FAF9F6]/94 dark:from-[#0C0A09]/92 dark:via-[#0C0A09]/85 dark:to-[#0C0A09]/95 transition-colors duration-500"
+        class="absolute inset-0 bg-gradient-to-b from-[#FAF9F6] via-transparent via-15% via-85% to-[#FAF9F6] dark:from-[#0C0A09] dark:via-transparent dark:to-[#0C0A09] opacity-95 pointer-events-none transition-colors duration-500"
       ></div>
 
-      <!-- Subtle Radial Vignette -->
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(26,22,21,0.08)_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.4)_100%)]"></div>
+      <!-- Cinematic Vignette for Depth -->
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(0,0,0,0.22)_100%)] dark:bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.55)_100%)] pointer-events-none"></div>
     </div>
   {/each}
 </aside>
