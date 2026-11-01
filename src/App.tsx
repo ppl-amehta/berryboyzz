@@ -12,6 +12,7 @@ import { InvestmentLadder } from './components/investment/InvestmentLadder';
 import { DynamicROICalculator } from './components/investment/DynamicROICalculator';
 import { FarmTourBooking } from './components/experiential/FarmTourBooking';
 import { AgenticConcierge } from './components/concierge/AgenticConcierge';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 export const App: React.FC = () => {
   const { theme, toggleTheme, isDark } = useTheme();
@@ -147,6 +148,9 @@ export const App: React.FC = () => {
 
       {/* Trained Autonomous Agentic Concierge ("Dr. Berryboy") */}
       <AgenticConcierge />
+
+      {/* Vercel Speed Insights Real-Time Performance & Core Web Vitals RUM */}
+      <SpeedInsights />
     </div>
   );
 };
