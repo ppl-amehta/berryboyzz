@@ -3,6 +3,9 @@
 		"src/routes/+layout.ts",
 		"src/routes/+layout.ts"
 	],
+	"/api/whatsapp-webhook": [
+		"src/routes/api/whatsapp-webhook/+server.ts"
+	],
 	"/cultivars": [
 		"src/routes/+layout.ts"
 	],

@@ -4,8 +4,8 @@
   let { progress = 0 } = $props<{ progress: number }>();
   let canvas: HTMLCanvasElement | null = $state(null);
 
-  const target = { current: progress };
-  const current = { current: progress };
+  const target = { current: 0 };
+  const current = { current: 0 };
 
   $effect(() => {
     target.current = progress;

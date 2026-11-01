@@ -1,0 +1,303 @@
+const BERRIES_DATA = [
+  {
+    id: "raspberry",
+    name: "Raspberry",
+    botanicalName: "Rubus idaeus",
+    genetics: "Primocane IMP Tissue-Culture Clones (Autumn Bliss / Polka F1)",
+    colorTheme: {
+      primary: "#E11D48",
+      glow: "rgba(225, 29, 72, 0.4)",
+      border: "border-rose-500/40",
+      bg: "bg-rose-950/20",
+      accent: "text-rose-400"
+    },
+    tagline: "The Crown Jewel of Controlled Environment Berry Agro-Assets",
+    description: "Imported Primocane cultivars engineered for high-density CEA polyhouses in Pune and Satara foothills. Yields firm, velvety aggregate drupelets with explosive sweet-tart aromatic profiles. Annual harvest twice every year.",
+    commercialDensity: "3,800 - 4,200 plants / acre (T-Trellis High Wire)",
+    spacing: "1.8m inter-row × 0.45m intra-plant",
+    substrate: "Buffered Coir pith + 25% Perlite, pH 5.6–6.0, Air-fill porosity >22%",
+    idealClimate: {
+      temperatureRange: "16°C night / 28°C day (CEA fogger regulated)",
+      chillingHours: "Low-chill Primocane (Zero vernalization requirement for cane fruiting)",
+      rhRange: "60% – 70% daytime humidity",
+      ph: "5.8 Target Rhizosphere pH",
+      ecTarget: "1.4 – 1.8 mS/cm Fertigation EC"
+    },
+    dailyCareProtocol: [
+      "Automated pulse fertigation: 6-8 daily irrigations of 120ml based on solar radiation (J/cm²)",
+      "Lateral shoot thinning maintaining 4-5 dominant canes per linear meter for maximum light interception",
+      "Continuous predatory mite (Phytoseiulus persimilis) release for zero-chemical two-spotted spider mite control",
+      "Daily morning harvest protocol at pink-red firm maturity index before ambient temperature exceeds 24°C"
+    ],
+    harvestCycleDays: "Bi-annual harvest: Every 6 months (1.6 kg/harvest = 3.2 kg/year per plant)",
+    yieldPerPlantGrams: 3200,
+    // 1.6 kg / harvest x 2 flushes = 3.2 kg / plant / year
+    flushesPerYear: 2,
+    punnetWholesalePriceINR: 195,
+    // 125g B2B
+    punnetRetailPriceINR: 320,
+    // 125g D2C
+    b2bSupplyChannels: ["The Oberoi / Taj Luxury Hospitality", "Nature's Basket & Foodhall Mumbai/Pune", "Cold-chain Air Cargo to UAE & Singapore"],
+    thousandPlantSetupCapex: 48e4,
+    thousandPlantAnnualGrossRevenue: 1287e3,
+    tastingNotes: {
+      brix: 13.8,
+      acidity: "Vibrant Malic & Citric acidity with floral honey notes",
+      aromaProfile: ["Wild Rose Petal", "Crushed Summer Berries", "Cedar Undertones"],
+      chefRecipePairing: {
+        dishName: "Nitrogen-Misted Raspberry & Goat Curd Tartlet with Wild Thyme Emulsion",
+        prepTime: "20 mins",
+        description: "Freshly harvested Primocane raspberries paired with hand-stretched artisanal Sahyadri goat cheese curd and local raw acacia honey.",
+        ingredients: [
+          "125g Fresh Berryboyzz Primocane Raspberries",
+          "100g Fresh goat curd or mascarpone",
+          "2 tbsp Cold-extracted Sahyadri forest honey",
+          "Micro-thyme leaves & pistachio crumb"
+        ]
+      }
+    },
+    livePlantAvailable: true,
+    livePlantPriceINR: 450
+  },
+  {
+    id: "blackberry",
+    name: "Blackberry",
+    botanicalName: "Rubus fruticosus",
+    genetics: "Imported Thornless Jumbo Drupelet (Chester & Ouachita IMP)",
+    colorTheme: {
+      primary: "#9333EA",
+      glow: "rgba(147, 51, 234, 0.4)",
+      border: "border-purple-500/40",
+      bg: "bg-purple-950/20",
+      accent: "text-purple-400"
+    },
+    tagline: "High-Anthocyanin Obsidian Giant with Exceptional Post-Harvest Rigidity",
+    description: "Thornless, ultra-vigorous canes adapted to Satara plateau micro-climates. Produces massive, glossy aggregate drupelets exceeding 8 grams each with intense antioxidant density. Yields 1.6 kg per harvest twice a year.",
+    commercialDensity: "3,200 - 3,500 plants / acre (Rotating Cross-Arm Trellis)",
+    spacing: "2.2m inter-row × 0.6m intra-plant",
+    substrate: "Volcanic cinder + Coir husk chips (60:40) with active mycorrhizal inoculation",
+    idealClimate: {
+      temperatureRange: "18°C night / 30°C day",
+      chillingHours: "150 - 200 hours low-chill winter requirement",
+      rhRange: "55% – 65% RH",
+      ph: "6.0 – 6.4 Target pH",
+      ecTarget: "1.6 – 2.0 mS/cm Target EC"
+    },
+    dailyCareProtocol: [
+      "Caning & tipping at 1.4m height to force vigorous secondary fruiting laterals",
+      "Bacto-slurry potassium-rich organic fertigation during drupelet cell division stage",
+      "UV-blocking 30% thermal shading during peak midday sun in March-May",
+      "Immediate field pre-cooling to 4°C within 45 minutes of harvest to preserve cell turgidity"
+    ],
+    harvestCycleDays: "Bi-annual harvest: 1.6 kg / harvest (3.2 kg / plant / year across 2 seasonal flushes)",
+    yieldPerPlantGrams: 3200,
+    flushesPerYear: 2,
+    punnetWholesalePriceINR: 210,
+    // 125g B2B
+    punnetRetailPriceINR: 350,
+    // 125g D2C
+    b2bSupplyChannels: ["Metropolitan Patisseries & Luxury Chocolatiers", "Tier-1 Cold Storage Distributors Mumbai", "Pharmaceutical Extract Partners"],
+    thousandPlantSetupCapex: 52e4,
+    thousandPlantAnnualGrossRevenue: 154e4,
+    tastingNotes: {
+      brix: 14.5,
+      acidity: "Deep vinous acidity balanced by rich natural fructose",
+      aromaProfile: ["Blackcurrant Cordial", "Damp Forest Floor", "Vanilla Pod"],
+      chefRecipePairing: {
+        dishName: "Smoked Blackberry Coulis with Dark Valrhona Chocolate Crémeux",
+        prepTime: "25 mins",
+        description: "Blistered Satara blackberries reduced with organic whole vanilla beans and cracked Tellicherry black pepper over 72% dark chocolate.",
+        ingredients: [
+          "150g Berryboyzz Jumbo Blackberries",
+          "1 tsp Crushed Tellicherry black pepper",
+          "1 Madagascan vanilla bean",
+          "70g Organic Muscovado cane sugar"
+        ]
+      }
+    },
+    livePlantAvailable: true,
+    livePlantPriceINR: 480
+  },
+  {
+    id: "mulberry",
+    name: "Mulberry (Shahtoot)",
+    botanicalName: "Morus macroura / Morus nigra",
+    genetics: "Himalayan Giant Long Mulberry & Royal Black Persian Clones",
+    colorTheme: {
+      primary: "#6366F1",
+      glow: "rgba(99, 102, 241, 0.4)",
+      border: "border-indigo-500/40",
+      bg: "bg-indigo-950/20",
+      accent: "text-indigo-400"
+    },
+    tagline: "Extreme Brix Heritage Cultivar · ₹80 (100g) / ₹80 (200g)",
+    description: "Long exotic finger-length mulberries reaching up to 10cm. Extremely high sugar accumulation (up to 21° Brix) with zero tannin bitterness. Premium delicacy in high-end culinary gastronomy. Packaged at ₹80 for 100g / 200g punnets.",
+    commercialDensity: "1,200 - 1,500 plants / acre (Intense Espalier Hedgerow)",
+    spacing: "2.5m inter-row × 1.2m intra-plant",
+    substrate: "Deep sandy-loam fortified with composted bagasse and trichoderma",
+    idealClimate: {
+      temperatureRange: "15°C – 34°C (Highly resilient to Sahyadri heat waves)",
+      chillingHours: "Zero chilling requirement (Continuous tropical/subtropical production)",
+      rhRange: "45% – 75% RH",
+      ph: "6.2 – 6.8 Soil pH",
+      ecTarget: "1.2 – 1.6 mS/cm"
+    },
+    dailyCareProtocol: [
+      "Synchronized post-harvest hard pruning twice annually to stimulate vigorous new fruit shoots",
+      "Rhizosphere liquid bio-fertilizer application (Pseudomonas fluorescens + Azotobacter)",
+      "Bird-deterrent overhead monofilament diamond netting across open spans",
+      "Gentle hand-plucking with cotton surgical gloves to prevent drupelet rupture"
+    ],
+    harvestCycleDays: "Bi-annual flush cycle; 1.6 kg per harvest = 3.2 kg / plant annually",
+    yieldPerPlantGrams: 3200,
+    flushesPerYear: 2,
+    punnetWholesalePriceINR: 80,
+    // ₹80 per 100g / 200g unit
+    punnetRetailPriceINR: 80,
+    // Direct farm pack: ₹80 (100g/200g)
+    b2bSupplyChannels: ["Fine Dining Chef Tasting Menus (Mumbai / Goa / Delhi)", "Artisanal Gelaterias", "Ayurvedic Botanical Extractors"],
+    thousandPlantSetupCapex: 39e4,
+    thousandPlantAnnualGrossRevenue: 1428e3,
+    tastingNotes: {
+      brix: 19.5,
+      acidity: "Mild low-acidity honey nectar with rich fig-like finish",
+      aromaProfile: ["Caramelized Figs", "Mulled Wine Spice", "Wild Honeysuckle"],
+      chefRecipePairing: {
+        dishName: "Caramelized Long Shahtoot over Cardamom-Infused Hung Curd Shrikhand",
+        prepTime: "15 mins",
+        description: "Whole flame-seared long mulberries folded into saffron-laced A2 Gir cow milk curd with crushed green pistachios.",
+        ingredients: [
+          "150g Berryboyzz Long Shahtoot Mulberries",
+          "200g A2 Cultured Hung Curd",
+          "Pinch of Kashmiri Saffron threads",
+          "Crushed green Iranian pistachios"
+        ]
+      }
+    },
+    livePlantAvailable: true,
+    livePlantPriceINR: 520
+  },
+  {
+    id: "strawberry",
+    name: "Strawberry",
+    botanicalName: "Fragaria × ananassa",
+    genetics: "Day-Neutral European High-Brix Cultivars (San Andreas & Murano Clones)",
+    colorTheme: {
+      primary: "#EF4444",
+      glow: "rgba(239, 68, 68, 0.4)",
+      border: "border-red-500/40",
+      bg: "bg-red-950/20",
+      accent: "text-red-400"
+    },
+    tagline: "Tabletop Hydroponic Perfection in the Mahabaleshwar-Satara Belt",
+    description: "Elevated gutter hydroponic strawberries cultivating dense, uniform conical berries with deep red core saturation, superior firmness, and elevated Brix levels outperforming standard field varieties. High-density commercial setup.",
+    commercialDensity: "24,000 - 28,000 plants / acre (Elevated Tabletop Gutters)",
+    spacing: "1.0m gutter spacing × 0.15m plant spacing",
+    substrate: "Sterilized Dutch Coco-Coir slabs with dual micro-drip emitters per plant",
+    idealClimate: {
+      temperatureRange: "12°C night / 24°C day (Optimal night chilling triggers high sucrose synthesis)",
+      chillingHours: "Day-neutral; continuous flowering under 12-14hr photoperiod",
+      rhRange: "65% – 75% RH",
+      ph: "5.5 – 5.8 Critical Substrate pH",
+      ecTarget: "1.5 – 1.9 mS/cm"
+    },
+    dailyCareProtocol: [
+      "Automated EC/pH closed-loop drainage monitoring measuring 20% leaching fraction daily",
+      "Weekly stolon/runner removal and old leaf stripping to prevent Botrytis cinerea fungal spores",
+      "Bumblebee hive (Bombus terrestris) integration inside polyhouses for 100% conical fruit shape",
+      "Single-layer calyx-intact harvest directly into export punnets to eliminate secondary handling"
+    ],
+    harvestCycleDays: "Bi-annual cycle: 65 days to first picking; two productive commercial flushes",
+    yieldPerPlantGrams: 1600,
+    // 800g x 2
+    flushesPerYear: 2,
+    punnetWholesalePriceINR: 110,
+    // 125g B2B
+    punnetRetailPriceINR: 180,
+    // 125g D2C
+    b2bSupplyChannels: ["Premium Supermarkets & Q-Commerce Dark Stores (Blinkit / Zepto Premium)", "Artisanal Bakery & Patisserie Chains", "Direct Farm Gate Tourists"],
+    thousandPlantSetupCapex: 22e4,
+    thousandPlantAnnualGrossRevenue: 572e3,
+    tastingNotes: {
+      brix: 12.5,
+      acidity: "Crisp bright citric acidity with concentrated strawberry esters",
+      aromaProfile: ["Ripe Alpine Meadow", "Pineapple Guava undertones", "Sweet Cream"],
+      chefRecipePairing: {
+        dishName: "Chilled Mahabaleshwar Strawberry Gazpacho with Basil Caviar",
+        prepTime: "15 mins",
+        description: "Vibrant pureed Murano strawberries emulsified with cold-pressed olive oil, aged balsamic glaze, and molecular sweet basil pearls.",
+        ingredients: [
+          "250g Berryboyzz Tabletop Strawberries",
+          "1 tbsp Aged Modena Balsamic vinegar",
+          "Fresh sweet basil leaves",
+          "Flaky sea salt & cold-pressed virgin olive oil"
+        ]
+      }
+    },
+    livePlantAvailable: true,
+    livePlantPriceINR: 180
+  },
+  {
+    id: "blueberry",
+    name: "Blueberry",
+    botanicalName: "Vaccinium corymbosum",
+    genetics: "Southern Highbush Low-Chill Clones (Biloxi & Emerald Tissue Culture)",
+    colorTheme: {
+      primary: "#3B82F6",
+      glow: "rgba(59, 130, 246, 0.4)",
+      border: "border-blue-500/40",
+      bg: "bg-blue-950/20",
+      accent: "text-blue-400"
+    },
+    tagline: "The Apex Asset: 2.5 kg / Plant Mature Yield After 36 Months",
+    description: "The highest margin berry crop globally. Cultivated in 35-liter aerated grow bags with acidic coir substrate and RO fertigation. Produces firm, powder-bloomed berries with crunchy skin. Reaches full mature yield of 2.5 kg per plant after 36 months.",
+    commercialDensity: "2,800 - 3,200 plants / acre (Containerized CEA Grow-Bags)",
+    spacing: "2.4m row spacing × 0.75m plant spacing",
+    substrate: "Specialized Acidified Pine bark + coarse peat (pH strictly 4.5–5.0)",
+    idealClimate: {
+      temperatureRange: "14°C night / 32°C day",
+      chillingHours: "150 - 250 hours (Southern Highbush low-chill cultivars)",
+      rhRange: "50% – 65% RH",
+      ph: "4.5 – 5.0 Acidic Substrate pH (Mandatory)",
+      ecTarget: "1.0 – 1.4 mS/cm (Very low salt sensitivity)"
+    },
+    dailyCareProtocol: [
+      "Strict RO water filtration with inline nitric acid injection maintaining steady 4.8 pH",
+      "Ammonium-nitrogen exclusive fertigation protocol (avoiding nitrate toxicity)",
+      "Iron-EDDHA chelate supplementation every 14 days to prevent leaf chlorosis",
+      "Hand-sorting for intact silver-blue epicuticular waxy bloom (the key freshness indicator)"
+    ],
+    harvestCycleDays: "Bi-annual flushes: Scales to mature yield of 2.5 kg/plant after 36 months (15-year asset lifespan)",
+    yieldPerPlantGrams: 2500,
+    // Explicitly 2.5 kg/plant after 36 months
+    flushesPerYear: 2,
+    punnetWholesalePriceINR: 280,
+    // 125g B2B
+    punnetRetailPriceINR: 450,
+    // 125g D2C
+    b2bSupplyChannels: ["Diplomatic Enclaves & Ultra-HNI Organic Direct Subscriptions", "Tier-1 Luxury Hospitality Groups", "Exclusive Domestic Airline First Class Caterers"],
+    thousandPlantSetupCapex: 75e4,
+    thousandPlantAnnualGrossRevenue: 252e4,
+    tastingNotes: {
+      brix: 15.2,
+      acidity: "Balanced crisp malic tang with floral blueberry esters",
+      aromaProfile: ["Silver Epicuticular Wax", "Crisp Meyer Lemon Zest", "Mountain Air"],
+      chefRecipePairing: {
+        dishName: "Slow-Poached Blueberries with Whipped Buffalo Ricotta and Lavender Pollen",
+        prepTime: "20 mins",
+        description: "Intact Biloxi blueberries lightly infused with lavender syrup served over freshly whipped organic buffalo milk ricotta.",
+        ingredients: [
+          "150g Berryboyzz Southern Highbush Blueberries",
+          "150g Artisanal Buffalo Ricotta",
+          "Organic edible lavender flowers",
+          "Toasted crushed Marcona almonds"
+        ]
+      }
+    },
+    livePlantAvailable: true,
+    livePlantPriceINR: 850
+  }
+];
+export {
+  BERRIES_DATA as B
+};

@@ -1,0 +1,1 @@
+import"./CDFQNSq5.js";import{s as t,r as c}from"./orRXP5gy.js";import{I as n}from"./Bm39_daW.js";const e={name:"clock",size:24,node:[["circle",{cx:"12",cy:"12",r:"10"}],["path",{d:"M12 6v6l4 2"}]]};e.node;var p=new Set(["$$slots","$$events","$$legacy"]);function m(o,r){let s=c(r,p);n(o,t(()=>s,{get icon(){return e}}))}export{m as C};

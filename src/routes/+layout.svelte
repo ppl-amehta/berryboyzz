@@ -2,9 +2,14 @@
   import '../app.css';
   import Navbar from '$components/Navbar.svelte';
   import Footer from '$components/Footer.svelte';
-  import { SpeedInsights } from '@vercel/speed-insights/sveltekit';
+  import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+  import { onMount } from 'svelte';
   
   let { children } = $props();
+
+  onMount(() => {
+    injectSpeedInsights();
+  });
 </script>
 
 <div class="min-h-screen flex flex-col bg-[#FAF9F6] text-[#1A1615]">
@@ -14,5 +19,3 @@
   </main>
   <Footer />
 </div>
-
-<SpeedInsights />
