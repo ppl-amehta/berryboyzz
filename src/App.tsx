@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useTheme } from './hooks/useTheme';
 import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
@@ -147,6 +148,9 @@ export const App: React.FC = () => {
 
       {/* Trained Autonomous Agentic Concierge ("Dr. Berryboy") */}
       <AgenticConcierge />
+
+      {/* Vercel Speed Insights */}
+      <SpeedInsights />
     </div>
   );
 };
