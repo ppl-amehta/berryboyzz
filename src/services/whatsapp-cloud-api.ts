@@ -4,7 +4,7 @@
  * interactive button/list dispatch, and automated conversational routing.
  */
 
-import { generateLeadCode } from '../utils/whatsapp';
+import { generateLeadCode } from '../utils/whatsapp.ts';
 
 export interface WhatsAppConfig {
   phoneNumberId: string;

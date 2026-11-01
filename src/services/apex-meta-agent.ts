@@ -12,10 +12,10 @@
  * - Channel-specific response rendering
  */
 
-import { generateLeadCode } from '../utils/whatsapp';
-import { WhatsAppCloudApiService, WhatsAppConfig } from './whatsapp-cloud-api';
-import { InstagramGraphApiService, InstagramConfig } from './instagram-graph-api';
-import { MetaSystemUserManager, MetaSystemUserConfig } from './meta-system-user';
+import { generateLeadCode } from '../utils/whatsapp.ts';
+import { WhatsAppCloudApiService, type WhatsAppConfig } from './whatsapp-cloud-api.ts';
+import { InstagramGraphApiService, type InstagramConfig } from './instagram-graph-api.ts';
+import { MetaSystemUserManager, type MetaSystemUserConfig } from './meta-system-user.ts';
 
 export type ChannelType = 'whatsapp' | 'instagram';
 export type PersonaType = 'investor' | 'grower' | 'connoisseur';

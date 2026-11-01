@@ -22,11 +22,13 @@ export const GET: RequestHandler = async ({ url }) => {
 export const POST: RequestHandler = async ({ request }) => {
   try {
     const payload = await request.json();
+    console.log('[WhatsApp Webhook Event Received]:', JSON.stringify(payload));
     return new Response(JSON.stringify({ status: 'EVENT_RECEIVED' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (err: any) {
+    console.error('[WhatsApp Webhook Error]:', err?.message || err);
     return new Response(JSON.stringify({ status: 'EVENT_RECEIVED' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },

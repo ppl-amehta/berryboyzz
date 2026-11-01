@@ -46,4 +46,39 @@ describe('WhatsApp Integration Engine (Frontier Deep Link Standards)', () => {
     expect(decoded).toContain('Raspberry');
     expect(decoded).toContain('[Ref: BB-');
   });
+
+  it('preserves rich financial model customMessage in ROI calculator leads', () => {
+    const customMessage = 'Capex Horizon ROI model for 2 Acres (N.P.V.H + CEA, Blueberry): Net Capex ₹48L, Net EBITDA ₹38L/yr, Breakeven: After 18 Months.';
+    const url = buildWhatsAppUrl({
+      leadSource: 'roi_calculator',
+      customMessage,
+    });
+    const decoded = decodeURIComponent(url.split('?text=')[1]);
+    expect(decoded).toContain(customMessage);
+    expect(decoded).toContain('[Ref: BB-');
+  });
+
+  it('preserves tour booking inquiries with specific tour name and date context', () => {
+    const url = buildWhatsAppUrl({
+      leadSource: 'tour_detail',
+      tourName: 'Gourmet Harvest & Berry Tasting Experience',
+      customMessage: 'I would like to book a slot for the "Gourmet Harvest & Berry Tasting Experience" (3.5 Hrs, fee: ₹1,500/person) at Berryboyzz farm.',
+    });
+    const decoded = decodeURIComponent(url.split('?text=')[1]);
+    expect(decoded).toContain('Gourmet Harvest & Berry Tasting Experience');
+    expect(decoded).toContain('₹1,500/person');
+    expect(decoded).toContain('[Ref: BB-');
+  });
+
+  it('preserves cultivar dossier inquiries from individual SSG routes', () => {
+    const url = buildWhatsAppUrl({
+      leadSource: 'cultivar_dossier',
+      berryVariety: 'Sweet Karaka Blackberries',
+      customMessage: 'I am reviewing the Sweet Karaka Blackberries (Rubus fruticosus) technical agronomy dossier on Berryboyzz and would like commercial planting availability.',
+    });
+    const decoded = decodeURIComponent(url.split('?text=')[1]);
+    expect(decoded).toContain('Sweet Karaka Blackberries');
+    expect(decoded).toContain('technical agronomy dossier');
+    expect(decoded).toContain('[Ref: BB-');
+  });
 });

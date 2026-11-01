@@ -1,1 +1,0 @@
-import"./CDFQNSq5.js";import{s,r as a}from"./orRXP5gy.js";import{I as p}from"./Bm39_daW.js";const r={name:"arrow-right",size:24,node:[["path",{d:"M5 12h14"}],["path",{d:"m12 5 7 7-7 7"}]]};r.node;var n=new Set(["$$slots","$$events","$$legacy"]);function d(o,t){let e=a(t,n);p(o,s(()=>e,{get icon(){return r}}))}export{d as A};
