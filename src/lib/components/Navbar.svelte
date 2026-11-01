@@ -1,0 +1,151 @@
+<script lang="ts">
+  import { Sprout, Menu, X, MessageCircle, ChevronRight, Phone } from '@lucide/svelte';
+  import { openWhatsAppLead } from '$utils/whatsapp';
+
+  let mobileMenuOpen = $state(false);
+
+  function toggleMobileMenu() {
+    mobileMenuOpen = !mobileMenuOpen;
+  }
+
+  function handleDirectWhatsApp() {
+    openWhatsAppLead({
+      leadSource: 'navbar_cta',
+      customMessage: 'Hello Berryboyzz, I would like to inquire about commercial berry farming and investment opportunities.',
+    });
+  }
+</script>
+
+<header class="sticky top-0 z-50 bg-[#FAF9F6]/90 backdrop-blur-md border-b border-[#E8E4DC] transition-all">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-20">
+      <!-- Brand Logo -->
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-emerald-800 text-white flex items-center justify-center shadow-md shadow-emerald-950/10 group-hover:bg-emerald-900 transition-colors">
+          <Sprout class="w-5 h-5" />
+        </div>
+        <div>
+          <span class="font-serif text-xl tracking-tight font-bold text-[#1A1615] block group-hover:text-emerald-900 transition-colors">
+            BERRYBOYZZ
+          </span>
+          <span class="text-[9px] tracking-widest uppercase font-semibold text-[#6B6661] block -mt-0.5">
+            Agro-Assets · Pune & Satara
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <nav class="hidden md:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-[#4A4643]">
+        <a href="/cultivars/" class="hover:text-emerald-800 transition-colors py-1">
+          Cultivars
+        </a>
+        <a href="/#commercial-models" class="hover:text-emerald-800 transition-colors py-1">
+          Commercial Models
+        </a>
+        <a href="/#roi-calculator" class="hover:text-emerald-800 transition-colors py-1">
+          Capex & ROI
+        </a>
+        <a href="/tours/" class="hover:text-emerald-800 transition-colors py-1">
+          Farm Tours
+        </a>
+        <a href="/#biological-os" class="hover:text-emerald-800 transition-colors py-1">
+          Biological OS
+        </a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="hidden sm:flex items-center gap-3">
+        <a
+          href="tel:+918888681136"
+          class="p-2.5 rounded-xl border border-[#E8E4DC] bg-white text-[#4A4643] hover:text-[#1A1615] hover:border-[#D4CEBF] transition-all"
+          title="Direct Agronomy Desk"
+        >
+          <Phone class="w-4 h-4" />
+        </a>
+        <button
+          onclick={handleDirectWhatsApp}
+          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-800 hover:bg-emerald-900 text-white shadow-sm shadow-emerald-950/10 transition-all hover:shadow-md cursor-pointer"
+        >
+          <MessageCircle class="w-4 h-4" />
+          <span>WhatsApp Desk</span>
+        </button>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden flex items-center gap-2">
+        <button
+          onclick={toggleMobileMenu}
+          class="p-2.5 rounded-xl border border-[#E8E4DC] bg-white text-[#1A1615] hover:bg-[#F5F2EB] transition-colors"
+          aria-label="Toggle Navigation Menu"
+        >
+          {#if mobileMenuOpen}
+            <X class="w-5 h-5" />
+          {:else}
+            <Menu class="w-5 h-5" />
+          {/if}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer -->
+  {#if mobileMenuOpen}
+    <div class="md:hidden bg-white border-b border-[#E8E4DC] px-4 pt-3 pb-6 space-y-3 shadow-xl">
+      <nav class="flex flex-col space-y-2 text-sm font-medium text-[#1A1615]">
+        <a
+          href="/cultivars/"
+          onclick={() => (mobileMenuOpen = false)}
+          class="px-3 py-2.5 rounded-lg hover:bg-[#F5F2EB] flex items-center justify-between"
+        >
+          <span>Flagship Cultivars</span>
+          <ChevronRight class="w-4 h-4 text-[#6B6661]" />
+        </a>
+        <a
+          href="/#commercial-models"
+          onclick={() => (mobileMenuOpen = false)}
+          class="px-3 py-2.5 rounded-lg hover:bg-[#F5F2EB] flex items-center justify-between"
+        >
+          <span>Commercial Models (NPVH / Tunnels)</span>
+          <ChevronRight class="w-4 h-4 text-[#6B6661]" />
+        </a>
+        <a
+          href="/#roi-calculator"
+          onclick={() => (mobileMenuOpen = false)}
+          class="px-3 py-2.5 rounded-lg hover:bg-[#F5F2EB] flex items-center justify-between"
+        >
+          <span>Capex Horizon & ROI Calculator</span>
+          <ChevronRight class="w-4 h-4 text-[#6B6661]" />
+        </a>
+        <a
+          href="/tours/"
+          onclick={() => (mobileMenuOpen = false)}
+          class="px-3 py-2.5 rounded-lg hover:bg-[#F5F2EB] flex items-center justify-between"
+        >
+          <span>Farm Tours & Study Tour</span>
+          <ChevronRight class="w-4 h-4 text-[#6B6661]" />
+        </a>
+        <a
+          href="/#biological-os"
+          onclick={() => (mobileMenuOpen = false)}
+          class="px-3 py-2.5 rounded-lg hover:bg-[#F5F2EB] flex items-center justify-between"
+        >
+          <span>6-Pillar Biological OS</span>
+          <ChevronRight class="w-4 h-4 text-[#6B6661]" />
+        </a>
+      </nav>
+
+      <div class="pt-2 border-t border-[#E8E4DC]">
+        <button
+          onclick={() => {
+            mobileMenuOpen = false;
+            handleDirectWhatsApp();
+          }}
+          class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-800 text-white shadow-sm"
+        >
+          <MessageCircle class="w-4 h-4" />
+          <span>Inquire via WhatsApp Desk</span>
+        </button>
+      </div>
+    </div>
+  {/if}
+</header>

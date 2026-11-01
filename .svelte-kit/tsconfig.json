@@ -30,6 +30,12 @@
 			],
 			"$services/*": [
 				"../src/services/*"
+			],
+			"$lib": [
+				"../src/lib"
+			],
+			"$lib/*": [
+				"../src/lib/*"
 			]
 		},
 		"rootDirs": [
