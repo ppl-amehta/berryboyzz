@@ -4,6 +4,102 @@
   let { progress = 0 } = $props<{ progress: number }>();
   let canvas: HTMLCanvasElement | null = $state(null);
 
+  interface StoryFrame {
+    id: string;
+    src: string;
+    title: string;
+    stage: string;
+    metric: string;
+    tag: string;
+    focalX: number;
+    focalY: number;
+  }
+
+  const FRAMES: StoryFrame[] = [
+    {
+      id: 'seed',
+      src: '/story/frame-1-seed.jpg',
+      title: 'Genetic Meristem Clone',
+      stage: 'Phase 01 / 07',
+      metric: '99.8% Clonal Purity',
+      tag: 'VIRUS-INDEXED TISSUE CULTURE',
+      focalX: 0.5,
+      focalY: 0.5,
+    },
+    {
+      id: 'sprout',
+      src: '/story/frame-2-sprout.jpg',
+      title: 'Rhizosphere Inoculation',
+      stage: 'Phase 02 / 07',
+      metric: '5.8 pH · 1.6 EC Substrate',
+      tag: 'MYCORRHIZAL BACTO-CONSORTIUM',
+      focalX: 0.48,
+      focalY: 0.56,
+    },
+    {
+      id: 'canopy',
+      src: '/story/frame-3-canopy.jpg',
+      title: 'High-Wire Trellis Canopy',
+      stage: 'Phase 03 / 07',
+      metric: '4,500 Canes / Acre · 360° PAR',
+      tag: 'CEA PROTECTED HIGH-WIRE',
+      focalX: 0.52,
+      focalY: 0.46,
+    },
+    {
+      id: 'bloom',
+      src: '/story/frame-4-bloom.jpg',
+      title: 'Synchronized Blossom',
+      stage: 'Phase 04 / 07',
+      metric: '100% Conical Drupelet Shape',
+      tag: 'DAY-NEUTRAL BUMBLEBEE POLLINATION',
+      focalX: 0.48,
+      focalY: 0.46,
+    },
+    {
+      id: 'ripening',
+      src: '/story/frame-5-ripening.jpg',
+      title: 'Anthocyanin Accumulation',
+      stage: 'Phase 05 / 07',
+      metric: '18.5° Brix · Deep Anthocyanin',
+      tag: 'HIGH-POTASSIUM BIO-DRENCH',
+      focalX: 0.5,
+      focalY: 0.5,
+    },
+    {
+      id: 'harvest',
+      src: '/story/frame-6-harvest.jpg',
+      title: 'Dawn Harvest & Cooling',
+      stage: 'Phase 06 / 07',
+      metric: '2°C–4°C Forced-Air Pre-Cooling',
+      tag: 'SINGLE-TOUCH EXPORT HARVEST',
+      focalX: 0.52,
+      focalY: 0.52,
+    },
+    {
+      id: 'punnet',
+      src: '/story/frame-7-punnet.jpg',
+      title: 'Luxury Retail & Export Punnet',
+      stage: 'Phase 07 / 07',
+      metric: '₹2,500 / kg Wholesale · 125g Punnet',
+      tag: 'COLD-CHAIN METRO DISTRIBUTION',
+      focalX: 0.5,
+      focalY: 0.54,
+    },
+  ];
+
+  // Particle interface for organic ambient spores & mist
+  interface Particle {
+    x: number;
+    y: number;
+    size: number;
+    speedX: number;
+    speedY: number;
+    baseAlpha: number;
+    pulseSpeed: number;
+    phase: number;
+  }
+
   const target = { current: 0 };
   const current = { current: 0 };
 
@@ -18,6 +114,28 @@
 
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
+
+    // Preload all 7 high-res master frames
+    const loadedImages: HTMLImageElement[] = [];
+    FRAMES.forEach((frame, idx) => {
+      const img = new Image();
+      img.src = frame.src;
+      img.onload = () => {
+        loadedImages[idx] = img;
+      };
+    });
+
+    // Initialize 28 atmospheric ambient spore / mist particles
+    const particles: Particle[] = Array.from({ length: 28 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      size: Math.random() * 2.2 + 0.8,
+      speedX: (Math.random() - 0.5) * 0.35,
+      speedY: -Math.random() * 0.45 - 0.15,
+      baseAlpha: Math.random() * 0.45 + 0.15,
+      pulseSpeed: Math.random() * 0.04 + 0.02,
+      phase: Math.random() * Math.PI * 2,
+    }));
 
     const handleResize = () => {
       if (!canvas || !ctx) return;
@@ -39,67 +157,73 @@
 
     const render = () => {
       tickCount++;
-      // Smooth lerp
-      current.current += (target.current - current.current) * 0.08;
-      const p = current.current;
+      // Smooth lerp on scroll progress for buttery 60fps/120fps motion
+      current.current += (target.current - current.current) * 0.075;
+      const p = Math.min(Math.max(current.current, 0), 1);
+
+      const isDark = document.documentElement.classList.contains('dark');
 
       ctx.clearRect(0, 0, width, height);
 
-      const cx = width * 0.5;
-      const cy = height * 0.5;
-      const baseScale = Math.min(width, height) / 800;
+      // 1. Calculate continuous transition math across the 7 phases
+      const totalSegments = FRAMES.length - 1; // 6 intervals
+      const scaledP = p * totalSegments;
+      const indexA = Math.min(Math.floor(scaledP), totalSegments - 1);
+      const indexB = Math.min(indexA + 1, totalSegments);
+      const segFrac = scaledP - indexA;
 
-      // Soft sunlit ambient aura matching phase
-      drawSunlitAura(ctx, width, height, p);
+      // S-curve smoothstep for seamless cross-dissolve
+      const easeFrac = segFrac * segFrac * (3 - 2 * segFrac);
 
-      // Phase 1: Embryonic Seed
-      if (p < 0.20) {
-        const localP = Math.min(Math.max(p / 0.14, 0), 1);
-        const fade = p < 0.14 ? 1 : 1 - (p - 0.14) / 0.06;
-        drawSeed(ctx, cx, cy, localP, fade, baseScale, tickCount);
+      // Continuous camera motion: subtle push-in zoom and micro-drift
+      const zoomA = 1.0 + segFrac * 0.07;
+      const zoomB = 0.95 + segFrac * 0.07;
+      const breathe = Math.sin(tickCount * 0.02) * 0.003;
+      const driftX = Math.cos(tickCount * 0.014) * 6;
+      const driftY = Math.sin(tickCount * 0.016) * 4;
+
+      // 2. Render Frame A (Base Layer)
+      if (loadedImages[indexA]) {
+        drawRealisticFrame(
+          ctx,
+          loadedImages[indexA],
+          1.0,
+          width,
+          height,
+          zoomA + breathe,
+          driftX,
+          driftY,
+          isDark
+        );
       }
 
-      // Phase 2: Root & Rhizosphere
-      if (p >= 0.10 && p < 0.36) {
-        const localP = Math.min(Math.max((p - 0.14) / 0.14, 0), 1);
-        const fade = p < 0.14 ? (p - 0.10) / 0.04 : p > 0.28 ? 1 - (p - 0.28) / 0.08 : 1;
-        drawRoots(ctx, cx, cy, localP, fade, baseScale, tickCount);
+      // 3. Render Frame B (Cross-Fading Top Layer)
+      if (loadedImages[indexB] && indexB !== indexA && easeFrac > 0.001) {
+        drawRealisticFrame(
+          ctx,
+          loadedImages[indexB],
+          easeFrac,
+          width,
+          height,
+          zoomB + breathe,
+          driftX * 0.7,
+          driftY * 0.7,
+          isDark
+        );
       }
 
-      // Phase 3: Vegetative Canopy
-      if (p >= 0.24 && p < 0.50) {
-        const localP = Math.min(Math.max((p - 0.28) / 0.14, 0), 1);
-        const fade = p < 0.28 ? (p - 0.24) / 0.04 : p > 0.42 ? 1 - (p - 0.42) / 0.08 : 1;
-        drawCanopy(ctx, cx, cy, localP, fade, baseScale, tickCount);
-      }
+      // 4. Atmospheric Volumetric Sunbeam / Glow Overlay
+      drawAtmosphericLighting(ctx, width, height, p, tickCount, isDark);
 
-      // Phase 4: Blossom
-      if (p >= 0.38 && p < 0.64) {
-        const localP = Math.min(Math.max((p - 0.42) / 0.15, 0), 1);
-        const fade = p < 0.42 ? (p - 0.38) / 0.04 : p > 0.57 ? 1 - (p - 0.57) / 0.07 : 1;
-        drawBlossom(ctx, cx, cy, localP, fade, baseScale, tickCount);
-      }
+      // 5. Ambient Micro-Particles (Floating Pollen / Dew Spores)
+      drawParticles(ctx, particles, width, height, tickCount, isDark);
 
-      // Phase 5: Swelling Drupelets
-      if (p >= 0.52 && p < 0.80) {
-        const localP = Math.min(Math.max((p - 0.57) / 0.15, 0), 1);
-        const fade = p < 0.57 ? (p - 0.52) / 0.05 : p > 0.72 ? 1 - (p - 0.72) / 0.08 : 1;
-        drawDrupelets(ctx, cx, cy, localP, fade, baseScale, tickCount);
-      }
+      // 6. Seamless Edge Feathering (Blends cleanly with hero billboard & page background)
+      drawFeatheringVignette(ctx, width, height, isDark);
 
-      // Phase 6: Harvest & Pre-Cooling (2°C-4°C)
-      if (p >= 0.70 && p < 0.90) {
-        const localP = Math.min(Math.max((p - 0.71) / 0.15, 0), 1);
-        const fade = p < 0.71 ? (p - 0.70) / 0.01 : p > 0.85 ? 1 - (p - 0.85) / 0.05 : 1;
-        drawHarvest(ctx, cx, cy, localP, fade, baseScale, tickCount);
-      }
-
-      // Phase 7: Commercial Punnet (₹2,500/kg)
-      if (p >= 0.84) {
-        const localP = Math.min(Math.max((p - 0.86) / 0.14, 0), 1);
-        const fade = p < 0.86 ? (p - 0.84) / 0.02 : 1;
-        drawPunnet(ctx, cx, cy, localP, fade, baseScale, tickCount);
-      }
+      // 7. Scientific Precision HUD Reticle (Anchored onto Morphological Focal Center)
+      const currentFrame = easeFrac > 0.5 ? FRAMES[indexB] : FRAMES[indexA];
+      drawScientificHUD(ctx, width, height, currentFrame, p, tickCount, isDark);
 
       animId = requestAnimationFrame(render);
     };
@@ -112,247 +236,251 @@
     };
   });
 
-  function drawSunlitAura(ctx: CanvasRenderingContext2D, w: number, h: number, p: number) {
-    const cx = w * 0.5;
-    const cy = h * 0.5;
-    const r = Math.min(w, h) * 0.45;
-    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-    
-    if (p < 0.28) {
-      grad.addColorStop(0, 'rgba(230, 243, 235, 0.4)');
-      grad.addColorStop(1, 'rgba(250, 249, 246, 0)');
-    } else if (p < 0.60) {
-      grad.addColorStop(0, 'rgba(254, 243, 199, 0.35)');
-      grad.addColorStop(1, 'rgba(250, 249, 246, 0)');
+  function drawRealisticFrame(
+    ctx: CanvasRenderingContext2D,
+    img: HTMLImageElement,
+    alpha: number,
+    w: number,
+    h: number,
+    zoom: number,
+    panX: number,
+    panY: number,
+    isDark: boolean
+  ) {
+    if (!img || alpha <= 0.001) return;
+
+    ctx.save();
+    ctx.globalAlpha = Math.min(Math.max(alpha, 0), 1);
+
+    // Compute aspect-ratio cover geometry
+    const imgAspect = img.naturalWidth / img.naturalHeight;
+    const canvasAspect = w / h;
+
+    let drawW = w;
+    let drawH = h;
+    if (canvasAspect > imgAspect) {
+      drawW = w;
+      drawH = w / imgAspect;
     } else {
-      grad.addColorStop(0, 'rgba(254, 226, 226, 0.35)');
+      drawH = h;
+      drawW = h * imgAspect;
+    }
+
+    drawW *= zoom;
+    drawH *= zoom;
+
+    const offsetX = (w - drawW) * 0.5 + panX;
+    const offsetY = (h - drawH) * 0.5 + panY;
+
+    // In dark mode, slightly balance brightness for deep obsidian ambiance
+    if (isDark) {
+      ctx.filter = 'brightness(0.88) contrast(1.08) saturate(1.15)';
+    } else {
+      ctx.filter = 'brightness(1.0) contrast(1.04) saturate(1.12)';
+    }
+
+    ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
+    ctx.restore();
+  }
+
+  function drawAtmosphericLighting(
+    ctx: CanvasRenderingContext2D,
+    w: number,
+    h: number,
+    p: number,
+    tick: number,
+    isDark: boolean
+  ) {
+    ctx.save();
+    const cx = w * (0.35 + Math.sin(tick * 0.01) * 0.15);
+    const cy = h * (0.3 + Math.cos(tick * 0.012) * 0.1);
+    const radius = Math.max(w, h) * 0.65;
+
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+
+    if (isDark) {
+      // Emerald / Anthocyanin deep bio-luminescence
+      grad.addColorStop(0, 'rgba(16, 185, 129, 0.08)');
+      grad.addColorStop(0.5, 'rgba(6, 78, 59, 0.04)');
+      grad.addColorStop(1, 'rgba(12, 10, 9, 0)');
+    } else {
+      // Warm porcelain sunlit estate radiance
+      grad.addColorStop(0, 'rgba(254, 243, 199, 0.22)');
+      grad.addColorStop(0.5, 'rgba(253, 230, 138, 0.08)');
       grad.addColorStop(1, 'rgba(250, 249, 246, 0)');
     }
+
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
+    ctx.restore();
   }
 
-  function drawSeed(ctx: CanvasRenderingContext2D, cx: number, cy: number, p: number, fade: number, s: number, tick: number) {
+  function drawParticles(
+    ctx: CanvasRenderingContext2D,
+    particles: Particle[],
+    w: number,
+    h: number,
+    tick: number,
+    isDark: boolean
+  ) {
     ctx.save();
-    ctx.globalAlpha = Math.max(fade, 0);
-    const breathe = 1 + Math.sin(tick * 0.04) * 0.03;
-    const size = 38 * s * (0.8 + p * 0.3) * breathe;
+    for (const pt of particles) {
+      pt.x += pt.speedX;
+      pt.y += pt.speedY;
 
-    // Outer aura
-    ctx.beginPath();
-    ctx.arc(cx, cy, size * 2.2, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(4, 120, 87, 0.08)';
-    ctx.fill();
+      // Wrap around viewport edges
+      if (pt.y < -10) pt.y = h + 10;
+      if (pt.x < -10) pt.x = w + 10;
+      if (pt.x > w + 10) pt.x = -10;
 
-    // Embryo Seed Body
+      const alphaPulse = pt.baseAlpha * (0.7 + Math.sin(tick * pt.pulseSpeed + pt.phase) * 0.3);
+
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+      ctx.fillStyle = isDark
+        ? `rgba(110, 231, 183, ${alphaPulse * 0.8})`
+        : `rgba(254, 240, 138, ${alphaPulse * 0.9})`;
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawFeatheringVignette(
+    ctx: CanvasRenderingContext2D,
+    w: number,
+    h: number,
+    isDark: boolean
+  ) {
+    ctx.save();
+    const bgColor = isDark ? '#0C0A09' : '#FAF9F6';
+
+    // Top soft feathering gradient
+    const topGrad = ctx.createLinearGradient(0, 0, 0, h * 0.24);
+    topGrad.addColorStop(0, bgColor);
+    topGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(0, 0, w, h * 0.24);
+
+    // Bottom soft feathering gradient
+    const btmGrad = ctx.createLinearGradient(0, h * 0.76, 0, h);
+    btmGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    btmGrad.addColorStop(1, bgColor);
+    ctx.fillStyle = btmGrad;
+    ctx.fillRect(0, h * 0.76, w, h * 0.24);
+
+    // Soft perimeter vignette for cinematic depth
+    const vignette = ctx.createRadialGradient(
+      w * 0.5,
+      h * 0.5,
+      Math.min(w, h) * 0.35,
+      w * 0.5,
+      h * 0.5,
+      Math.max(w, h) * 0.7
+    );
+    vignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    vignette.addColorStop(1, isDark ? 'rgba(12, 10, 9, 0.45)' : 'rgba(250, 249, 246, 0.35)');
+    ctx.fillStyle = vignette;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.restore();
+  }
+
+  function drawScientificHUD(
+    ctx: CanvasRenderingContext2D,
+    w: number,
+    h: number,
+    frame: StoryFrame,
+    p: number,
+    tick: number,
+    isDark: boolean
+  ) {
+    ctx.save();
+
+    // Position reticle around the anatomical focal point (responsive)
+    const rx = w * frame.focalX + Math.sin(tick * 0.02) * 4;
+    const ry = h * frame.focalY + Math.cos(tick * 0.025) * 4;
+
+    const pulse = 1 + Math.sin(tick * 0.05) * 0.06;
+    const reticleRadius = 28 * pulse;
+
+    const strokeColor = isDark ? 'rgba(52, 211, 153, 0.65)' : 'rgba(4, 120, 87, 0.75)';
+    const textColor = isDark ? '#FAF9F6' : '#1A1615';
+    const tagColor = isDark ? '#34D399' : '#047857';
+
+    // 1. Crosshair optical reticle circle
     ctx.beginPath();
-    ctx.ellipse(cx, cy, size * 0.75, size * 1.1, Math.PI / 12, 0, Math.PI * 2);
-    ctx.fillStyle = '#047857';
-    ctx.fill();
-    ctx.strokeStyle = '#065F46';
-    ctx.lineWidth = 2.5 * s;
+    ctx.arc(rx, ry, reticleRadius, 0, Math.PI * 2);
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 2. Corner crosshair notches
+    const notchLen = 6;
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 1.5;
+
+    // Top
+    ctx.beginPath();
+    ctx.moveTo(rx, ry - reticleRadius - notchLen);
+    ctx.lineTo(rx, ry - reticleRadius + notchLen);
+    ctx.stroke();
+    // Bottom
+    ctx.beginPath();
+    ctx.moveTo(rx, ry + reticleRadius - notchLen);
+    ctx.lineTo(rx, ry + reticleRadius + notchLen);
+    ctx.stroke();
+    // Left
+    ctx.beginPath();
+    ctx.moveTo(rx - reticleRadius - notchLen, ry);
+    ctx.lineTo(rx - reticleRadius + notchLen, ry);
+    ctx.stroke();
+    // Right
+    ctx.beginPath();
+    ctx.moveTo(rx + reticleRadius - notchLen, ry);
+    ctx.lineTo(rx + reticleRadius + notchLen, ry);
     ctx.stroke();
 
-    // Inner DNA glow
+    // Center focal point
     ctx.beginPath();
-    ctx.ellipse(cx, cy, size * 0.35, size * 0.6, Math.PI / 12, 0, Math.PI * 2);
-    ctx.fillStyle = '#6EE7B7';
+    ctx.arc(rx, ry, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = tagColor;
     ctx.fill();
 
-    ctx.restore();
-  }
+    // 3. Technical Lead-Line & Floating Metric Pill (Positioned to the right of reticle)
+    const leadStartX = rx + reticleRadius * 0.7;
+    const leadStartY = ry - reticleRadius * 0.7;
+    const elbowX = leadStartX + 35;
+    const elbowY = leadStartY - 25;
+    const labelEndX = elbowX + 130;
 
-  function drawRoots(ctx: CanvasRenderingContext2D, cx: number, cy: number, p: number, fade: number, s: number, tick: number) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(fade, 0);
-
-    const rootCount = 10;
-    for (let i = 0; i < rootCount; i++) {
-      const angle = (i / rootCount) * Math.PI + Math.PI * 0.05;
-      const len = (120 + (i % 3) * 30) * s * p;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy - 20 * s);
-      const cpX = cx + Math.cos(angle) * (len * 0.6) + Math.sin(tick * 0.02 + i) * 8;
-      const cpY = cy + Math.sin(angle) * (len * 0.6);
-      const endX = cx + Math.cos(angle) * len;
-      const endY = cy + Math.sin(angle) * len;
-
-      ctx.quadraticCurveTo(cpX, cpY, endX, endY);
-      ctx.strokeStyle = i % 2 === 0 ? '#047857' : '#059669';
-      ctx.lineWidth = Math.max(1, (3 - (i % 2)) * s);
-      ctx.stroke();
-
-      // Root tip nodes
-      if (p > 0.4) {
-        ctx.beginPath();
-        ctx.arc(endX, endY, 2.5 * s, 0, Math.PI * 2);
-        ctx.fillStyle = '#10B981';
-        ctx.fill();
-      }
-    }
-    ctx.restore();
-  }
-
-  function drawCanopy(ctx: CanvasRenderingContext2D, cx: number, cy: number, p: number, fade: number, s: number, tick: number) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(fade, 0);
-
-    // Main Stem
     ctx.beginPath();
-    ctx.moveTo(cx, cy + 80 * s);
-    ctx.quadraticCurveTo(cx - 15 * s + Math.sin(tick * 0.03) * 6, cy, cx, cy - 110 * s * p);
-    ctx.strokeStyle = '#065F46';
-    ctx.lineWidth = 5 * s;
+    ctx.moveTo(leadStartX, leadStartY);
+    ctx.lineTo(elbowX, elbowY);
+    ctx.lineTo(labelEndX, elbowY);
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 1;
     ctx.stroke();
 
-    // Leaves
-    const leafCount = 6;
-    for (let i = 0; i < leafCount; i++) {
-      const side = i % 2 === 0 ? 1 : -1;
-      const leafY = cy + 40 * s - i * 25 * s * p;
-      if (leafY > cy - 110 * s * p) {
-        ctx.save();
-        ctx.translate(cx, leafY);
-        ctx.rotate((side * 0.5) + Math.sin(tick * 0.03 + i) * 0.08);
-
-        ctx.beginPath();
-        ctx.ellipse(side * 28 * s * p, 0, 24 * s * p, 10 * s * p, 0, 0, Math.PI * 2);
-        ctx.fillStyle = i % 2 === 0 ? '#047857' : '#059669';
-        ctx.fill();
-        ctx.strokeStyle = '#064E3B';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-
-        ctx.restore();
-      }
-    }
-    ctx.restore();
-  }
-
-  function drawBlossom(ctx: CanvasRenderingContext2D, cx: number, cy: number, p: number, fade: number, s: number, tick: number) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(fade, 0);
-
-    const petals = 5;
-    const r = 42 * s * p;
-
-    for (let i = 0; i < petals; i++) {
-      const angle = (i / petals) * Math.PI * 2 + tick * 0.005;
-      const px = cx + Math.cos(angle) * (r * 0.7);
-      const py = cy + Math.sin(angle) * (r * 0.7);
-
-      ctx.beginPath();
-      ctx.arc(px, py, 22 * s * p, 0, Math.PI * 2);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fill();
-      ctx.strokeStyle = '#E5E7EB';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-
-    // Golden center stamens
+    // Data Pill Box
+    ctx.fillStyle = isDark ? 'rgba(20, 18, 16, 0.85)' : 'rgba(255, 255, 255, 0.88)';
     ctx.beginPath();
-    ctx.arc(cx, cy, 14 * s * p, 0, Math.PI * 2);
-    ctx.fillStyle = '#F59E0B';
+    ctx.roundRect(elbowX, elbowY - 26, 175, 24, 6);
     ctx.fill();
-
-    ctx.restore();
-  }
-
-  function drawDrupelets(ctx: CanvasRenderingContext2D, cx: number, cy: number, p: number, fade: number, s: number, tick: number) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(fade, 0);
-
-    const drupeletCount = 28;
-    for (let i = 0; i < drupeletCount; i++) {
-      const phi = Math.acos(-1 + (2 * i) / drupeletCount);
-      const theta = Math.sqrt(drupeletCount * Math.PI) * phi;
-      const r = 55 * s * p;
-
-      const dx = cx + r * Math.sin(phi) * Math.cos(theta);
-      const dy = cy + (r * 1.2) * Math.cos(phi) * (0.8 + 0.2 * p);
-
-      ctx.beginPath();
-      ctx.arc(dx, dy, 11 * s * p, 0, Math.PI * 2);
-      ctx.fillStyle = i % 3 === 0 ? '#BE123C' : i % 3 === 1 ? '#9F1239' : '#E11D48';
-      ctx.fill();
-
-      // Specular shine
-      ctx.beginPath();
-      ctx.arc(dx - 3 * s, dy - 3 * s, 3 * s * p, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-      ctx.fill();
-    }
-
-    ctx.restore();
-  }
-
-  function drawHarvest(ctx: CanvasRenderingContext2D, cx: number, cy: number, p: number, fade: number, s: number, tick: number) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(fade, 0);
-
-    // Plucked berry in chilled air
-    drawDrupelets(ctx, cx, cy - 20 * s, 1.0, 1.0, s, tick);
-
-    // Chilled fog & crystal ice particles (2°C - 4°C precooling)
-    const particleCount = 14;
-    for (let i = 0; i < particleCount; i++) {
-      const a = (i / particleCount) * Math.PI * 2 + tick * 0.02;
-      const d = (80 + Math.sin(tick * 0.05 + i) * 20) * s;
-      const px = cx + Math.cos(a) * d;
-      const py = cy + Math.sin(a) * d;
-
-      ctx.beginPath();
-      ctx.arc(px, py, 2.5 * s, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(59, 130, 246, 0.5)';
-      ctx.fill();
-    }
-
-    ctx.restore();
-  }
-
-  function drawPunnet(ctx: CanvasRenderingContext2D, cx: number, cy: number, p: number, fade: number, s: number, tick: number) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(fade, 0);
-
-    // Export Punnet Box
-    const boxW = 180 * s * p;
-    const boxH = 120 * s * p;
-    const bx = cx - boxW / 2;
-    const by = cy - boxH / 2;
-
-    // Punnet container
-    ctx.beginPath();
-    ctx.roundRect(bx, by, boxW, boxH, 16 * s);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-    ctx.fill();
-    ctx.strokeStyle = '#D1D5DB';
-    ctx.lineWidth = 2 * s;
+    ctx.strokeStyle = isDark ? 'rgba(52, 211, 153, 0.3)' : 'rgba(4, 120, 87, 0.3)';
+    ctx.lineWidth = 1;
     ctx.stroke();
 
-    // Ripe berries inside punnet
-    for (let i = 0; i < 6; i++) {
-      const row = Math.floor(i / 3);
-      const col = i % 3;
-      const px = bx + 35 * s + col * 55 * s;
-      const py = by + 35 * s + row * 50 * s;
+    // Pill Text
+    ctx.fillStyle = tagColor;
+    ctx.font = 'bold 9px JetBrains Mono, monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(frame.tag.slice(0, 24), elbowX + 8, elbowY - 14);
 
-      ctx.beginPath();
-      ctx.arc(px, py, 18 * s * p, 0, Math.PI * 2);
-      ctx.fillStyle = '#BE123C';
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(px - 4 * s, py - 4 * s, 4 * s, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-      ctx.fill();
-    }
-
-    // Gold label
-    ctx.fillStyle = '#047857';
-    ctx.font = `bold ${Math.round(11 * s)}px Inter, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('BERRYBOYZZ · ₹2,500/kg', cx, by + boxH - 12 * s);
+    ctx.fillStyle = textColor;
+    ctx.font = 'bold 10px JetBrains Mono, monospace';
+    ctx.fillText(frame.metric, elbowX + 8, elbowY - 4);
 
     ctx.restore();
   }

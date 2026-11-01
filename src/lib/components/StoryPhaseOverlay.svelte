@@ -63,17 +63,29 @@
   ];
 
   const phase = $derived(PHASES[Math.min(Math.max(currentPhaseIndex, 0), 6)]);
+  const isVisible = $derived(progress >= 0.02 && progress < 0.98);
 </script>
 
-<div class="fixed top-24 left-4 sm:left-8 z-20 max-w-sm sm:max-w-md pointer-events-none">
-  <div class="glass-panel p-6 rounded-3xl bg-white/90 dark:bg-[#141210]/90 backdrop-blur-md border-[#E8E4DC] dark:border-[#282420] shadow-xl space-y-3 pointer-events-auto">
+<div
+  class="fixed top-24 left-4 sm:left-8 z-20 max-w-sm sm:max-w-md pointer-events-none transition-all duration-500 ease-out {isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}"
+>
+  <div class="glass-panel p-6 sm:p-7 rounded-3xl space-y-3.5 pointer-events-auto">
     <div class="flex items-center justify-between">
-      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
         Living Morphogenesis
       </span>
       <span class="font-mono-num text-xs font-bold text-[#6B6661] dark:text-[#9E9689]">
         Stage 0{phase.index} / 07
       </span>
+    </div>
+
+    <!-- 7-Stage Micro Scrubber Track -->
+    <div class="grid grid-cols-7 gap-1 pt-1">
+      {#each PHASES as p, idx}
+        <div
+          class="h-1 rounded-full transition-all duration-300 {idx === phase.index - 1 ? 'bg-emerald-700 dark:bg-emerald-400' : idx < phase.index - 1 ? 'bg-emerald-300 dark:bg-emerald-800' : 'bg-[#E8E4DC] dark:bg-[#282420]'}"
+        ></div>
+      {/each}
     </div>
 
     <div>
@@ -89,8 +101,8 @@
       {phase.desc}
     </p>
 
-    <div class="pt-2 border-t border-[#F0ECE1] dark:border-[#282420] flex items-center justify-between">
-      <span class="text-[11px] font-mono font-bold text-emerald-900 dark:text-emerald-300 bg-[#F5F2EB] dark:bg-[#1E1A17] px-2.5 py-1 rounded-lg">
+    <div class="pt-2 border-t border-[#E8E4DC]/80 dark:border-[#282420]/80 flex items-center justify-between">
+      <span class="text-[11px] font-mono font-bold text-emerald-900 dark:text-emerald-300 glass-subpanel px-2.5 py-1 rounded-lg">
         {phase.metric}
       </span>
       <span class="text-[10px] text-[#6B6661] dark:text-[#9E9689] uppercase tracking-wider font-semibold">
