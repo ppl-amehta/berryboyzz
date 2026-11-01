@@ -6,10 +6,18 @@
     --font-mono: 'JetBrains Mono', monospace;
   }
 
+  /* Day Mode as default (Apex warm porcelain alabaster) */
   body {
-    background-color: #08090C;
-    color: #F3F4F6;
+    background-color: #FAF9F6;
+    color: #1C1917;
     font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Night Mode when html has .dark class */
+  html.dark body {
+    background-color: #08090C;
+    color: #EDEDED;
   }
 
   /* Custom subtle scrollbar */
@@ -17,44 +25,60 @@
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #08090C;
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #232733;
+    background: #D6D3D1;
     border-radius: 3px;
   }
+  html.dark ::-webkit-scrollbar-thumb {
+    background: #27272A;
+  }
   ::-webkit-scrollbar-thumb:hover {
-    background: #374151;
+    background: #A8A29E;
   }
 }
 
-/* Glassmorphism primitives */
+/* Glassmorphism primitives (Day / Night adaptive) */
 .glass-panel {
-  background: rgba(14, 17, 24, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(231, 229, 228, 0.95);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.dark .glass-panel {
+  background: rgba(14, 17, 24, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
 .glass-panel-glow {
-  background: rgba(18, 22, 32, 0.82);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(225, 29, 72, 0.25);
-  box-shadow: 0 0 35px -10px rgba(225, 29, 72, 0.2);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(225, 29, 72, 0.28);
+  box-shadow: 0 12px 35px -8px rgba(225, 29, 72, 0.12);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glass-panel-emerald {
-  background: rgba(14, 24, 20, 0.82);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  box-shadow: 0 0 35px -10px rgba(16, 185, 129, 0.15);
+html.dark .glass-panel-glow {
+  background: rgba(18, 22, 32, 0.90);
+  border: 1px solid rgba(225, 29, 72, 0.30);
+  box-shadow: 0 12px 35px -8px rgba(225, 29, 72, 0.22);
 }
 
-/* Precision Grid overlay */
+/* Subtle background grid pattern */
 .bg-grid-pattern {
   background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+}
+
+html.dark .bg-grid-pattern {
   background-image: 
     linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
@@ -65,7 +89,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Pulsing beacon */
 @keyframes beacon-pulse {
   0% { transform: scale(0.95); opacity: 0.8; }
   50% { transform: scale(1.4); opacity: 0.2; }
@@ -76,7 +99,6 @@
   animation: beacon-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Native CSS Scroll-driven animations fallbacks & support */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

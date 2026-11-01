@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Calculator, ArrowRight, MessageCircle, Info, Sparkles, TrendingUp } from 'lucide-react';
+import { Calculator, MessageCircle } from 'lucide-react';
 import { openWhatsAppLead } from '../../utils/whatsapp';
 
 interface ModelOption {
@@ -34,14 +34,13 @@ export const DynamicROICalculator: React.FC = () => {
 
   const calculations = useMemo(() => {
     const rawCapex = acreage * model.capexPerAcre;
-    // NHB subsidy: roughly 50% on eligible components, capped at ~₹50,00,000 per project
     const maxSubsidy = 5000000;
     const eligibleSubsidy = includeSubsidy ? Math.min(rawCapex * 0.45, maxSubsidy) : 0;
     const netCapex = rawCapex - eligibleSubsidy;
 
     const annualYieldKg = Math.round(acreage * berry.baseYieldKgPerAcre * model.yieldMultiplier);
     const annualGrossRevenue = Math.round(annualYieldKg * berry.avgWholesalePricePerKg);
-    const annualOpex = Math.round(acreage * model.opexPerAcre + annualGrossRevenue * 0.12); // Operational + cold chain logistics fee
+    const annualOpex = Math.round(acreage * model.opexPerAcre + annualGrossRevenue * 0.12);
     const annualNetEBITDA = Math.max(0, annualGrossRevenue - annualOpex);
 
     const breakevenMonths = annualNetEBITDA > 0 ? Math.round((netCapex / annualNetEBITDA) * 12) : 36;
@@ -61,20 +60,20 @@ export const DynamicROICalculator: React.FC = () => {
   }, [acreage, model, berry, includeSubsidy]);
 
   return (
-    <section id="roi-calculator" className="py-28 px-6 md:px-12 max-w-7xl mx-auto relative z-20">
+    <section id="roi-calculator" className="py-24 px-6 md:px-12 max-w-7xl mx-auto relative z-20">
       <div className="space-y-4 max-w-3xl mb-16">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono tracking-widest uppercase bg-amber-500/10 border border-amber-500/30 text-amber-400">
-          <Calculator className="w-3.5 h-3.5 text-amber-400" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono tracking-wider bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-400 font-semibold">
+          <Calculator className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
           <span>Interactive Commercial Agro-Asset Modeler</span>
         </div>
-        <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
+        <h2 className="text-3xl md:text-5xl font-extrabold text-stone-900 dark:text-white tracking-tight leading-tight">
           Simulate Your Commercial Yield, <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-rose-300 to-emerald-400">
-            Capex Outlay & Breakeven Horizon.
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-rose-600 to-emerald-600 dark:from-amber-400 dark:via-rose-300 dark:to-emerald-400">
+            Capex Outlay &amp; Breakeven Horizon.
           </span>
         </h2>
-        <p className="text-zinc-400 text-base md:text-lg font-light leading-relaxed">
-          Transparent sensitivity modeling built on audited farm logs from the Pune-Satara corridor.
+        <p className="text-stone-600 dark:text-zinc-400 text-base md:text-lg font-light leading-relaxed">
+          Transparent calculations built on audited farm logs from our Pune and Satara farms.
           Calculate exact project cash flows with National Horticulture Board (NHB) subsidy provisions.
         </p>
       </div>
@@ -85,8 +84,8 @@ export const DynamicROICalculator: React.FC = () => {
           {/* Acreage Slider */}
           <div className="space-y-3">
             <div className="flex justify-between items-center text-xs font-mono">
-              <span className="text-zinc-400 uppercase tracking-wider font-semibold">Total Land Parcel (Acres):</span>
-              <span className="text-xl font-bold text-white bg-zinc-900 px-3 py-1 rounded-xl border border-zinc-700">
+              <span className="text-stone-700 dark:text-zinc-400 uppercase tracking-wider font-semibold">Land Parcel Size:</span>
+              <span className="text-xl font-bold text-stone-900 dark:text-white bg-stone-100 dark:bg-zinc-900 px-3.5 py-1.5 rounded-xl border border-stone-200 dark:border-zinc-700">
                 {acreage.toFixed(1)} {acreage === 1 ? 'Acre' : 'Acres'}
               </span>
             </div>
@@ -97,20 +96,20 @@ export const DynamicROICalculator: React.FC = () => {
               step={0.5}
               value={acreage}
               onChange={(e) => setAcreage(parseFloat(e.target.value))}
-              className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-rose-500"
+              className="w-full h-2.5 bg-stone-200 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-rose-600"
             />
-            <div className="flex justify-between text-[10px] font-mono text-zinc-400">
+            <div className="flex justify-between text-[11px] font-mono text-stone-500 dark:text-zinc-400 font-medium">
               <span>0.5 Acre (Pilot)</span>
               <span>10 Acres (Commercial)</span>
               <span>25 Acres (Estate)</span>
-              <span>50 Acres (Mega-Syndicate)</span>
+              <span>50 Acres (Syndicate)</span>
             </div>
           </div>
 
           {/* Infrastructure Model Selector */}
           <div className="space-y-2">
-            <label className="text-xs font-mono text-zinc-400 uppercase tracking-wider block">
-              Cultivation Infrastructure Model:
+            <label className="text-xs font-mono text-stone-700 dark:text-zinc-400 uppercase tracking-wider block font-semibold">
+              Greenhouse Infrastructure System:
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
               {MODELS.map((m) => {
@@ -119,14 +118,14 @@ export const DynamicROICalculator: React.FC = () => {
                   <button
                     key={m.id}
                     onClick={() => setSelectedModelId(m.id)}
-                    className={`p-3 rounded-xl text-left border transition-all ${
+                    className={`p-3.5 rounded-xl text-left border transition-all ${
                       isSelected
-                        ? 'bg-rose-500/20 text-white border-rose-500 shadow-md'
-                        : 'bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:text-zinc-200'
+                        ? 'bg-rose-500/15 text-rose-800 dark:text-white border-rose-500 shadow-sm font-semibold'
+                        : 'bg-stone-50 dark:bg-zinc-900/60 text-stone-600 dark:text-zinc-400 border-stone-200 dark:border-zinc-800 hover:text-stone-900 dark:hover:text-zinc-200'
                     }`}
                   >
                     <span className="block font-semibold truncate">{m.name.split('(')[0]}</span>
-                    <span className="text-[10px] text-zinc-400">₹{(m.capexPerAcre / 100000).toFixed(1)}L / Acre</span>
+                    <span className="text-[10px] text-stone-500 dark:text-zinc-400">₹{(m.capexPerAcre / 100000).toFixed(1)}L / Acre</span>
                   </button>
                 );
               })}
@@ -135,8 +134,8 @@ export const DynamicROICalculator: React.FC = () => {
 
           {/* Primary Berry Crop Selector */}
           <div className="space-y-2">
-            <label className="text-xs font-mono text-zinc-400 uppercase tracking-wider block">
-              Primary Crop Allocation:
+            <label className="text-xs font-mono text-stone-700 dark:text-zinc-400 uppercase tracking-wider block font-semibold">
+              Primary Berry Variety:
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
               {Object.entries(BERRY_PRICING).map(([key, item]) => {
@@ -147,12 +146,12 @@ export const DynamicROICalculator: React.FC = () => {
                     onClick={() => setSelectedBerryKey(key)}
                     className={`p-2.5 rounded-xl text-center border transition-all ${
                       isSelected
-                        ? 'bg-amber-500/20 text-amber-200 border-amber-500/60 font-semibold'
-                        : 'bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:text-zinc-200'
+                        ? 'bg-amber-500/20 text-amber-800 dark:text-amber-200 border-amber-500/60 font-semibold shadow-sm'
+                        : 'bg-stone-50 dark:bg-zinc-900/60 text-stone-600 dark:text-zinc-400 border-stone-200 dark:border-zinc-800 hover:text-stone-900 dark:hover:text-zinc-200'
                     }`}
                   >
                     <span className="block truncate">{item.name.split(' ')[0]}</span>
-                    <span className="text-[10px] text-zinc-400">₹{item.avgWholesalePricePerKg}/kg</span>
+                    <span className="text-[10px] text-stone-500 dark:text-zinc-400">₹{item.avgWholesalePricePerKg}/kg</span>
                   </button>
                 );
               })}
@@ -160,35 +159,35 @@ export const DynamicROICalculator: React.FC = () => {
           </div>
 
           {/* NHB Subsidy Toggle */}
-          <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 flex items-center justify-between">
-            <div className="space-y-0.5">
-              <span className="text-xs font-semibold text-white block">
+          <div className="p-4 rounded-2xl bg-stone-50 dark:bg-zinc-900/80 border border-stone-200 dark:border-zinc-800 flex items-center justify-between">
+            <div className="space-y-0.5 pr-4">
+              <span className="text-xs font-semibold text-stone-900 dark:text-white block">
                 Include National Horticulture Board (NHB) Subsidy
               </span>
-              <span className="text-[11px] text-zinc-400">
+              <span className="text-[11px] text-stone-500 dark:text-zinc-400">
                 Eligible capital subsidy up to ₹50,00,000 for polyhouse CEA infrastructure in Maharashtra.
               </span>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
+            <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
               <input
                 type="checkbox"
                 checked={includeSubsidy}
                 onChange={(e) => setIncludeSubsidy(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+              <div className="w-11 h-6 bg-stone-300 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
             </label>
           </div>
         </div>
 
         {/* Right Output Financial Telemetry Deck (5 Cols) */}
-        <div className="lg:col-span-5 p-7 md:p-8 rounded-3xl bg-gradient-to-br from-[#121622] via-[#0E1118] to-zinc-950 border border-zinc-700/80 shadow-2xl space-y-6">
+        <div className="lg:col-span-5 p-7 md:p-8 rounded-3xl bg-stone-900 dark:bg-gradient-to-br dark:from-[#121622] dark:via-[#0E1118] dark:to-zinc-950 text-white border border-stone-800 dark:border-zinc-700/80 shadow-2xl space-y-6">
           <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
             <span className="text-xs font-mono text-zinc-400 uppercase tracking-widest font-semibold">
               Project Financial Output
             </span>
             <div className="px-2.5 py-1 rounded-full text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30">
-              SENSITIVITY: HIGH CONFIDENCE
+              HIGH CONFIDENCE MODEL
             </div>
           </div>
 
@@ -200,13 +199,13 @@ export const DynamicROICalculator: React.FC = () => {
             </div>
 
             {includeSubsidy && calculations.eligibleSubsidy > 0 && (
-              <div className="flex justify-between items-center p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/30 text-emerald-300">
+              <div className="flex justify-between items-center p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300">
                 <span>Est. NHB Capital Subsidy:</span>
                 <span className="font-semibold">- ₹{(calculations.eligibleSubsidy / 100000).toFixed(2)} Lakhs</span>
               </div>
             )}
 
-            <div className="flex justify-between items-center p-3.5 rounded-xl bg-zinc-900 border border-zinc-700 text-sm">
+            <div className="flex justify-between items-center p-3.5 rounded-xl bg-zinc-800/90 border border-zinc-700 text-sm">
               <span className="text-white font-medium">Net Deployed Capital:</span>
               <strong className="text-rose-400 text-base">₹{(calculations.netCapex / 100000).toFixed(2)} Lakhs</strong>
             </div>
@@ -222,7 +221,7 @@ export const DynamicROICalculator: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/30 to-teal-950/30 border border-emerald-500/40 flex items-center justify-between">
+            <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 to-teal-950/40 border border-emerald-500/40 flex items-center justify-between">
               <div>
                 <span className="text-[10px] text-emerald-400 block uppercase tracking-wider font-semibold">
                   ESTIMATED NET ANNUAL EBITDA:
