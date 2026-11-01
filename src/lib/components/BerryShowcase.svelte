@@ -1,18 +1,18 @@
 <script lang="ts">
   import { BERRIES_DATA } from '$data/berriesData';
   import { ArrowRight, Sparkles, CheckCircle2, MessageCircle } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
 
   let selectedBerryId = $state(BERRIES_DATA[0].id);
   const currentBerry = $derived(BERRIES_DATA.find((b) => b.id === selectedBerryId) || BERRIES_DATA[0]);
 
-  function handleOrder() {
-    openWhatsAppLead({
+  const currentBerryWhatsAppUrl = $derived(
+    buildWhatsAppUrl({
       leadSource: 'home_showcase',
       berryVariety: currentBerry.name,
       customMessage: `I want to inquire about ${currentBerry.name} planting stock / fresh punnets from Berryboyzz.`,
-    });
-  }
+    })
+  );
 </script>
 
 <section id="cultivars" class="py-24 px-4 sm:px-6 lg:px-8 bg-[#FAF9F6] border-t border-[#E8E4DC]">
@@ -111,13 +111,15 @@
               <span>Full Dossier & Recipe</span>
               <ArrowRight class="w-3.5 h-3.5" />
             </a>
-            <button
-              onclick={handleOrder}
+            <a
+              href={currentBerryWhatsAppUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               class="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-800 hover:bg-emerald-900 text-white shadow-sm transition-all cursor-pointer"
             >
               <MessageCircle class="w-3.5 h-3.5" />
               <span>Inquire Crop Availability</span>
-            </button>
+            </a>
           </div>
         </div>
 

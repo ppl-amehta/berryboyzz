@@ -1,15 +1,7 @@
 <script lang="ts">
   import { COMMERCIAL_MODELS } from '$data/commercialModels';
   import { Warehouse, CheckCircle2, MessageCircle, ArrowRight } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
-
-  function handleModelInquiry(model: (typeof COMMERCIAL_MODELS)[0]) {
-    openWhatsAppLead({
-      leadSource: 'commercial_model',
-      commercialModel: model.name,
-      customMessage: `I am interested in setting up the ${model.name} (${model.subtitle}) in Maharashtra.`,
-    });
-  }
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
 </script>
 
 <section id="commercial-models" class="py-24 px-4 sm:px-6 lg:px-8 bg-[#FAF9F6] border-t border-[#E8E4DC]">
@@ -84,13 +76,18 @@
           </div>
 
           <div class="pt-6 mt-6 border-t border-[#E8E4DC]">
-            <button
-              onclick={() => handleModelInquiry(model)}
+            <a
+              href={buildWhatsAppUrl({
+                leadSource: 'commercial_model',
+                customMessage: `I am interested in setting up the ${model.name} (${model.subtitle}) in Maharashtra.`,
+              })}
+              target="_blank"
+              rel="noopener noreferrer"
               class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider bg-white text-[#1A1615] border border-[#E8E4DC] hover:border-emerald-800 hover:text-emerald-900 transition-all cursor-pointer"
             >
               <MessageCircle class="w-3.5 h-3.5" />
               <span>Inquire Infrastructure Setup</span>
-            </button>
+            </a>
           </div>
         </article>
       {/each}

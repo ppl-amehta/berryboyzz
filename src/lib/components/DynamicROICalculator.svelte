@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Calculator, MessageCircle, AlertCircle, TrendingUp, ShieldCheck, HelpCircle } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
 
   interface ModelOption {
     id: string;
@@ -95,14 +95,14 @@
     };
   });
 
-  function handleSendWhatsAppModel() {
-    openWhatsAppLead({
+  const whatsappUrl = $derived(
+    buildWhatsAppUrl({
       leadSource: 'roi_calculator',
       acreage,
       capexCalculated: `₹${(calculations.netCapex / 100000).toFixed(2)}L`,
       customMessage: `Capex Horizon ROI model for ${acreage} Acres (${model.name}, ${berry.name}): Net Capex ₹${(calculations.netCapex / 100000).toFixed(2)}L, Net EBITDA ₹${(calculations.annualNetEBITDA / 100000).toFixed(2)}L/yr, Breakeven: After ${calculations.breakevenMonths} Months.`,
-    });
-  }
+    })
+  );
 </script>
 
 <section id="roi-calculator" class="py-24 px-4 sm:px-6 lg:px-8 bg-[#FAF9F6]">
@@ -297,13 +297,15 @@
         </div>
 
         <!-- WhatsApp Dispatch Button -->
-        <button
-          onclick={handleSendWhatsAppModel}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           class="w-full py-4 px-6 rounded-2xl text-xs font-bold uppercase tracking-wider bg-emerald-800 hover:bg-emerald-900 text-white shadow-md shadow-emerald-950/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
           <MessageCircle class="w-4 h-4" />
           <span>Send This Financial Model to WhatsApp Desk</span>
-        </button>
+        </a>
       </div>
     </div>
   </div>

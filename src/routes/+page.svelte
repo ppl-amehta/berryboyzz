@@ -12,7 +12,7 @@
   import FarmTourBooking from '$components/FarmTourBooking.svelte';
   import AgenticConcierge from '$components/AgenticConcierge.svelte';
   import { Sprout, ArrowDown, ChevronRight, MessageCircle } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
 
   let scrollProgress = $state(0);
   let currentPhaseIndex = $state(0);
@@ -81,13 +81,15 @@
       </p>
 
       <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <button
-          onclick={() => openWhatsAppLead({ leadSource: 'hero_primary', customMessage: 'Hello, I want to discuss commercial berry farm setup in Maharashtra.' })}
+        <a
+          href={buildWhatsAppUrl({ leadSource: 'hero_primary', customMessage: 'Hello, I want to discuss commercial berry farm setup in Maharashtra.' })}
+          target="_blank"
+          rel="noopener noreferrer"
           class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-wider bg-emerald-800 hover:bg-emerald-900 text-white shadow-md shadow-emerald-950/20 transition-all cursor-pointer"
         >
           <MessageCircle class="w-4 h-4" />
           <span>Inquire Allocation via WhatsApp</span>
-        </button>
+        </a>
 
         <a
           href="#cultivars"

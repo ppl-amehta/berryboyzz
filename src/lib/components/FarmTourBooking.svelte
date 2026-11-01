@@ -1,18 +1,22 @@
 <script lang="ts">
   import { TOUR_PACKAGES } from '$data/tourPackages';
   import { Clock, MapPin, MessageCircle, ArrowRight, CheckCircle2 } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
 
   const harvestTour = TOUR_PACKAGES.find((t) => t.id === 'harvest-visit') || TOUR_PACKAGES[0];
   const studyTour = TOUR_PACKAGES.find((t) => t.id === 'study-tour') || TOUR_PACKAGES[1];
 
-  function handleBook(tour: typeof harvestTour) {
-    openWhatsAppLead({
-      leadSource: 'home_tours_section',
-      tourName: tour.title,
-      customMessage: `I want to reserve a slot for the ${tour.title} at Berryboyzz farm.`,
-    });
-  }
+  const harvestTourWhatsAppUrl = buildWhatsAppUrl({
+    leadSource: 'home_tours_section',
+    tourName: harvestTour.title,
+    customMessage: `I want to reserve a slot for the ${harvestTour.title} at Berryboyzz farm.`,
+  });
+
+  const studyTourWhatsAppUrl = buildWhatsAppUrl({
+    leadSource: 'home_tours_section',
+    tourName: studyTour.title,
+    customMessage: `I want to reserve a slot for the ${studyTour.title} at Berryboyzz farm.`,
+  });
 </script>
 
 <section id="farm-tours" class="py-24 px-4 sm:px-6 lg:px-8 bg-[#FAF9F6] border-t border-[#E8E4DC]">
@@ -81,13 +85,15 @@
           >
             Read Syllabus
           </a>
-          <button
-            onclick={() => handleBook(harvestTour)}
+          <a
+            href={harvestTourWhatsAppUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             class="inline-flex items-center gap-2 py-3 px-5 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-800 hover:bg-emerald-900 text-white shadow-sm cursor-pointer"
           >
             <MessageCircle class="w-4 h-4" />
             <span>Book Experience</span>
-          </button>
+          </a>
         </div>
       </article>
 
@@ -129,13 +135,15 @@
           >
             View All 12 Modules
           </a>
-          <button
-            onclick={() => handleBook(studyTour)}
+          <a
+            href={studyTourWhatsAppUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             class="inline-flex items-center gap-2 py-3 px-5 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-800 hover:bg-emerald-900 text-white shadow-sm cursor-pointer"
           >
             <MessageCircle class="w-4 h-4" />
             <span>Book Study Tour</span>
-          </button>
+          </a>
         </div>
       </article>
     </div>

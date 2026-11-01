@@ -1,17 +1,17 @@
 <script lang="ts">
   import { Clock, MapPin, Users, MessageCircle, Calendar, ArrowLeft, CheckCircle2 } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
 
   let { data } = $props();
   const tour = $derived(data.tour);
 
-  function handleBooking() {
-    openWhatsAppLead({
+  const tourWhatsAppUrl = $derived(
+    buildWhatsAppUrl({
       leadSource: 'tour_detail',
       tourName: tour.title,
       customMessage: `I would like to book a slot for the "${tour.title}" (${tour.duration}, fee: ₹${tour.feePerPersonINR}/person) at Berryboyzz farm.`,
-    });
-  }
+    })
+  );
 </script>
 
 <svelte:head>
@@ -123,12 +123,14 @@
       </p>
     </div>
 
-    <button
-      onclick={handleBooking}
+    <a
+      href={tourWhatsAppUrl}
+      target="_blank"
+      rel="noopener noreferrer"
       class="shrink-0 inline-flex items-center gap-2.5 px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-wider bg-emerald-800 hover:bg-emerald-900 text-white shadow-md shadow-emerald-950/20 transition-all cursor-pointer"
     >
       <MessageCircle class="w-4 h-4" />
       <span>Book via WhatsApp Desk</span>
-    </button>
+    </a>
   </section>
 </div>

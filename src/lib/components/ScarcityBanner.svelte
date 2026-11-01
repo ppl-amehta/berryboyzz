@@ -1,6 +1,11 @@
 <script lang="ts">
   import { Flame, Clock, ArrowRight } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
+
+  const bannerWhatsAppUrl = buildWhatsAppUrl({
+    leadSource: 'scarcity_banner',
+    customMessage: 'Priority inquiry regarding Cohort 04 allocation (₹2.5L/Acre/mo CEA opportunity cost).',
+  });
 </script>
 
 <div class="bg-[#FBF8EF] border-y border-[#EADBBD] py-3.5 px-4 sm:px-6 lg:px-8">
@@ -19,13 +24,15 @@
       <span class="text-[#6B6661] text-[11px] hidden md:inline">
         Only 3 commercial allocations remaining for Q2 planting
       </span>
-      <button
-        onclick={() => openWhatsAppLead({ leadSource: 'scarcity_banner', customMessage: 'Priority inquiry regarding Cohort 04 allocation (₹2.5L/Acre/mo CEA opportunity cost).' })}
+      <a
+        href={bannerWhatsAppUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         class="inline-flex items-center gap-1 font-bold text-emerald-900 hover:text-emerald-950 hover:underline uppercase tracking-wider text-[11px] cursor-pointer"
       >
         <span>Lock Allocation</span>
         <ArrowRight class="w-3 h-3" />
-      </button>
+      </a>
     </div>
   </div>
 </div>

@@ -1,6 +1,11 @@
 <script lang="ts">
   import { Sprout, MessageCircle, MapPin, Phone, Mail, ArrowUpRight } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
+
+  const footerWhatsAppUrl = buildWhatsAppUrl({
+    leadSource: 'footer_desk',
+    customMessage: 'Inquiry from Berryboyzz website footer',
+  });
 </script>
 
 <footer class="bg-white border-t border-[#E8E4DC] text-[#1A1615] pt-16 pb-12 mt-24">
@@ -94,13 +99,15 @@
             <span>agro@berryboyzz.com</span>
           </a>
         </div>
-        <button
-          onclick={() => openWhatsAppLead({ leadSource: 'footer_desk', customMessage: 'Inquiry from Berryboyzz website footer' })}
+        <a
+          href={footerWhatsAppUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           class="w-full mt-2 inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-800 text-white hover:bg-emerald-900 transition-colors shadow-sm cursor-pointer"
         >
           <MessageCircle class="w-4 h-4" />
           <span>WhatsApp Agronomist</span>
-        </button>
+        </a>
       </div>
     </div>
 

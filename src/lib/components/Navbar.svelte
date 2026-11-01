@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Sprout, Menu, X, MessageCircle, ChevronRight, Phone } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
 
   let mobileMenuOpen = $state(false);
 
@@ -8,12 +8,10 @@
     mobileMenuOpen = !mobileMenuOpen;
   }
 
-  function handleDirectWhatsApp() {
-    openWhatsAppLead({
-      leadSource: 'navbar_cta',
-      customMessage: 'Hello Berryboyzz, I would like to inquire about commercial berry farming and investment opportunities.',
-    });
-  }
+  const whatsappUrl = buildWhatsAppUrl({
+    leadSource: 'navbar_cta',
+    customMessage: 'Hello Berryboyzz, I would like to inquire about commercial berry farming and investment opportunities.',
+  });
 </script>
 
 <header class="sticky top-0 z-50 bg-[#FAF9F6]/90 backdrop-blur-md border-b border-[#E8E4DC] transition-all">
@@ -62,13 +60,15 @@
         >
           <Phone class="w-4 h-4" />
         </a>
-        <button
-          onclick={handleDirectWhatsApp}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-800 hover:bg-emerald-900 text-white shadow-sm shadow-emerald-950/10 transition-all hover:shadow-md cursor-pointer"
         >
           <MessageCircle class="w-4 h-4" />
           <span>WhatsApp Desk</span>
-        </button>
+        </a>
       </div>
 
       <!-- Mobile Menu Button -->
@@ -135,16 +135,16 @@
       </nav>
 
       <div class="pt-2 border-t border-[#E8E4DC]">
-        <button
-          onclick={() => {
-            mobileMenuOpen = false;
-            handleDirectWhatsApp();
-          }}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onclick={() => (mobileMenuOpen = false)}
           class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-800 text-white shadow-sm"
         >
           <MessageCircle class="w-4 h-4" />
           <span>Inquire via WhatsApp Desk</span>
-        </button>
+        </a>
       </div>
     </div>
   {/if}

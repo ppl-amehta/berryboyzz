@@ -1,17 +1,17 @@
 <script lang="ts">
   import { Sprout, MessageCircle, Thermometer, Droplets, Gauge, ShieldCheck, ArrowLeft, CheckCircle2, Utensils } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
 
   let { data } = $props();
   const berry = $derived(data.berry);
 
-  function handleInquiry() {
-    openWhatsAppLead({
+  const cultivarWhatsAppUrl = $derived(
+    buildWhatsAppUrl({
       leadSource: 'cultivar_dossier',
       berryVariety: berry.name,
       customMessage: `I am reviewing the ${berry.name} (${berry.botanicalName}) technical agronomy dossier on Berryboyzz and would like commercial planting availability.`,
-    });
-  }
+    })
+  );
 </script>
 
 <svelte:head>
@@ -231,12 +231,14 @@
       </span>
     </div>
 
-    <button
-      onclick={handleInquiry}
+    <a
+      href={cultivarWhatsAppUrl}
+      target="_blank"
+      rel="noopener noreferrer"
       class="shrink-0 inline-flex items-center gap-2.5 px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-wider bg-emerald-800 hover:bg-emerald-900 text-white shadow-md shadow-emerald-950/20 transition-all cursor-pointer"
     >
       <MessageCircle class="w-4 h-4" />
       <span>Inquire Plant Allocation</span>
-    </button>
+    </a>
   </section>
 </div>

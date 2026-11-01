@@ -116,6 +116,14 @@ export function buildWhatsAppUrl(payload: WhatsAppLeadPayload): string {
 
 export function openWhatsAppLead(payload: WhatsAppLeadPayload): void {
   const url = buildWhatsAppUrl(payload);
-  // Synchronous open inside user click gesture guarantees Safari iOS popup clearance
-  window.open(url, '_blank', 'noopener,noreferrer');
+  if (typeof window === 'undefined') return;
+
+  try {
+    const win = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!win || win.closed || typeof win.closed === 'undefined') {
+      window.location.href = url;
+    }
+  } catch (_err) {
+    window.location.href = url;
+  }
 }

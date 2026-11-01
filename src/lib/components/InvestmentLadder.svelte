@@ -1,15 +1,7 @@
 <script lang="ts">
   import { INVESTMENT_TIERS } from '$data/commercialModels';
   import { ShieldCheck, MessageCircle, ArrowRight, CheckCircle2 } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
-
-  function handleTierInquiry(tier: (typeof INVESTMENT_TIERS)[0]) {
-    openWhatsAppLead({
-      leadSource: 'investment_ladder',
-      investmentTier: tier.name,
-      customMessage: `I am inquiring about the ${tier.name} (${tier.capitalRequired}) investment tier with Berryboyzz.`,
-    });
-  }
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
 </script>
 
 <section id="investment-tiers" class="py-24 px-4 sm:px-6 lg:px-8 bg-white border-t border-[#E8E4DC]">
@@ -81,13 +73,19 @@
             <span class="text-[10px] text-[#8C867E] block text-center">
               * Cold chain logistics & SLM not included
             </span>
-            <button
-              onclick={() => handleTierInquiry(tier)}
+            <a
+              href={buildWhatsAppUrl({
+                leadSource: 'investment_ladder',
+                investmentTier: tier.name,
+                customMessage: `I am inquiring about the ${tier.name} (${tier.capitalRequired}) investment tier with Berryboyzz.`,
+              })}
+              target="_blank"
+              rel="noopener noreferrer"
               class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider {tier.id === 'tier-2-commercial-1000' ? 'bg-emerald-800 text-white hover:bg-emerald-900 shadow-sm' : 'bg-[#FAF9F6] text-[#1A1615] border border-[#E8E4DC] hover:border-[#D4CEBF]'} transition-all cursor-pointer"
             >
               <MessageCircle class="w-3.5 h-3.5" />
               <span>Inquire Allocation</span>
-            </button>
+            </a>
           </div>
         </article>
       {/each}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { MessageCircle, X, ChevronRight, Sparkles, UserCheck } from '@lucide/svelte';
-  import { openWhatsAppLead } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '$utils/whatsapp';
 
   let isOpen = $state(false);
 
@@ -30,14 +30,6 @@
       message: 'Hello, I am interested in regular B2B wholesale berry procurement for my hospitality/culinary brand.',
     },
   ];
-
-  function selectPersona(msg: string) {
-    isOpen = false;
-    openWhatsAppLead({
-      leadSource: 'concierge_drawer',
-      customMessage: msg,
-    });
-  }
 </script>
 
 <!-- Floating Concierge Trigger -->
@@ -84,8 +76,14 @@
           Select Your Inquiring Profile:
         </span>
         {#each PERSONAS as persona}
-          <button
-            onclick={() => selectPersona(persona.message)}
+          <a
+            href={buildWhatsAppUrl({
+              leadSource: 'concierge_drawer',
+              customMessage: persona.message,
+            })}
+            target="_blank"
+            rel="noopener noreferrer"
+            onclick={() => (isOpen = false)}
             class="w-full text-left p-3 rounded-2xl border border-[#E8E4DC] hover:border-emerald-700 hover:bg-[#FAF9F6] transition-all flex items-center justify-between group cursor-pointer"
           >
             <div>
@@ -97,7 +95,7 @@
               </span>
             </div>
             <ChevronRight class="w-4 h-4 text-[#8C867E] group-hover:text-emerald-800 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
-          </button>
+          </a>
         {/each}
       </div>
 
