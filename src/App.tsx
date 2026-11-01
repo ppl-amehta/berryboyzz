@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useTheme } from './hooks/useTheme';
 import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
-import { HyperrealStoryStage } from './components/visual-story/HyperrealStoryStage';
+import { MorphogenesisCanvas } from './components/visual-story/MorphogenesisCanvas';
 import { StoryScrubberRail } from './components/visual-story/StoryScrubberRail';
+import { StoryPhaseOverlay } from './components/visual-story/StoryPhaseOverlay';
 import { TelemetryTicker } from './components/visual-story/TelemetryTicker';
 import { BerryShowcase } from './components/berries/BerryShowcase';
 import { CEAInfrastructure } from './components/agronomy/CEAInfrastructure';
@@ -16,41 +16,31 @@ import { AgenticConcierge } from './components/concierge/AgenticConcierge';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 export const App: React.FC = () => {
-  const { theme, toggleTheme, isDark } = useTheme();
-  const [currentPhaseIndex, setCurrentPhaseIndex] = useState<number>(0);
   const [scrollProgress, setScrollProgress] = useState<number>(0);
+  const [currentPhaseIndex, setCurrentPhaseIndex] = useState<number>(0);
   const storyContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Zero-layout-thrash passive scroll measurement (cached bounds via ResizeObserver)
+  // Passive, non-blocking scroll measurement for the full-screen scrollytelling canvas
   useEffect(() => {
-    let cachedTop = 0;
-    let cachedTotal = 1000;
-
-    const measureBounds = () => {
-      const container = storyContainerRef.current;
-      if (container) {
-        const rect = container.getBoundingClientRect();
-        const scrollTop = window.scrollY || document.documentElement.scrollTop;
-        cachedTop = rect.top + scrollTop;
-        cachedTotal = Math.max(container.offsetHeight - window.innerHeight, 1);
-      }
-    };
-
-    measureBounds();
-    const ro = new ResizeObserver(measureBounds);
-    if (storyContainerRef.current) ro.observe(storyContainerRef.current);
-
     let ticking = false;
+
     const onScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          const scrollY = window.scrollY || document.documentElement.scrollTop;
-          const currentScrolled = scrollY - cachedTop;
-          const p = Math.min(Math.max(currentScrolled / cachedTotal, 0), 1);
-          setScrollProgress(p);
+          const container = storyContainerRef.current;
+          if (container) {
+            const rect = container.getBoundingClientRect();
+            const totalScrollable = container.offsetHeight - window.innerHeight;
+            if (totalScrollable > 0) {
+              const currentScrolled = -rect.top;
+              const p = Math.min(Math.max(currentScrolled / totalScrollable, 0), 1);
+              setScrollProgress(p);
 
-          const phaseIdx = Math.min(Math.floor(p * 7), 6);
-          setCurrentPhaseIndex(phaseIdx);
+              // Map p (0.0 to 1.0) to 7 phases
+              const phaseIdx = Math.min(Math.floor(p * 7), 6);
+              setCurrentPhaseIndex(phaseIdx);
+            }
+          }
           ticking = false;
         });
         ticking = true;
@@ -58,48 +48,20 @@ export const App: React.FC = () => {
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', measureBounds, { passive: true });
     onScroll();
 
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', measureBounds);
-      ro.disconnect();
-    };
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // IntersectionObserver to sync active phase precisely as each card scrolls into the center
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.id;
-            const match = id.match(/phase-card-(\d+)/);
-            if (match) {
-              const idx = parseInt(match[1], 10);
-              setCurrentPhaseIndex(idx);
-            }
-          }
-        });
-      },
-      { rootMargin: '-20% 0px -40% 0px', threshold: 0.1 }
-    );
-
-    const cards = document.querySelectorAll('[id^="phase-card-"]');
-    cards.forEach((card) => observer.observe(card));
-
-    return () => observer.disconnect();
-  }, []);
-
+  // Jump to specific story phase
   const handleSelectPhase = useCallback((phaseIndex: number) => {
-    setCurrentPhaseIndex(phaseIndex);
-    const el = document.getElementById(`phase-card-${phaseIndex}`);
+    const el = document.getElementById(`phase-${phaseIndex}`);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.scrollIntoView({ behavior: 'smooth' });
     }
   }, []);
 
+  // Instant skip to the core platform content
   const handleSkipToCore = useCallback(() => {
     const el = document.getElementById('core-platform-anchor');
     if (el) {
@@ -108,55 +70,36 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#FAF9F6] dark:bg-[#08090C] text-[#1C1917] dark:text-[#EDEDED] overflow-x-hidden selection:bg-rose-500/20 selection:text-rose-700 dark:selection:bg-rose-500/30 dark:selection:text-rose-200 transition-colors duration-300">
+    <div className="relative min-h-screen bg-[#08090C] text-[#EDEDED] overflow-x-hidden selection:bg-rose-500/30 selection:text-rose-200">
       {/* Precision grid pattern background */}
       <div className="fixed inset-0 bg-grid-pattern pointer-events-none opacity-40 z-0" />
 
-      {/* Primary Fixed Navbar with Day/Night Mode Switcher */}
-      <Navbar theme={theme} toggleTheme={toggleTheme} />
+      {/* Primary Fixed Navbar */}
+      <Navbar />
 
-      {/* Hero Header */}
-      <section className="pt-28 pb-6 px-6 md:px-12 max-w-7xl mx-auto text-center space-y-5 relative z-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono tracking-wider bg-rose-500/10 border border-rose-500/25 text-rose-600 dark:text-rose-400 font-medium shadow-sm">
-          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-          <span>Pune &amp; Satara Precision Agro-Corridor · Berryboyzz Flagship</span>
-        </div>
+      {/* Morphogenesis Canvas & Vertical Storytelling Section */}
+      <section ref={storyContainerRef} className="relative w-full">
+        {/* Fixed Procedural Morphogenesis Canvas */}
+        <MorphogenesisCanvas progress={scrollProgress} currentPhaseIndex={currentPhaseIndex} />
 
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-stone-900 dark:text-white leading-[1.1] max-w-5xl mx-auto">
-          We Grow India’s Cleanest, <br className="hidden sm:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-rose-500 to-purple-600 dark:from-rose-400 dark:via-purple-400 dark:to-amber-300">
-            Most Delicious Precision Berries.
-          </span>
-        </h1>
+        {/* Vertical Scrollytelling Phase Overlays */}
+        <StoryPhaseOverlay onExploreCore={handleSkipToCore} />
 
-        <p className="text-base sm:text-xl text-stone-600 dark:text-zinc-300 max-w-3xl mx-auto font-light leading-relaxed">
-          Grown in soil-free, climate-controlled greenhouses in the cool Sahyadri foothills. 
-          Discover the complete seed-to-table journey below, or jump directly to commercial farm investments and fresh punnet supply.
-        </p>
-      </section>
-
-      {/* Dedicated Hyperreal Vertical Scrollytelling Stage */}
-      <div ref={storyContainerRef} className="relative z-10">
-        <HyperrealStoryStage
-          currentPhaseIndex={currentPhaseIndex}
-          progress={scrollProgress}
-          onSelectPhase={handleSelectPhase}
-          onSkipToCore={handleSkipToCore}
-        />
+        {/* Right-Rail Telemetry Scrubber */}
         <StoryScrubberRail
           currentPhaseIndex={currentPhaseIndex}
           progress={scrollProgress}
           onSelectPhase={handleSelectPhase}
           onSkipToCore={handleSkipToCore}
         />
-      </div>
+      </section>
 
-      {/* Ambient Diffused Transition into Core Platform (Zero visual clash) */}
-      <div id="core-platform-anchor" className="relative z-20 transition-all duration-500">
-        {/* Real-time Facility Ambient Telemetry Bar */}
+      {/* Anchor Point where Core Platform starts after scroll story */}
+      <div id="core-platform-anchor" className="relative z-20">
+        {/* Real-time Ambient Facility Telemetry Ticker */}
         <TelemetryTicker />
 
-        {/* 1. Flagship 5-Berry Cultivar Showcase & Modals */}
+        {/* 1. Flagship 5-Berry Cultivar Portfolio & Deep-Dive Modals */}
         <BerryShowcase />
 
         {/* 2. Commercial Farm CEA Engineering Models (Pune & Satara) */}
@@ -184,7 +127,7 @@ export const App: React.FC = () => {
       {/* Trained Autonomous Agentic Concierge ("Dr. Berryboy") */}
       <AgenticConcierge />
 
-      {/* Vercel Speed Insights Real-Time Performance & Core Web Vitals RUM */}
+      {/* Vercel Speed Insights telemetry */}
       <SpeedInsights />
     </div>
   );
