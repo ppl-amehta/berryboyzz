@@ -141,4 +141,44 @@ describe('AgroExpertEngine Idempotency & Turn Resolution', () => {
     expect(result.replyText).toContain('+91 88886 81136');
     expect(result.richDataCard?.type).toBe('escalation_ticket');
   });
+
+  it('intelligently answers open-ended trellising and canopy questions', async () => {
+    const engine = AgroExpertEngine.getInstance();
+    const result = await engine.handleCustomerMessage(
+      'test_session_trellis',
+      'Why do blackberries need trellising and what system should I use?',
+      'web',
+      'Farmer Patil'
+    );
+
+    expect(result.replyText.toLowerCase()).toContain('trellis');
+    expect(result.replyText.toLowerCase()).toMatch(/v-trellis|open gable|canopy/);
+    expect(result.replyText).not.toContain('How can I assist your commercial berry cultivation or agro-asset investment today?\n• 📈 Commercial 1-Acre Polyhouse ROI');
+  });
+
+  it('intelligently answers open-ended pest and mite management questions', async () => {
+    const engine = AgroExpertEngine.getInstance();
+    const result = await engine.handleCustomerMessage(
+      'test_session_pests',
+      'How do I control red spider mites in my polyhouse?',
+      'web',
+      'Grower Deshmukh'
+    );
+
+    expect(result.replyText.toLowerCase()).toContain('mite');
+    expect(result.replyText.toLowerCase()).toMatch(/californicus|sulfur|ipm|predat/);
+  });
+
+  it('intelligently answers open-ended chill hour questions', async () => {
+    const engine = AgroExpertEngine.getInstance();
+    const result = await engine.handleCustomerMessage(
+      'test_session_chill',
+      'What are the chilling hour requirements for berries in Maharashtra?',
+      'web',
+      'Grower Kulkarni'
+    );
+
+    expect(result.replyText.toLowerCase()).toContain('chill');
+    expect(result.replyText.toLowerCase()).toMatch(/biloxi|autumn bliss|deccan/);
+  });
 });

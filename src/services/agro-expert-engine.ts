@@ -236,8 +236,8 @@ export class AgroExpertEngine {
 
     // 6. Invoke 5.3 Flash MoE Dual-Engine
     const response = await this.slmClient.generateCompletion(systemInstruction, session.history, {
-      temperature: 0.2,
-      maxTokens: 512,
+      temperature: 0.3,
+      maxTokens: 1024,
     });
 
     let reply = response.content;
@@ -344,6 +344,9 @@ export class AgroExpertEngine {
 
 MISSION:
 Guide growers, investors, tourists, and buyers to logical conclusions with authoritative scientific and financial clarity.
+
+OPEN-ENDED INQUIRY POLICY:
+You are an authentic, deeply trained CEA agro-expert. You MUST accept, understand, and thoroughly answer all open-ended questions about berry botany, canopy trellising, chill hours, Maharashtra microclimates, IPM (spider mites, botrytis, powdery mildew), substrates, fertigation skids, cold chains, and economics. NEVER give a rigid, unhelpful menu or brush-off greeting when a user asks a technical or conversational question.
 
 STRICT GROUNDING RULES:
 1. NEVER hallucinate numbers or invent financial claims. If tool data is provided below in [DETERMINISTIC DATA], use those EXACT numbers.
