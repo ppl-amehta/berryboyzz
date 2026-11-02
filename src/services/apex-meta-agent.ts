@@ -13,6 +13,8 @@
  */
 
 import { generateLeadCode } from '../utils/whatsapp.ts';
+import { AgroToolsKernel } from './agro-tools.js';
+import { AgroExpertEngine } from './agro-expert-engine.js';
 import { WhatsAppCloudApiService, type WhatsAppConfig } from './whatsapp-cloud-api.ts';
 import { InstagramGraphApiService, type InstagramConfig } from './instagram-graph-api.ts';
 import { MetaSystemUserManager, type MetaSystemUserConfig } from './meta-system-user.ts';
@@ -66,18 +68,18 @@ export class ApexMetaAgent {
   }
 
   /**
-   * Internal tool calling registry
+   * Internal tool calling registry backed by AgroToolsKernel
    */
   public executeTool(name: string, args: Record<string, any> = {}): any {
     switch (name) {
       case 'calculate_roi': {
         const acres = Number(args.acres || 1);
-        const capexPerAcre = 8500000; // ₹85L/acre turnkey polyhouse
-        const annualYieldKg = acres * 12000; // 12,000 kg Grade-A Primocane
-        const grossRevenue = annualYieldKg * 600; // ₹600/kg B2B off-take
-        const annualOpex = acres * 1850000; // ₹18.5L/acre
-        const netEbitda = grossRevenue - annualOpex; // ₹53.5L/acre net
-        const nhbSubsidyCap = acres * 5600000; // 50% NHB subsidy up to cap
+        const capexPerAcre = Number(args.capexPerAcre || 8500000); // ₹85L/acre turnkey polyhouse
+        const annualYieldKg = acres * 12000;
+        const grossRevenue = annualYieldKg * 600;
+        const annualOpex = acres * 1850000;
+        const netEbitda = grossRevenue - annualOpex;
+        const nhbSubsidyCap = acres * 5600000;
 
         return {
           acres,
@@ -93,38 +95,13 @@ export class ApexMetaAgent {
 
       case 'get_cultivar_dossier': {
         const query = (args.cultivar || '').toLowerCase();
-        if (query.includes('rasp') || query.includes('primocane')) {
-          return {
-            name: 'Ruby Primocane Raspberry',
-            botanical: 'Rubus idaeus (Primocane type)',
-            brix: '14.2° Brix',
-            yieldPerAcre: '12,000 kg/year',
-            features: 'Dual-crop fruiting on current-season canes, high anthocyanin content, firm cell walls for 14-day cold chain transit.',
-          };
-        }
-        if (query.includes('black')) {
-          return {
-            name: 'Obsidian Thornless Blackberry',
-            botanical: 'Rubus fruticosus',
-            brix: '13.8° Brix',
-            yieldPerAcre: '14,500 kg/year',
-            features: 'High-density erect trellis growth, zero spine thorns, extreme antioxidant profile.',
-          };
-        }
-        if (query.includes('blue')) {
-          return {
-            name: 'Azure Highbush Blueberry',
-            botanical: 'Vaccinium corymbosum',
-            brix: '15.0° Brix',
-            yieldPerAcre: '9,500 kg/year',
-            features: 'Substrate coir-perlite bags with strict pH 4.5-5.2 automated fertigation.',
-          };
-        }
+        const specs = AgroToolsKernel.getCultivarSpecs(query);
         return {
-          name: 'Berryboyzz Elite Primocane Collection',
-          brix: '14.0° - 15.5° Brix',
-          yieldPerAcre: '10,000 - 14,000 kg/year',
-          features: 'Cultivated in Pune & Satara smart polyhouses with automated climate & fertigation.',
+          name: specs.name,
+          botanical: specs.botanical,
+          brix: specs.brixRating,
+          yieldPerAcre: specs.annualYieldPerPlant,
+          features: specs.keyFeatures,
         };
       }
 

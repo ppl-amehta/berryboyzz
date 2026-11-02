@@ -5,7 +5,7 @@ import {
   handleWebhookVerification,
   processMetaWebhookEvent,
   MetaWebhookConfig,
-} from '../../api/meta-webhook';
+} from '../services/meta-webhook-utils';
 
 describe('Meta Webhook Engine', () => {
   const mockConfig: MetaWebhookConfig = {

@@ -5,6 +5,7 @@
  */
 
 import { generateLeadCode } from '../utils/whatsapp.ts';
+import { AgroExpertEngine } from './agro-expert-engine.js';
 
 export interface WhatsAppConfig {
   phoneNumberId: string;
@@ -216,92 +217,54 @@ export class WhatsAppCloudApiService {
   }
 
   /**
-   * Dr. Berryboy Autonomous WhatsApp Response Matrix
-   * Handles incoming user intent and dispatches context-aware answers
+   * Dr. Berryboy Autonomous WhatsApp Response Matrix (5.3 Flash MoE Powered)
+   * Handles incoming user intent, runs deterministic tools, and dispatches context-aware answers
    */
   public async generateAutoReply(inbound: InboundWhatsAppMessage): Promise<void> {
-    const textLower = (inbound.text || '').toLowerCase();
+    const engine = AgroExpertEngine.getInstance();
+
+    // 1. Message Idempotency Check (Filter Meta delivery retries)
+    if (inbound.messageId && engine.isMessageDuplicate(inbound.messageId)) {
+      console.log(`[WhatsAppCloudApi] Skipping duplicate message id: ${inbound.messageId}`);
+      return;
+    }
+
     const recipient = inbound.from;
-    const leadRef = inbound.leadCode || generateLeadCode('BB-WA');
+    const inputText = inbound.text || inbound.interactiveButtonId || inbound.interactiveListId || 'Hello';
 
-    // Button actions
-    if (inbound.interactiveButtonId === 'btn_roi') {
+    try {
+      // 2. Delegate to Isomorphic Agro-Expert Engine (5.3 Flash MoE + Deterministic Tools)
+      const result = await engine.handleCustomerMessage(
+        recipient,
+        inputText,
+        'whatsapp',
+        inbound.senderName,
+        recipient
+      );
+
+      // 3. Dispatch Interactive Buttons if available (up to 3 per Meta spec)
+      if (result.suggestedButtons && result.suggestedButtons.length > 0) {
+        await this.sendInteractiveButtons(
+          recipient,
+          result.replyText,
+          result.suggestedButtons.map((b) => ({ id: b.id, title: b.title.slice(0, 20) })),
+          'Berryboyzz™ Precision Agronomy',
+          'Pune · Satara · Maharashtra'
+        );
+        return;
+      }
+
+      // 4. Fallback to clean plain text dispatch
+      await this.sendTextMessage(recipient, result.replyText);
+    } catch (err: any) {
+      console.error('[WhatsAppCloudApi] Engine Turn Error:', err?.message || err);
+
+      // Resilient fallback to avoid silent drops
       await this.sendTextMessage(
         recipient,
-        `📊 *Berryboyzz 1-Acre Commercial Model*\n\n• Annual Yield: 12,000 kg Grade-A Primocane\n• Revenue: ₹72.00 Lakhs/yr (@ ₹600/kg B2B off-take)\n• OPEX: ₹18.50 Lakhs/yr (fertigation, labor, power)\n• Net EBITDA: ₹53.50 Lakhs/yr (~74% margin)\n• NHB Capital Subsidy: Up to 50% (~₹56L cap)\n\nWould you like our formal financial prospectus?`
+        `Hello ${inbound.senderName}, our senior agronomy desk has recorded your session [Ref: ${inbound.leadCode || 'BB-PRIORITY'}]. An expert agronomist from our Pune hub will connect with you shortly.\n\nDirect Hotline: +91 88886 81136`
       );
-      return;
     }
-
-    if (inbound.interactiveButtonId === 'btn_tour') {
-      await this.sendTextMessage(
-        recipient,
-        `🚜 *Berryboyzz Farm Tours (Pune & Satara)*\n\nSlots available this Saturday & Sunday:\n1. Sunrise Harvest Walk (07:00 AM)\n2. High-Tech Polyhouse Masterclass (11:00 AM)\n3. Gourmet Punnet Tasting Table (04:00 PM)\n\nPlease reply with your preferred date and party size to confirm reservations.`
-      );
-      return;
-    }
-
-    if (inbound.interactiveButtonId === 'btn_agronomist') {
-      await this.sendTextMessage(
-        recipient,
-        `👨‍🌾 *Chief Agronomist Escalation*\n\nYour inquiry [Ref: ${leadRef}] has been forwarded to our lead CEA agronomist in Pune. An agronomist will call or message you shortly.\n\nDirect Desk Hotline: +91 88886 81136`
-      );
-      return;
-    }
-
-    // Keyword detection
-    if (textLower.includes('roi') || textLower.includes('calculator') || textLower.includes('cost') || textLower.includes('capex')) {
-      await this.sendInteractiveButtons(
-        recipient,
-        `Welcome ${inbound.senderName}! I am Dr. Berryboy AI, Chief Agronomy Intelligence for Berryboyzz™.\n\nOur precision berry farming yields up to ₹53.5L net EBITDA per acre with guaranteed off-take contracts and 50% NHB subsidies.\n\nChoose an option below:`,
-        [
-          { id: 'btn_roi', title: '📈 View 1-Acre ROI' },
-          { id: 'btn_tour', title: '🚜 Book Farm Tour' },
-          { id: 'btn_agronomist', title: '👨‍🌾 Talk to Expert' },
-        ],
-        'Berryboyzz™ Investment Desk'
-      );
-      return;
-    }
-
-    if (textLower.includes('seed') || textLower.includes('plant') || textLower.includes('variety') || textLower.includes('buy')) {
-      await this.sendInteractiveList(
-        recipient,
-        `We supply certified virus-free European tissue-cultured clones ready for commercial greenhouse or home garden planting:`,
-        'Explore Cultivars',
-        [
-          {
-            title: 'Commercial Primocanes',
-            rows: [
-              { id: 'cult_rasp', title: 'Autumn Bliss Raspberry', description: 'Year-1 fruiting, 14.2° Brix mountain sweetness' },
-              { id: 'cult_black', title: 'Karaka Black Blackberry', description: 'Heavy clusters, high antioxidant anthocyanins' },
-              { id: 'cult_blue', title: 'Biloxi Low-Chill Blueberry', description: 'Thrives in Maharashtra climate, 20-year lifespan' },
-            ],
-          },
-          {
-            title: 'Substrates & Setups',
-            rows: [
-              { id: 'setup_1000', title: '1,000 Plant Commercial Unit', description: 'Complete drip, trellising & fertigation package' },
-              { id: 'setup_home', title: 'Home Garden 5-Plant Kit', description: 'Aerated coco-coir pots with bio-nutrition' },
-            ],
-          },
-        ],
-        'Berryboyzz™ Genetic Vault'
-      );
-      return;
-    }
-
-    // Default friendly greeting with buttons
-    await this.sendInteractiveButtons(
-      recipient,
-      `Hello ${inbound.senderName}, welcome to Berryboyzz™ Precision Berry Ecosystem (Pune & Satara).\n\nYour session is verified under [Ref: ${leadRef}]. How can our agronomy & investment team assist you today?`,
-      [
-        { id: 'btn_roi', title: '📈 Commercial ROI' },
-        { id: 'btn_tour', title: '🚜 Schedule Visit' },
-        { id: 'btn_agronomist', title: '👨‍🌾 Agronomist Desk' },
-      ],
-      'Berryboyzz™ Official WhatsApp Desk'
-    );
   }
 
   private async executePostRequest(endpoint: string, data: any): Promise<any> {
