@@ -7,6 +7,9 @@ const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'berryboyzz_webhook_ve
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID || '1127117767143751';
 const ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN || '';
 
+/**
+ * Meta Webhook Verification Handshake (GET)
+ */
 export const GET: RequestHandler = async ({ url }) => {
   const mode = url.searchParams.get('hub.mode');
   const token = url.searchParams.get('hub.verify_token');
@@ -22,10 +25,14 @@ export const GET: RequestHandler = async ({ url }) => {
   return new Response('Forbidden: Verification token mismatch', { status: 403 });
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+/**
+ * Meta Webhook Inbound Event Processing (POST)
+ * Critical: Must return HTTP 200 within <3000ms to prevent Meta automated retry storms.
+ * Processing is executed asynchronously with error logging.
+ */
+export const POST: RequestHandler = async ({ request, platform }) => {
   try {
     const payload = await request.json();
-    console.log('[WhatsApp Webhook Event Received]:', JSON.stringify(payload));
 
     if (ACCESS_TOKEN) {
       const whatsappService = new WhatsAppCloudApiService({
@@ -35,22 +42,37 @@ export const POST: RequestHandler = async ({ request }) => {
       });
 
       const inboundMessages = whatsappService.parseWebhookPayload(payload);
-      for (const msg of inboundMessages) {
-        try {
-          await whatsappService.generateAutoReply(msg);
-          console.log('[WhatsApp AutoReply Sent Successfully to]:', msg.from);
-        } catch (replyErr: any) {
-          console.error('[WhatsApp AutoReply Error]:', replyErr?.message || replyErr);
+
+      if (inboundMessages.length > 0) {
+        const backgroundTask = (async () => {
+          for (const msg of inboundMessages) {
+            try {
+              await whatsappService.generateAutoReply(msg);
+              console.log('[WhatsApp AutoReply Sent Successfully to]:', msg.from);
+            } catch (replyErr: any) {
+              console.error('[WhatsApp AutoReply Error]:', replyErr?.message || replyErr);
+            }
+          }
+        })();
+
+        // Use platform.context.waitUntil on Vercel / Cloudflare runtimes if present
+        if (platform?.context?.waitUntil) {
+          platform.context.waitUntil(backgroundTask);
+        } else {
+          // Unblock HTTP response immediately while keeping task attached
+          backgroundTask.catch((err) => console.error('[WhatsApp Unhandled Background Error]:', err));
         }
       }
     }
 
+    // Immediately return HTTP 200 to satisfy Meta's 3-second SLA
     return new Response(JSON.stringify({ status: 'EVENT_RECEIVED' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (err: any) {
-    console.error('[WhatsApp Webhook Error]:', err?.message || err);
+    console.error('[WhatsApp Webhook Inbound Parse Error]:', err?.message || err);
+    // Still return 200 to prevent Meta retry floods on bad payload structures
     return new Response(JSON.stringify({ status: 'EVENT_RECEIVED' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },

@@ -2,6 +2,7 @@
  * Berryboyzz™ Apex Cloud-Native SLM Client
  * 
  * 100% Pure HTTPS Multi-Provider Client with Zero Local Machine / Binary Dependencies
+ * Global Request Budget Guardrail (<8000ms) ensuring zero Vercel 504 Gateway Timeouts
  * Supported Endpoints:
  * 1. OpenRouter Free Tier (DeepSeek-R1 Free, DeepSeek-Chat Free, Qwen 2.5 Free)
  * 2. DeepSeek Direct API (DeepSeek-Chat v3 / v4.1, sub-300ms latency)
@@ -46,6 +47,7 @@ export class AgroSLMClient {
   private groqApiKey = '';
   private huggingFaceApiKey = '';
   private geminiApiKey = '';
+  private readonly GLOBAL_BUDGET_MS = 8000;
 
   constructor() {
     this.openRouterApiKey = process.env.OPENROUTER_API_KEY || '';
@@ -57,6 +59,7 @@ export class AgroSLMClient {
 
   /**
    * Dispatches prompt through the cloud-native multi-provider failover pipeline
+   * Governed by an 8-second global deadline to prevent Vercel 504 gateway timeouts.
    */
   public async generateCompletion(
     systemPrompt: string,
@@ -76,9 +79,10 @@ export class AgroSLMClient {
     }
 
     // 1. Try OpenRouter Free-Tier Endpoints (DeepSeek-R1 Free, DeepSeek-Chat Free, Qwen Free)
-    if (this.openRouterApiKey) {
+    if (this.openRouterApiKey && Date.now() - startTime < this.GLOBAL_BUDGET_MS - 2000) {
       try {
-        const result = await this.tryOpenRouterApi(systemPrompt, messages, options);
+        const remainingMs = this.GLOBAL_BUDGET_MS - (Date.now() - startTime);
+        const result = await this.tryOpenRouterApi(systemPrompt, messages, options, remainingMs);
         if (result) {
           return {
             content: result.content,
@@ -92,9 +96,10 @@ export class AgroSLMClient {
     }
 
     // 2. Try DeepSeek Direct Low-Latency API
-    if (this.deepSeekApiKey) {
+    if (this.deepSeekApiKey && Date.now() - startTime < this.GLOBAL_BUDGET_MS - 2000) {
       try {
-        const result = await this.tryDeepSeekDirectApi(systemPrompt, messages, options);
+        const remainingMs = this.GLOBAL_BUDGET_MS - (Date.now() - startTime);
+        const result = await this.tryDeepSeekDirectApi(systemPrompt, messages, options, remainingMs);
         if (result) {
           return {
             content: result.content,
@@ -108,9 +113,10 @@ export class AgroSLMClient {
     }
 
     // 3. Try Groq Cloud Ultra-Low Latency Free API (DeepSeek-R1 Distill LLaMA 70B)
-    if (this.groqApiKey) {
+    if (this.groqApiKey && Date.now() - startTime < this.GLOBAL_BUDGET_MS - 2000) {
       try {
-        const result = await this.tryGroqCloudApi(systemPrompt, messages, options);
+        const remainingMs = this.GLOBAL_BUDGET_MS - (Date.now() - startTime);
+        const result = await this.tryGroqCloudApi(systemPrompt, messages, options, remainingMs);
         if (result) {
           return {
             content: result.content,
@@ -124,9 +130,10 @@ export class AgroSLMClient {
     }
 
     // 4. Try Hugging Face Serverless Inference Router (DeepSeek-R1 Distill Qwen / 14B)
-    if (this.huggingFaceApiKey) {
+    if (this.huggingFaceApiKey && Date.now() - startTime < this.GLOBAL_BUDGET_MS - 2000) {
       try {
-        const result = await this.tryHuggingFaceApi(systemPrompt, messages, options);
+        const remainingMs = this.GLOBAL_BUDGET_MS - (Date.now() - startTime);
+        const result = await this.tryHuggingFaceApi(systemPrompt, messages, options, remainingMs);
         if (result) {
           return {
             content: result.content,
@@ -140,9 +147,10 @@ export class AgroSLMClient {
     }
 
     // 5. Try Google Cloud Free-Tier MoE / Flash (Gemini 3.1 Flash-Lite -> 3.5 Flash-Lite -> 3.8 Flash)
-    if (this.geminiApiKey) {
+    if (this.geminiApiKey && Date.now() - startTime < this.GLOBAL_BUDGET_MS - 1500) {
       try {
-        const result = await this.tryGeminiCascade(systemPrompt, messages, options);
+        const remainingMs = this.GLOBAL_BUDGET_MS - (Date.now() - startTime);
+        const result = await this.tryGeminiCascade(systemPrompt, messages, options, remainingMs);
         if (result) {
           return {
             content: result.content,
@@ -170,7 +178,8 @@ export class AgroSLMClient {
   private async tryOpenRouterApi(
     systemPrompt: string,
     messages: SLMMessage[],
-    options: SLMCompletionOptions
+    options: SLMCompletionOptions,
+    budgetMs: number
   ): Promise<{ content: string; engineUsed: SLMResponse['engineUsed'] } | null> {
     if (!this.openRouterApiKey) return null;
 
@@ -186,10 +195,12 @@ export class AgroSLMClient {
       ...messages.map((m) => ({ role: m.role, content: m.content })),
     ];
 
+    const callTimeout = Math.max(2000, Math.min(5000, Math.floor(budgetMs / 2)));
+
     for (const model of candidateModels) {
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 8000);
+        const timeout = setTimeout(() => controller.abort(), callTimeout);
 
         const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
           method: 'POST',
@@ -213,6 +224,12 @@ export class AgroSLMClient {
         if (!res.ok) continue;
 
         const data = await res.json();
+        // Check for OpenRouter error payload returned under HTTP 200
+        if (data.error) {
+          console.warn(`[AgroSLMClient] OpenRouter ${model.id} returned error payload:`, data.error);
+          continue;
+        }
+
         let content = data.choices?.[0]?.message?.content;
         if (content && typeof content === 'string') {
           // Strip out <think> tags from DeepSeek R1 reasoning traces
@@ -222,7 +239,7 @@ export class AgroSLMClient {
           }
         }
       } catch (err: any) {
-        console.warn(`[AgroSLMClient] OpenRouter ${model.id} failed:`, err?.message || err);
+        console.warn(`[AgroSLMClient] OpenRouter ${model.id} attempt error:`, err?.message || err);
       }
     }
 
@@ -235,13 +252,15 @@ export class AgroSLMClient {
   private async tryDeepSeekDirectApi(
     systemPrompt: string,
     messages: SLMMessage[],
-    options: SLMCompletionOptions
+    options: SLMCompletionOptions,
+    budgetMs: number
   ): Promise<{ content: string; engineUsed: SLMResponse['engineUsed'] } | null> {
     if (!this.deepSeekApiKey) return null;
 
     try {
+      const callTimeout = Math.max(2000, Math.min(4500, budgetMs));
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
+      const timeout = setTimeout(() => controller.abort(), callTimeout);
 
       const res = await fetch('https://api.deepseek.com/chat/completions', {
         method: 'POST',
@@ -266,6 +285,8 @@ export class AgroSLMClient {
       if (!res.ok) return null;
 
       const data = await res.json();
+      if (data.error) return null;
+
       const content = data.choices?.[0]?.message?.content;
       if (content && typeof content === 'string' && content.trim().length > 0) {
         return { content: content.trim(), engineUsed: 'DEEPSEEK_DIRECT_API' };
@@ -283,13 +304,15 @@ export class AgroSLMClient {
   private async tryGroqCloudApi(
     systemPrompt: string,
     messages: SLMMessage[],
-    options: SLMCompletionOptions
+    options: SLMCompletionOptions,
+    budgetMs: number
   ): Promise<{ content: string; engineUsed: SLMResponse['engineUsed'] } | null> {
     if (!this.groqApiKey) return null;
 
     try {
+      const callTimeout = Math.max(2000, Math.min(4000, budgetMs));
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 7000);
+      const timeout = setTimeout(() => controller.abort(), callTimeout);
 
       const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -314,6 +337,8 @@ export class AgroSLMClient {
       if (!res.ok) return null;
 
       const data = await res.json();
+      if (data.error) return null;
+
       let content = data.choices?.[0]?.message?.content;
       if (content && typeof content === 'string') {
         content = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
@@ -334,13 +359,15 @@ export class AgroSLMClient {
   private async tryHuggingFaceApi(
     systemPrompt: string,
     messages: SLMMessage[],
-    options: SLMCompletionOptions
+    options: SLMCompletionOptions,
+    budgetMs: number
   ): Promise<{ content: string; engineUsed: SLMResponse['engineUsed'] } | null> {
     if (!this.huggingFaceApiKey) return null;
 
     try {
+      const callTimeout = Math.max(2000, Math.min(4000, budgetMs));
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
+      const timeout = setTimeout(() => controller.abort(), callTimeout);
 
       const res = await fetch('https://router.huggingface.co/hf-inference/v1/chat/completions', {
         method: 'POST',
@@ -365,6 +392,8 @@ export class AgroSLMClient {
       if (!res.ok) return null;
 
       const data = await res.json();
+      if (data.error) return null;
+
       let content = data.choices?.[0]?.message?.content;
       if (content && typeof content === 'string') {
         content = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
@@ -385,7 +414,8 @@ export class AgroSLMClient {
   private async tryGeminiCascade(
     systemPrompt: string,
     messages: SLMMessage[],
-    options: SLMCompletionOptions
+    options: SLMCompletionOptions,
+    budgetMs: number
   ): Promise<{ content: string; engineUsed: SLMResponse['engineUsed'] } | null> {
     const candidateModels: Array<{ id: string; engine: SLMResponse['engineUsed'] }> = [
       { id: 'gemini-3.1-flash-lite', engine: 'GEMINI_3_1_FLASH_LITE' },
@@ -413,11 +443,13 @@ export class AgroSLMClient {
       body.generationConfig.responseMimeType = 'application/json';
     }
 
+    const callTimeout = Math.max(2000, Math.min(5000, budgetMs));
+
     for (const target of candidateModels) {
       try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${target.id}:generateContent?key=${this.geminiApiKey}`;
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 9000);
+        const timeoutId = setTimeout(() => controller.abort(), callTimeout);
 
         const res = await fetch(url, {
           method: 'POST',
@@ -451,44 +483,45 @@ export class AgroSLMClient {
 
   /**
    * High-intelligence semantic domain knowledge fallback
-   * Evaluates questions across agronomy, CEA, trellising, IPM, fertigation, economics, and varieties
+   * Uses strict word-boundary regular expressions to prevent substring false-positives
+   * (e.g. "check" or "receipt" matching 'ec', "phone" matching 'ph', "sacred" matching 'acre')
    */
   private generateDeterministicFallback(messages: SLMMessage[]): string {
     const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user')?.content.toLowerCase() || '';
 
     // 1. Trellising & Canopy Architecture
-    if (lastUserMsg.includes('trellis') || lastUserMsg.includes('support') || lastUserMsg.includes('gable') || lastUserMsg.includes('training') || lastUserMsg.includes('prun')) {
+    if (/\b(trellis(ing)?|canop(y|ies)|prun(e|ing)|tipping|gable|botrytis|canes?)\b/i.test(lastUserMsg)) {
       return `🌿 **Canopy & Trellis Architecture (Deccan Polyhouse SOP)**\n\nFor commercial raspberries (Autumn Bliss) and blackberries (Karaka Black) in Maharashtra:\n\n1. **V-Trellis / Open Gable System**: We mandate a 30°–45° outward angle V-trellis with high-tensile galvanized wires at 0.6m, 1.2m, and 1.8m height.\n2. **Airflow & Brix Maximization**: The open V-center allows uninterrupted sun exposure to fruiting laterals (boosting Brix past 14°–18°) while preventing *Botrytis cinerea* (gray mold) during humid monsoon spells.\n3. **Pruning Protocol**: Primocane-fruiting varieties are tipped at 1.2m to force lateral fruiting branches, with spent floricanes cut flush to the crown after harvest.\n\nWould you like the exact wire tensioning specs or spacing layout for your polyhouse?`;
     }
 
     // 2. Pests, Diseases & Integrated Pest Management (IPM)
-    if (lastUserMsg.includes('pest') || lastUserMsg.includes('mite') || lastUserMsg.includes('fungus') || lastUserMsg.includes('mildew') || lastUserMsg.includes('disease') || lastUserMsg.includes('insect') || lastUserMsg.includes('spray')) {
+    if (/\b(pests?|mites?|fungus|fungal|mildew|powdery|insects?|sprays?|spraying|biocontrol|pathogens?)\b/i.test(lastUserMsg)) {
       return `🛡️ **Controlled Environment IPM Protocol (Satara & Pune)**\n\nIn high-value CEA berry cultivation, proactive biological control replaces heavy chemical sprays:\n\n1. **Two-Spotted Spider Mite (*Tetranychus urticae*)**: Primary berry threat under polyhouse heat. Controlled with predatory mites (*Neoseiulus californicus*) and micronized wettable sulfur (pH < 8.0) before fruit set.\n2. **Powdery Mildew (*Podosphaera macularis*)**: Suppressed by maintaining relative humidity < 70% via ridge ventilation and preventive sprays of *Bacillus subtilis* or potassium bicarbonate.\n3. **Root Rot Prevention**: Because Maharashtra black cotton soils harbor *Phytophthora*, all plants must be kept in sterile soilless coir slabs/bags elevated on drainage gutters.\n\nShare your current humidity/temperature readings or symptoms for a targeted bio-control prescription.`;
     }
 
     // 3. Climate, Altitude, Chilling Hours & Maharashtra Suitability
-    if (lastUserMsg.includes('chill') || lastUserMsg.includes('climate') || lastUserMsg.includes('temperature') || lastUserMsg.includes('altitude') || lastUserMsg.includes('weather') || lastUserMsg.includes('heat') || lastUserMsg.includes('winter')) {
+    if (/\b(chill(ing)?|climates?|temperatures?|altitudes?|weather|heat|winter|diurnal)\b/i.test(lastUserMsg)) {
       return `☀️ **Deccan Microclimate & Chilling Hour Suitability**\n\nCommercial berry cultivation in Maharashtra requires matching cultivar genetics to Deccan plateau elevations:\n\n1. **Chilling Requirements**: Traditional temperate berries need 600–1,000 chill hours (<7°C), which Maharashtra cannot provide. Berryboyzz™ exclusively utilizes **zero-to-low chill genetics**:\n   • **Biloxi Blueberry**: Only ~150 chill hours required, naturally flower-induced by Deccan winter nights.\n   • **Autumn Bliss Raspberry**: Primocane fruiter that flowers on current-season wood without winter chilling.\n   • **Karaka Black Blackberry**: Trailing cultivar thriving with mild diurnal swings (18°C night / 28°C day).\n2. **Heat Mitigation**: In Naturally Ventilated Polyhouses (NVPH), top ridge vents and 50% aluminet thermal screens keep canopy temperatures below 32°C during April–May peak sun.\n\nWhat is your project's altitude or district location?`;
     }
 
     // 4. Commercial ROI, Capex, Subsidies & Economics
-    if (lastUserMsg.includes('roi') || lastUserMsg.includes('cost') || lastUserMsg.includes('capex') || lastUserMsg.includes('invest') || lastUserMsg.includes('profit') || lastUserMsg.includes('subsidy') || lastUserMsg.includes('nhb') || lastUserMsg.includes('acre')) {
+    if (/\b(roi|capex|costs?|invest(or|ment|ing)?|profits?|subsid(y|ies)|nhb|dpr|acres?|ekad|margin|ebitda)\b/i.test(lastUserMsg)) {
       const roi = AgroToolsKernel.calculateROI(1, 'nvph', true);
       return `📊 **Berryboyzz™ 1-Acre Commercial Polyhouse Model**\n\n• **Gross Capex**: ₹${(roi.capexGross / 100000).toFixed(2)}L (NVPH structure, irrigation automation, substrate & mother stock)\n• **NHB 50% Subsidy**: Net Capex reduces to **₹${(roi.capexNet / 100000).toFixed(2)}L**\n• **Annual Commercial Yield**: ${roi.annualYieldKg.toLocaleString()} kg Grade-A Primocane\n• **Annual Projected Revenue**: ₹${(roi.annualRevenue / 100000).toFixed(2)}L (@ ₹${roi.offtakeRatePerKg}/kg contracted institutional off-take)\n• **Annual Operational EBITDA**: ₹${(roi.netAnnualEbitda / 100000).toFixed(2)}L (~${roi.ebitdaMarginPct}% margin)\n• **Payback Horizon**: 12–14 months under standard CEA SOPs.\n\nWould you like a customized multi-acre DPR (Detailed Project Report) or subsidy roadmap?`;
     }
 
-    // 5. Water, Soil, EC, pH & Fertigation
-    if (lastUserMsg.includes('water') || lastUserMsg.includes('tds') || lastUserMsg.includes('ph') || lastUserMsg.includes('ec') || lastUserMsg.includes('soil') || lastUserMsg.includes('fertiliz') || lastUserMsg.includes('fertigation')) {
+    // 5. Water, Soil, EC, pH & Fertigation (Strict word boundaries to avoid 'check', 'receipt', 'phone')
+    if (/\b(waters?|tds|ph|ec|soils?|borewells?|fertigat(ion|ing)?|fertiliz(er|ers|ation)?|salinit(y|ies)|alkalinit(y|ies)|bicarbonates?)\b/i.test(lastUserMsg)) {
       return `💧 **Borewell Water & Substrate Precision Specs**\n\nDeccan basalt groundwater typically carries high pH (7.6–8.2) and elevated bicarbonates (>250 ppm HCO3), which cause rapid iron chlorosis in berries:\n\n1. **Soilless Substrate**: Mandatory 70:30 buffered coco-coir/perlite in 15–20L UV-stabilized bags. Open soil planting is not commercially viable.\n2. **Target Water Chemistry**:\n   • **Irrigation EC**: 1.2–1.6 mS/cm\n   • **Target pH**: 5.5–5.8 for Blueberries (ammonium-dominant); 5.8–6.2 for Raspberries\n   • **Bicarbonate Neutralization**: Inline nitric/phosphoric acid dosing to reduce HCO3 below 60 ppm.\n3. **RO Blending**: If raw borewell TDS exceeds 600 ppm, a 60:40 RO-permeate blend is implemented.\n\nSend your borewell water report (TDS, pH, EC) for an immediate agronomy audit.`;
     }
 
     // 6. Farm Tours & Visits
-    if (lastUserMsg.includes('tour') || lastUserMsg.includes('visit') || lastUserMsg.includes('see the farm') || lastUserMsg.includes('location') || lastUserMsg.includes('address')) {
+    if (/\b(tours?|visits?|see the farm|locations?|address|directions?|tasting|masterclass)\b/i.test(lastUserMsg)) {
       return `🚜 **Berryboyzz™ Polyhouse Facility & Masterclass Visits (Satara)**\n\nExperience India's highest-altitude commercial CEA berry setup on the Wai-Panchgani Highway, Satara:\n\n1. **Gourmet Harvest & Berry Tasting Walk**: ₹1,250–₹1,800/guest (Saturdays & Sundays, 08:00 AM)\n2. **Commercial CEA Polyhouse Masterclass**: ₹3,500/guest (Technical session with Senior Agronomists, 10:00 AM – 03:30 PM)\n\nReply with your preferred Saturday/Sunday date and party size to confirm your pass.`;
     }
 
     // 7. Cultivars & Varieties
-    if (lastUserMsg.includes('raspberry') || lastUserMsg.includes('blackberry') || lastUserMsg.includes('blueberry') || lastUserMsg.includes('strawberry') || lastUserMsg.includes('mulberry') || lastUserMsg.includes('cultivar') || lastUserMsg.includes('variety')) {
+    if (/\b(raspberr(y|ies)|blackberr(y|ies)|blueberr(y|ies)|strawberr(y|ies)|mulberr(y|ies)|cultivars?|variet(y|ies)|autumn bliss|karaka black|biloxi|san andreas)\b/i.test(lastUserMsg)) {
       return `🍓 **Certified Tissue-Culture Berry Cultivars (Berryboyzz™)**\n\n• **Autumn Bliss Raspberry**: 14.2° Brix, high firmness, dual harvest peaks (Nov–Jan & Mar–May), 3.2 kg/cane/yr.\n• **Karaka Black Blackberry**: 18.5° Brix, jumbo cylindrical fruit (10–14g), heavy trailing canopy, 3.5 kg/plant/yr.\n• **Biloxi Blueberry**: 15.5° Brix, evergreen low-chill bush, requires substrate pH 4.5–5.2, 4.0 kg/plant/yr.\n• **San Andreas Strawberry**: Day-neutral, 12.8° Brix, continuous flowering across Maharashtra winter.\n• **Sweet Lavender Mulberry**: 22.0° Brix, year-round harvest, premium white-blush berry.\n\nWhich cultivar are you planning for your project?`;
     }
 

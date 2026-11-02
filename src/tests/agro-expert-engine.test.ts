@@ -88,12 +88,12 @@ describe('Berryboyzz AgroToolsKernel (Deterministic Calculation Verification)', 
 });
 
 describe('AgroExpertEngine Idempotency & Turn Resolution', () => {
-  it('deduplicates incoming WhatsApp message IDs to prevent Meta retry loops', () => {
+  it('deduplicates incoming WhatsApp message IDs to prevent Meta retry loops', async () => {
     const engine = AgroExpertEngine.getInstance();
     const testMsgId = `wamid.HBgLOTE5OTk5OTk5${Date.now()}`;
 
-    expect(engine.isMessageDuplicate(testMsgId)).toBe(false); // First time: not duplicate
-    expect(engine.isMessageDuplicate(testMsgId)).toBe(true); // Immediate retry: duplicate detected
+    expect(await engine.isMessageDuplicate(testMsgId)).toBe(false); // First time: not duplicate
+    expect(await engine.isMessageDuplicate(testMsgId)).toBe(true); // Immediate retry: duplicate detected
   });
 
   it('classifies investor inquiries and generates verified ROI card', async () => {
@@ -127,7 +127,7 @@ describe('AgroExpertEngine Idempotency & Turn Resolution', () => {
     expect(result.richDataCard?.data.bicarbonateRisk).toBe('SEVERE');
   });
 
-  it('triggers human escalation with Chief Agronomist contact when requested', async () => {
+  it('triggers human escalation with Chief Agronomist contact when requested and keeps it sticky', async () => {
     const engine = AgroExpertEngine.getInstance();
     const result = await engine.handleCustomerMessage(
       'test_session_esc',
@@ -137,9 +137,33 @@ describe('AgroExpertEngine Idempotency & Turn Resolution', () => {
     );
 
     expect(result.humanEscalationTriggered).toBe(true);
-    expect(result.leadToken).toMatch(/^BB-ESC-[A-Z0-9]+-\d+$/);
+    expect(result.leadToken).toMatch(/^BB-ESC-[A-Z0-9]+-[A-Z0-9]+$/);
     expect(result.replyText).toContain('+91 88886 81136');
     expect(result.richDataCard?.type).toBe('escalation_ticket');
+
+    // Verify Sticky Escalation: Next message remains escalated
+    const followUp = await engine.handleCustomerMessage(
+      'test_session_esc',
+      'Okay, when will they call me?',
+      'web',
+      'VIP Landowner'
+    );
+    expect(followUp.humanEscalationTriggered).toBe(true);
+    expect(followUp.replyText).toContain('Active Technical Queue');
+    expect(followUp.replyText).toContain('+91 88886 81136');
+  });
+
+  it('does not fabricate water reports when critical TDS/pH numbers are missing', async () => {
+    const engine = AgroExpertEngine.getInstance();
+    const result = await engine.handleCustomerMessage(
+      'test_session_no_tds',
+      'Can you test my well water?',
+      'web',
+      'Farmer Without Numbers'
+    );
+
+    // Should NOT produce a fabricated water audit card with invented 750 TDS
+    expect(result.richDataCard?.type).not.toBe('water_audit');
   });
 
   it('intelligently answers open-ended trellising and canopy questions', async () => {

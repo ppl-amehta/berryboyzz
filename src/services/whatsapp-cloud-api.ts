@@ -224,7 +224,7 @@ export class WhatsAppCloudApiService {
     const engine = AgroExpertEngine.getInstance();
 
     // 1. Message Idempotency Check (Filter Meta delivery retries)
-    if (inbound.messageId && engine.isMessageDuplicate(inbound.messageId)) {
+    if (inbound.messageId && (await engine.isMessageDuplicate(inbound.messageId))) {
       console.log(`[WhatsAppCloudApi] Skipping duplicate message id: ${inbound.messageId}`);
       return;
     }
