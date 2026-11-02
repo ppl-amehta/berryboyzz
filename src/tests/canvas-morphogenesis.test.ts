@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { STORY_PHASES } from '../components/visual-story/StoryScrubberRail';
+import { STORY_PHASES } from '../lib/data/storyPhases';
 
 describe('Morphogenesis Canvas Engine & Scrollytelling Mapping', () => {
   it('defines 7 distinct chronological phases from seed to luxury table punnet', () => {

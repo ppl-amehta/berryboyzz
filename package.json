@@ -7,7 +7,6 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "node --env-file=.env server.mjs",
     "meta:cli": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs",
     "meta:audit": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs audit",
     "meta:simulate": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs simulate",
@@ -16,9 +15,6 @@
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
     "clsx": "^2.1.1",
-    "lucide-react": "^1.16.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
@@ -28,13 +24,8 @@
     "@sveltejs/vite-plugin-svelte": "^5.1.1",
     "@tailwindcss/vite": "^4.0.0",
     "@testing-library/dom": "^10.4.2",
-    "@testing-library/react": "^16.3.3",
     "@types/node": "^26.6.6",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^29.1.1",
-    "lucide-svelte": "^1.0.1",
     "svelte": "^5.57.3",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.3",
