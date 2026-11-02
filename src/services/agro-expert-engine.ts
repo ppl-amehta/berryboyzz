@@ -149,11 +149,19 @@ export class AgroExpertEngine {
     // 1. Detect Explicit Human Escalation
     if (
       textLower.includes('human') ||
-      textLower.includes('speak with expert') ||
+      textLower.includes('speak with') ||
+      textLower.includes('speak to') ||
+      textLower.includes('talk to') ||
+      textLower.includes('talk with') ||
       textLower.includes('call me') ||
+      textLower.includes('phone me') ||
       textLower.includes('head agronomist') ||
+      textLower.includes('chief agronomist') ||
       textLower.includes('talk to expert') ||
-      textLower.includes('founder')
+      textLower.includes('speak with expert') ||
+      textLower.includes('founder') ||
+      textLower.includes('negotiate') ||
+      textLower.includes('commercial agreement')
     ) {
       return this.handleHumanEscalation(session, 'User requested direct consultation with senior grower');
     }
