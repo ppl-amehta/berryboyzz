@@ -1,9 +1,14 @@
 /**
- * Berryboyzz™ Apex Dual-Engine SLM Client
+ * Berryboyzz™ Apex Cloud-Native SLM Client
  * 
- * Cloud Primary: Ultra-low latency Gemini 3.1 Flash-Lite & 3.5 Flash-Lite (native REST API, zero npm bloat)
- * Local / Hybrid Co-Engine: OpenCode MoE bridge (GLM 5.3 Flash / DeepSeek v4.1 Flash)
- * Resilient Fallback: Comprehensive Agro-Intelligence Semantic Knowledge Engine
+ * 100% Pure HTTPS Multi-Provider Client with Zero Local Machine / Binary Dependencies
+ * Supported Endpoints:
+ * 1. OpenRouter Free Tier (DeepSeek-R1 Free, DeepSeek-Chat Free, Qwen 2.5 Free)
+ * 2. DeepSeek Direct API (DeepSeek-Chat v3 / v4.1, sub-300ms latency)
+ * 3. Groq Cloud Free Tier (DeepSeek-R1 Distill LLaMA-70B, sub-400ms latency)
+ * 4. Hugging Face Serverless Router (DeepSeek-R1 Distill Qwen / 14B)
+ * 5. Google Cloud High-Throughput Free Tier (Gemini 3.1 Flash-Lite & 3.5 Flash-Lite)
+ * 6. Deterministic Agro-Intelligence Semantic Knowledge Engine Guardrail
  */
 
 import { AgroToolsKernel } from './agro-tools.js';
@@ -21,20 +26,37 @@ export interface SLMCompletionOptions {
 
 export interface SLMResponse {
   content: string;
-  engineUsed: 'GEMINI_3_1_FLASH_LITE' | 'GEMINI_3_5_FLASH_LITE' | 'GEMINI_3_8_FLASH' | 'GLM_5_3_FLASH_MOE' | 'DEEPSEEK_V4_1_FLASH' | 'DETERMINISTIC_FALLBACK';
+  engineUsed:
+    | 'OPENROUTER_DEEPSEEK_R1_FREE'
+    | 'OPENROUTER_DEEPSEEK_CHAT_FREE'
+    | 'OPENROUTER_QWEN_FREE'
+    | 'DEEPSEEK_DIRECT_API'
+    | 'GROQ_DEEPSEEK_R1'
+    | 'HUGGINGFACE_ROUTER'
+    | 'GEMINI_3_1_FLASH_LITE'
+    | 'GEMINI_3_5_FLASH_LITE'
+    | 'GEMINI_3_8_FLASH'
+    | 'DETERMINISTIC_FALLBACK';
   latencyMs: number;
 }
 
 export class AgroSLMClient {
+  private openRouterApiKey = '';
+  private deepSeekApiKey = '';
+  private groqApiKey = '';
+  private huggingFaceApiKey = '';
   private geminiApiKey = '';
-  private openCodeBinary = '/Users/arjavdmehta/.opencode/bin/opencode';
 
   constructor() {
+    this.openRouterApiKey = process.env.OPENROUTER_API_KEY || '';
+    this.deepSeekApiKey = process.env.DEEPSEEK_API_KEY || '';
+    this.groqApiKey = process.env.GROQ_API_KEY || '';
+    this.huggingFaceApiKey = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY || '';
     this.geminiApiKey = process.env.GEMINI_API_KEY || '';
   }
 
   /**
-   * Dispatches prompt through the dual-engine failover pipeline
+   * Dispatches prompt through the cloud-native multi-provider failover pipeline
    */
   public async generateCompletion(
     systemPrompt: string,
@@ -43,7 +65,7 @@ export class AgroSLMClient {
   ): Promise<SLMResponse> {
     const startTime = Date.now();
 
-    // Fast-path for unit tests to prevent Vitest test timeouts
+    // Fast-path for unit tests to prevent network flakiness and Vitest timeouts
     if (process.env.VITEST) {
       const fallbackText = this.generateDeterministicFallback(messages);
       return {
@@ -53,44 +75,308 @@ export class AgroSLMClient {
       };
     }
 
-    // 1. Primary Engine: Cloud Low-Latency MoE / Flash (Gemini 3.1 Flash-Lite -> 3.5 Flash-Lite -> 3.8 Flash)
-    // Runs identically on Vercel Serverless, Node.js, and Edge runtimes with zero external npm dependencies
-    if (this.geminiApiKey) {
+    // 1. Try OpenRouter Free-Tier Endpoints (DeepSeek-R1 Free, DeepSeek-Chat Free, Qwen Free)
+    if (this.openRouterApiKey) {
       try {
-        const cloudResult = await this.tryGeminiCascade(systemPrompt, messages, options);
-        if (cloudResult) {
+        const result = await this.tryOpenRouterApi(systemPrompt, messages, options);
+        if (result) {
           return {
-            content: cloudResult.content,
-            engineUsed: cloudResult.engineUsed,
+            content: result.content,
+            engineUsed: result.engineUsed,
             latencyMs: Date.now() - startTime,
           };
         }
       } catch (err: any) {
-        console.warn('[AgroSLMClient] Cloud SLM cascade failed, trying co-engine:', err?.message || err);
+        console.warn('[AgroSLMClient] OpenRouter cascade failed:', err?.message || err);
       }
     }
 
-    // 2. Secondary Engine: OpenCode MoE bridge (GLM 5.3 Flash / DeepSeek v4.1) when available
-    try {
-      const openCodeResult = await this.tryOpenCodeMoE('opencode/glm-5.3-flash-free', systemPrompt, messages, options);
-      if (openCodeResult) {
-        return {
-          content: openCodeResult,
-          engineUsed: 'GLM_5_3_FLASH_MOE',
-          latencyMs: Date.now() - startTime,
-        };
+    // 2. Try DeepSeek Direct Low-Latency API
+    if (this.deepSeekApiKey) {
+      try {
+        const result = await this.tryDeepSeekDirectApi(systemPrompt, messages, options);
+        if (result) {
+          return {
+            content: result.content,
+            engineUsed: result.engineUsed,
+            latencyMs: Date.now() - startTime,
+          };
+        }
+      } catch (err: any) {
+        console.warn('[AgroSLMClient] DeepSeek direct API failed:', err?.message || err);
       }
-    } catch (err: any) {
-      console.warn('[AgroSLMClient] OpenCode bridge unavailable:', err?.message || err);
     }
 
-    // 3. Guaranteed Comprehensive Agro-Intelligence Fallback
+    // 3. Try Groq Cloud Ultra-Low Latency Free API (DeepSeek-R1 Distill LLaMA 70B)
+    if (this.groqApiKey) {
+      try {
+        const result = await this.tryGroqCloudApi(systemPrompt, messages, options);
+        if (result) {
+          return {
+            content: result.content,
+            engineUsed: result.engineUsed,
+            latencyMs: Date.now() - startTime,
+          };
+        }
+      } catch (err: any) {
+        console.warn('[AgroSLMClient] Groq API failed:', err?.message || err);
+      }
+    }
+
+    // 4. Try Hugging Face Serverless Inference Router (DeepSeek-R1 Distill Qwen / 14B)
+    if (this.huggingFaceApiKey) {
+      try {
+        const result = await this.tryHuggingFaceApi(systemPrompt, messages, options);
+        if (result) {
+          return {
+            content: result.content,
+            engineUsed: result.engineUsed,
+            latencyMs: Date.now() - startTime,
+          };
+        }
+      } catch (err: any) {
+        console.warn('[AgroSLMClient] Hugging Face router failed:', err?.message || err);
+      }
+    }
+
+    // 5. Try Google Cloud Free-Tier MoE / Flash (Gemini 3.1 Flash-Lite -> 3.5 Flash-Lite -> 3.8 Flash)
+    if (this.geminiApiKey) {
+      try {
+        const result = await this.tryGeminiCascade(systemPrompt, messages, options);
+        if (result) {
+          return {
+            content: result.content,
+            engineUsed: result.engineUsed,
+            latencyMs: Date.now() - startTime,
+          };
+        }
+      } catch (err: any) {
+        console.warn('[AgroSLMClient] Gemini cascade failed:', err?.message || err);
+      }
+    }
+
+    // 6. Guaranteed Comprehensive Agro-Intelligence Fallback
     const fallbackText = this.generateDeterministicFallback(messages);
     return {
       content: fallbackText,
       engineUsed: 'DETERMINISTIC_FALLBACK',
       latencyMs: Date.now() - startTime,
     };
+  }
+
+  /**
+   * Invokes OpenRouter Free-Tier Endpoints via standard OpenAI format
+   */
+  private async tryOpenRouterApi(
+    systemPrompt: string,
+    messages: SLMMessage[],
+    options: SLMCompletionOptions
+  ): Promise<{ content: string; engineUsed: SLMResponse['engineUsed'] } | null> {
+    if (!this.openRouterApiKey) return null;
+
+    const candidateModels: Array<{ id: string; engine: SLMResponse['engineUsed'] }> = [
+      { id: 'deepseek/deepseek-r1:free', engine: 'OPENROUTER_DEEPSEEK_R1_FREE' },
+      { id: 'deepseek/deepseek-chat:free', engine: 'OPENROUTER_DEEPSEEK_CHAT_FREE' },
+      { id: 'qwen/qwen-2.5-72b-instruct:free', engine: 'OPENROUTER_QWEN_FREE' },
+      { id: 'meta-llama/llama-3.3-70b-instruct:free', engine: 'OPENROUTER_DEEPSEEK_CHAT_FREE' },
+    ];
+
+    const formattedMessages = [
+      { role: 'system', content: systemPrompt },
+      ...messages.map((m) => ({ role: m.role, content: m.content })),
+    ];
+
+    for (const model of candidateModels) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+
+        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.openRouterApiKey}`,
+            'HTTP-Referer': 'https://berryboyzz.vercel.app',
+            'X-Title': 'Berryboyzz Agro-Expert Concierge',
+          },
+          body: JSON.stringify({
+            model: model.id,
+            messages: formattedMessages,
+            temperature: options.temperature ?? 0.3,
+            max_tokens: options.maxTokens ?? 1024,
+          }),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeout);
+
+        if (!res.ok) continue;
+
+        const data = await res.json();
+        let content = data.choices?.[0]?.message?.content;
+        if (content && typeof content === 'string') {
+          // Strip out <think> tags from DeepSeek R1 reasoning traces
+          content = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+          if (content.length > 0) {
+            return { content, engineUsed: model.engine };
+          }
+        }
+      } catch (err: any) {
+        console.warn(`[AgroSLMClient] OpenRouter ${model.id} failed:`, err?.message || err);
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Invokes DeepSeek direct REST API (deepseek-chat)
+   */
+  private async tryDeepSeekDirectApi(
+    systemPrompt: string,
+    messages: SLMMessage[],
+    options: SLMCompletionOptions
+  ): Promise<{ content: string; engineUsed: SLMResponse['engineUsed'] } | null> {
+    if (!this.deepSeekApiKey) return null;
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+
+      const res = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.deepSeekApiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages.map((m) => ({ role: m.role, content: m.content })),
+          ],
+          temperature: options.temperature ?? 0.3,
+          max_tokens: options.maxTokens ?? 1024,
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeout);
+
+      if (!res.ok) return null;
+
+      const data = await res.json();
+      const content = data.choices?.[0]?.message?.content;
+      if (content && typeof content === 'string' && content.trim().length > 0) {
+        return { content: content.trim(), engineUsed: 'DEEPSEEK_DIRECT_API' };
+      }
+    } catch (err: any) {
+      console.warn('[AgroSLMClient] DeepSeek direct API error:', err?.message || err);
+    }
+
+    return null;
+  }
+
+  /**
+   * Invokes Groq Cloud ultra-fast inference (DeepSeek-R1 Distill LLaMA 70B)
+   */
+  private async tryGroqCloudApi(
+    systemPrompt: string,
+    messages: SLMMessage[],
+    options: SLMCompletionOptions
+  ): Promise<{ content: string; engineUsed: SLMResponse['engineUsed'] } | null> {
+    if (!this.groqApiKey) return null;
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 7000);
+
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.groqApiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'deepseek-r1-distill-llama-70b',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages.map((m) => ({ role: m.role, content: m.content })),
+          ],
+          temperature: options.temperature ?? 0.3,
+          max_tokens: options.maxTokens ?? 1024,
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeout);
+
+      if (!res.ok) return null;
+
+      const data = await res.json();
+      let content = data.choices?.[0]?.message?.content;
+      if (content && typeof content === 'string') {
+        content = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+        if (content.length > 0) {
+          return { content, engineUsed: 'GROQ_DEEPSEEK_R1' };
+        }
+      }
+    } catch (err: any) {
+      console.warn('[AgroSLMClient] Groq API error:', err?.message || err);
+    }
+
+    return null;
+  }
+
+  /**
+   * Invokes Hugging Face serverless router (DeepSeek-R1 Distill Qwen / 14B)
+   */
+  private async tryHuggingFaceApi(
+    systemPrompt: string,
+    messages: SLMMessage[],
+    options: SLMCompletionOptions
+  ): Promise<{ content: string; engineUsed: SLMResponse['engineUsed'] } | null> {
+    if (!this.huggingFaceApiKey) return null;
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+
+      const res = await fetch('https://router.huggingface.co/hf-inference/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.huggingFaceApiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-14B',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages.map((m) => ({ role: m.role, content: m.content })),
+          ],
+          temperature: options.temperature ?? 0.3,
+          max_tokens: options.maxTokens ?? 1024,
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeout);
+
+      if (!res.ok) return null;
+
+      const data = await res.json();
+      let content = data.choices?.[0]?.message?.content;
+      if (content && typeof content === 'string') {
+        content = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+        if (content.length > 0) {
+          return { content, engineUsed: 'HUGGINGFACE_ROUTER' };
+        }
+      }
+    } catch (err: any) {
+      console.warn('[AgroSLMClient] Hugging Face error:', err?.message || err);
+    }
+
+    return null;
   }
 
   /**
@@ -161,56 +447,6 @@ export class AgroSLMClient {
     }
 
     return null;
-  }
-
-  /**
-   * Invokes OpenCode Flash MoE models when running in local Node environment
-   */
-  private async tryOpenCodeMoE(
-    modelId: string,
-    systemPrompt: string,
-    messages: SLMMessage[],
-    options: SLMCompletionOptions
-  ): Promise<string | null> {
-    if (typeof process === 'undefined' || !process.versions?.node) {
-      return null;
-    }
-
-    try {
-      const { execFile } = await import('node:child_process');
-      const { promisify } = await import('node:util');
-      const fs = await import('node:fs');
-      const execFileAsync = promisify(execFile);
-
-      if (!fs.existsSync(this.openCodeBinary)) {
-        return null;
-      }
-
-      const promptSegments: string[] = [`[SYSTEM INSTRUCTION]\n${systemPrompt}\n`];
-      for (const msg of messages) {
-        promptSegments.push(`[${msg.role.toUpperCase()}]: ${msg.content}`);
-      }
-      promptSegments.push('[ASSISTANT]:');
-      const fullPrompt = promptSegments.join('\n\n');
-
-      const { stdout } = await execFileAsync(
-        this.openCodeBinary,
-        ['run', fullPrompt, '-m', modelId, '--pure'],
-        {
-          timeout: 15000,
-          maxBuffer: 2 * 1024 * 1024,
-          env: {
-            ...process.env,
-            PATH: `/Users/arjavdmehta/.nvm/versions/node/v24.3.0/bin:${process.env.PATH || ''}:/usr/local/bin:/usr/bin:/bin`,
-          },
-        }
-      );
-
-      const cleaned = stdout.replace(/^> build · .*\n*/g, '').trim();
-      return cleaned.length > 0 ? cleaned : null;
-    } catch {
-      return null;
-    }
   }
 
   /**
