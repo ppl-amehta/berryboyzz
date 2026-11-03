@@ -161,22 +161,34 @@
   <PostStoryBackdrop activeSection={activeSectionId} />
 
   <!-- Cultivar Showcase -->
-  <BerryShowcase />
+  <div class="content-auto">
+    <BerryShowcase />
+  </div>
 
   <!-- Commercial Models (NPVH / Polytunnel / Grow-Bay) -->
-  <CEAInfrastructure />
+  <div class="content-auto">
+    <CEAInfrastructure />
+  </div>
 
   <!-- Dynamic ROI & Capex Horizon Calculator -->
-  <DynamicROICalculator />
+  <div class="content-auto">
+    <DynamicROICalculator />
+  </div>
 
   <!-- Investment Tiers -->
-  <InvestmentLadder />
+  <div class="content-auto">
+    <InvestmentLadder />
+  </div>
 
   <!-- 6-Pillar Biological OS -->
-  <BiologicalOS />
+  <div class="content-auto">
+    <BiologicalOS />
+  </div>
 
   <!-- Farm Tour Bookings & Masterclasses -->
-  <FarmTourBooking />
+  <div class="content-auto">
+    <FarmTourBooking />
+  </div>
 </div>
 
 <!-- Telemetry Bottom Bar -->

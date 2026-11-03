@@ -4,11 +4,14 @@
   import Footer from '#components/Footer.svelte';
   import { injectSpeedInsights } from '@vercel/speed-insights';
   import { onMount } from 'svelte';
+  import { scheduleBackgroundTask } from '#utils/scheduler';
   
   let { children } = $props();
 
   onMount(() => {
-    injectSpeedInsights({ framework: 'sveltekit' });
+    scheduleBackgroundTask(() => {
+      injectSpeedInsights({ framework: 'sveltekit' });
+    });
   });
 </script>
 

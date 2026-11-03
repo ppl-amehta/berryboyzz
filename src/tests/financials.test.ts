@@ -37,4 +37,29 @@ describe('Financial Engine & Commercial ROI Modeling', () => {
     const capexPerAcre = syndicateCapex / targetAcreage;
     expect(capexPerAcre).toBe(800000); // Scaled efficiency
   });
+
+  it('computes multi-year DCF, NPV, and IRR via computeFinancialModel off-thread engine', async () => {
+    const { computeFinancialModel } = await import('../lib/workers/agro-calculator.worker');
+    const result = computeFinancialModel({
+      acreage: 2.5,
+      capexPerAcre: 3600000,
+      setupCostPerAcre: 4800000,
+      opexPerAcre: 480000,
+      yieldMultiplier: 1.0,
+      baseYieldKgPerAcre: 12500,
+      avgWholesalePricePerKg: 1560,
+      includeSubsidy: true,
+      discountRate: 0.10,
+    });
+
+    expect(result.rawCapex).toBe(9000000); // 2.5 * 3.6M
+    expect(result.eligibleSubsidy).toBe(3600000); // 40% of 9M (below 4M cap)
+    expect(result.netCapex).toBe(5400000);
+    expect(result.annualYieldKg).toBe(31250);
+    expect(result.projections).toHaveLength(10);
+    expect(result.npv10Year).toBeGreaterThan(0);
+    expect(parseFloat(result.irrPercentage)).toBeGreaterThan(20);
+    expect(result.sensitivity.priceDown20.ebitda).toBeLessThan(result.sensitivity.priceBaseline.ebitda);
+    expect(result.sensitivity.priceUp20.ebitda).toBeGreaterThan(result.sensitivity.priceBaseline.ebitda);
+  });
 });

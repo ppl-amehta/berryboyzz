@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { Calculator, MessageCircle, AlertCircle, TrendingUp, ShieldCheck, HelpCircle } from '@lucide/svelte';
   import { buildWhatsAppUrl } from '#utils/whatsapp';
+  import { computeFinancialModel, type CalculationOutput } from '#lib/workers/agro-calculator.worker';
 
   interface ModelOption {
     id: string;
@@ -66,33 +68,53 @@
   const model = $derived(MODELS.find((m) => m.id === selectedModelId) || MODELS[0]);
   const berry = $derived(BERRY_PRICING[selectedBerryKey] || BERRY_PRICING.raspberry);
 
-  const calculations = $derived.by(() => {
-    const rawCapex = acreage * model.capexPerAcre;
-    const setupCost = acreage * model.setupCostPerAcre;
-    const eligibleSubsidy = includeSubsidy ? Math.min(rawCapex * 0.40, 4000000) : 0;
-    const netCapex = rawCapex - eligibleSubsidy;
+  let worker: Worker | null = null;
+  let calculations = $state<CalculationOutput>(
+    computeFinancialModel({
+      acreage: 2.5,
+      capexPerAcre: 3600000,
+      setupCostPerAcre: 4800000,
+      opexPerAcre: 480000,
+      yieldMultiplier: 1.0,
+      baseYieldKgPerAcre: 12500,
+      avgWholesalePricePerKg: 1560,
+      includeSubsidy: true,
+    })
+  );
 
-    const annualYieldKg = Math.round(acreage * berry.baseYieldKgPerAcre * model.yieldMultiplier);
-    const annualGrossRevenue = annualYieldKg * berry.avgWholesalePricePerKg;
-    const annualOpex = acreage * model.opexPerAcre;
-    const annualNetEBITDA = annualGrossRevenue - annualOpex;
-
-    const rawMonths = annualNetEBITDA > 0 ? (netCapex / (annualNetEBITDA / 12)) : 36;
-    const breakevenMonths = Math.max(16, Math.min(18, Math.round(rawMonths)));
-    const roiAnnualPercentage = netCapex > 0 ? ((annualNetEBITDA / netCapex) * 100).toFixed(1) : '0';
-
-    return {
-      rawCapex,
-      setupCost,
-      eligibleSubsidy,
-      netCapex,
-      annualYieldKg,
-      annualGrossRevenue,
-      annualOpex,
-      annualNetEBITDA,
-      breakevenMonths,
-      roiAnnualPercentage,
+  onMount(() => {
+    if (typeof window !== 'undefined' && window.Worker) {
+      try {
+        worker = new Worker(new URL('../workers/agro-calculator.worker.ts', import.meta.url), { type: 'module' });
+        worker.onmessage = (e: MessageEvent<CalculationOutput>) => {
+          calculations = e.data;
+        };
+      } catch {
+        // Fallback to inline compute if workers blocked
+      }
+    }
+    return () => {
+      worker?.terminate();
     };
+  });
+
+  $effect(() => {
+    const input = {
+      acreage,
+      capexPerAcre: model.capexPerAcre,
+      setupCostPerAcre: model.setupCostPerAcre,
+      opexPerAcre: model.opexPerAcre,
+      yieldMultiplier: model.yieldMultiplier,
+      baseYieldKgPerAcre: berry.baseYieldKgPerAcre,
+      avgWholesalePricePerKg: berry.avgWholesalePricePerKg,
+      includeSubsidy,
+    };
+
+    if (worker) {
+      worker.postMessage(input);
+    } else {
+      calculations = computeFinancialModel(input);
+    }
   });
 
   const whatsappUrl = $derived(
@@ -294,6 +316,12 @@
                   After {calculations.breakevenMonths} Months
                 </strong>
               </div>
+            </div>
+
+            <!-- Worker-Accelerated Institutional Metric Strip -->
+            <div class="flex justify-between items-center pt-2 border-t border-emerald-300/40 dark:border-emerald-700/40 text-[11px] font-mono">
+              <span class="text-emerald-900 dark:text-emerald-300">Project IRR: <strong class="font-bold">{calculations.irrPercentage}%</strong></span>
+              <span class="text-emerald-900 dark:text-emerald-300">10-Yr NPV: <strong class="font-bold">₹{(calculations.npv10Year / 100000).toFixed(1)} Lakhs</strong></span>
             </div>
           </div>
         </div>

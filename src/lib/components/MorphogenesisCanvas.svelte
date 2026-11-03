@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { asyncDecodeImage, scheduleBackgroundTask, yieldToMain } from '#utils/scheduler';
 
   let { progress = 0 } = $props<{ progress: number }>();
   let canvas: HTMLCanvasElement | null = $state(null);
@@ -109,35 +110,32 @@
 
   onMount(() => {
     if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: true });
+    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
     if (!ctx) return;
 
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    // Preload initial frame immediately; defer remaining frames to idle
+    // Asynchronously decode initial frame off main thread for instant, hitch-free LCP
     const loadedImages: HTMLImageElement[] = [];
-    const img0 = new Image();
-    img0.src = FRAMES[0].src;
-    img0.onload = () => {
-      loadedImages[0] = img0;
-    };
+    asyncDecodeImage(FRAMES[0].src)
+      .then((img) => {
+        loadedImages[0] = img;
+      })
+      .catch(() => {});
 
-    const loadRemainingFrames = () => {
-      FRAMES.slice(1).forEach((frame, idx) => {
-        const img = new Image();
-        img.src = frame.src;
-        img.onload = () => {
-          loadedImages[idx + 1] = img;
-        };
-      });
-    };
-
-    if (typeof requestIdleCallback !== 'undefined') {
-      requestIdleCallback(loadRemainingFrames, { timeout: 2500 });
-    } else {
-      setTimeout(loadRemainingFrames, 300);
-    }
+    // Defer remaining frames sequentially in background cycles, yielding to prevent Long Tasks
+    scheduleBackgroundTask(async () => {
+      for (let i = 1; i < FRAMES.length; i++) {
+        try {
+          const img = await asyncDecodeImage(FRAMES[i].src);
+          loadedImages[i] = img;
+        } catch {
+          // Graceful fallback
+        }
+        await yieldToMain();
+      }
+    });
 
     // Initialize 28 atmospheric ambient spore / mist particles
     const particles: Particle[] = Array.from({ length: 28 }, () => ({
@@ -395,31 +393,29 @@
     ctx.restore();
   }
 
-  function drawFeatheringVignette(
-    ctx: CanvasRenderingContext2D,
-    w: number,
-    h: number,
-    isDark: boolean
-  ) {
-    ctx.save();
+  let cachedVignetteKey = '';
+  let cachedTopGrad: CanvasGradient | null = null;
+  let cachedBtmGrad: CanvasGradient | null = null;
+  let cachedVignetteGrad: CanvasGradient | null = null;
+
+  function getFeatheringGradients(ctx: CanvasRenderingContext2D, w: number, h: number, isDark: boolean) {
+    const key = `${w}x${h}_${isDark}`;
+    if (key === cachedVignetteKey && cachedTopGrad && cachedBtmGrad && cachedVignetteGrad) {
+      return { topGrad: cachedTopGrad, btmGrad: cachedBtmGrad, vignette: cachedVignetteGrad };
+    }
+
+    cachedVignetteKey = key;
     const bgColor = isDark ? '#0C0A09' : '#FAF9F6';
 
-    // Top soft feathering gradient
-    const topGrad = ctx.createLinearGradient(0, 0, 0, h * 0.24);
-    topGrad.addColorStop(0, bgColor);
-    topGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = topGrad;
-    ctx.fillRect(0, 0, w, h * 0.24);
+    cachedTopGrad = ctx.createLinearGradient(0, 0, 0, h * 0.24);
+    cachedTopGrad.addColorStop(0, bgColor);
+    cachedTopGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
-    // Bottom soft feathering gradient
-    const btmGrad = ctx.createLinearGradient(0, h * 0.76, 0, h);
-    btmGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
-    btmGrad.addColorStop(1, bgColor);
-    ctx.fillStyle = btmGrad;
-    ctx.fillRect(0, h * 0.76, w, h * 0.24);
+    cachedBtmGrad = ctx.createLinearGradient(0, h * 0.76, 0, h);
+    cachedBtmGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    cachedBtmGrad.addColorStop(1, bgColor);
 
-    // Soft perimeter vignette for cinematic depth
-    const vignette = ctx.createRadialGradient(
+    cachedVignetteGrad = ctx.createRadialGradient(
       w * 0.5,
       h * 0.5,
       Math.min(w, h) * 0.35,
@@ -427,8 +423,27 @@
       h * 0.5,
       Math.max(w, h) * 0.7
     );
-    vignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
-    vignette.addColorStop(1, isDark ? 'rgba(12, 10, 9, 0.45)' : 'rgba(250, 249, 246, 0.35)');
+    cachedVignetteGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    cachedVignetteGrad.addColorStop(1, isDark ? 'rgba(12, 10, 9, 0.45)' : 'rgba(250, 249, 246, 0.35)');
+
+    return { topGrad: cachedTopGrad, btmGrad: cachedBtmGrad, vignette: cachedVignetteGrad };
+  }
+
+  function drawFeatheringVignette(
+    ctx: CanvasRenderingContext2D,
+    w: number,
+    h: number,
+    isDark: boolean
+  ) {
+    ctx.save();
+    const { topGrad, btmGrad, vignette } = getFeatheringGradients(ctx, w, h, isDark);
+
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(0, 0, w, h * 0.24);
+
+    ctx.fillStyle = btmGrad;
+    ctx.fillRect(0, h * 0.76, w, h * 0.24);
+
     ctx.fillStyle = vignette;
     ctx.fillRect(0, 0, w, h);
 
