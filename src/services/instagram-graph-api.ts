@@ -1,5 +1,5 @@
 /**
- * Meta Instagram Graph API (v22.0) Integration Engine
+ * Meta Instagram Graph API (v26.0) Integration Engine
  * Direct programmatic control for:
  * - Direct Messaging (DMs) with Quick Replies
  * - Automated Comment Moderation & Inline Replies
@@ -54,7 +54,7 @@ export class InstagramGraphApiService {
     this.config = {
       instagramAccountId: config.instagramAccountId || '',
       accessToken: config.accessToken || '',
-      apiVersion: config.apiVersion || 'v22.0',
+      apiVersion: config.apiVersion || 'v26.0',
       appSecret: config.appSecret || '',
     };
     this.baseUrl = `https://graph.facebook.com/${this.config.apiVersion}`;

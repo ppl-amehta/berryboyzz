@@ -11,7 +11,7 @@ describe('MetaSystemUserManager', () => {
     appId: '123456789012345',
     appSecret: 'abcdef0123456789abcdef0123456789',
     businessId: '987654321098765',
-    apiVersion: 'v21.0',
+    apiVersion: 'v26.0',
   };
 
   let manager: MetaSystemUserManager;
@@ -61,7 +61,7 @@ describe('MetaSystemUserManager', () => {
 
     const debugInfo = await manager.debugToken('EAAG_TEST_TOKEN');
     expect(fetchSpy).toHaveBeenCalledWith(
-      expect.stringContaining('https://graph.facebook.com/v21.0/debug_token'),
+      expect.stringContaining('https://graph.facebook.com/v26.0/debug_token'),
       expect.any(Object)
     );
     expect(debugInfo.isValid).toBe(true);

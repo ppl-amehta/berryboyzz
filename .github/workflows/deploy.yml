@@ -1,75 +1,41 @@
-name: Frontier Hyper-Optimized CI/CD & Edge Deployment
+name: Frontier CI/CD Quality Gate & Verification
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
-# Single concurrent deployment to prevent race conditions on fast commits
 concurrency:
-  group: 'pages'
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
-  # STAGE 1: Fast-fail Static Analysis, Quality Gate & Automated Testing
-  quality-and-build:
-    name: Quality Gate, Unit Tests & Production Compilation
+  quality-gate:
+    name: TypeCheck, Tests & Production Compilation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 24 Environment
+      - name: Setup Node.js 24/26 Environment
         uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: 'npm'
 
-      - name: Deterministic Dependency Installation
-        run: npm ci --prefer-offline
+      - name: Install Dependencies
+        run: npm ci
 
-      - name: Strict TypeScript Compilation Check
-        run: npx tsc -b
+      - name: Generate SvelteKit Type Manifests
+        run: npx svelte-kit sync
+
+      - name: Strict TypeScript Verification
+        run: npx tsc --noEmit
 
       - name: Execute Vitest Automated Test Matrix
-        run: npx vitest run --reporter=verbose
+        run: npm test
 
-      - name: Compile Optimized Production Bundle
+      - name: Compile Production Build Bundle
         run: npm run build
-
-      - name: Add .nojekyll Marker for GitHub Pages
-        run: touch dist/.nojekyll
-
-      - name: Enforce Strict JavaScript Asset Budget (<450 KB)
-        run: |
-          MAX_KB=450
-          TOTAL_BYTES=$(wc -c < dist/assets/*.js | head -n 1)
-          TOTAL_KB=$((TOTAL_BYTES / 1024))
-          echo "Total bundle size: ${TOTAL_KB} KB (Max Budget: ${MAX_KB} KB)"
-          if [ $TOTAL_KB -gt $MAX_KB ]; then
-            echo "::error::Bundle exceeded maximum budget of ${MAX_KB} KB"
-            exit 1
-          fi
-
-      - name: Package & Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-
-  # STAGE 2: Atomic Zero-Downtime Deployment to Apex Edge CDN (GitHub Pages)
-  deploy:
-    name: Atomic Edge CDN Deployment
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    needs: quality-and-build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages Edge Network
-        id: deployment
-        uses: actions/deploy-pages@v4

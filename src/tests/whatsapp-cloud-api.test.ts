@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { WhatsAppCloudApiService } from '../services/whatsapp-cloud-api';
 
-describe('WhatsApp Cloud API Service (Frontier Meta Graph API v21.0)', () => {
+describe('WhatsApp Cloud API Service (Frontier Meta Graph API v26.0)', () => {
   const mockConfig = {
     phoneNumberId: '105938472918234',
     accessToken: 'EAAG_MOCK_ACCESS_TOKEN_XYZ',
     verifyToken: 'test_verify_token_123',
-    apiVersion: 'v21.0',
+    apiVersion: 'v26.0',
   };
 
   let service: WhatsAppCloudApiService;
@@ -130,7 +130,7 @@ describe('WhatsApp Cloud API Service (Frontier Meta Graph API v21.0)', () => {
       expect(fetchSpy).toHaveBeenCalledTimes(1);
 
       const [url, options] = fetchSpy.mock.calls[0];
-      expect(url).toBe('https://graph.facebook.com/v21.0/105938472918234/messages');
+      expect(url).toBe('https://graph.facebook.com/v26.0/105938472918234/messages');
       expect(options?.headers).toMatchObject({
         'Authorization': 'Bearer EAAG_MOCK_ACCESS_TOKEN_XYZ',
         'Content-Type': 'application/json',

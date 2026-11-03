@@ -1,5 +1,5 @@
 /**
- * Meta WhatsApp Cloud API (Graph API v22.0) Integration Engine
+ * Meta WhatsApp Cloud API (Graph API v26.0) Integration Engine
  * Provides end-to-end bidirectional messaging, webhook verification,
  * interactive button/list dispatch, and automated conversational routing.
  */
@@ -13,7 +13,7 @@ export interface WhatsAppConfig {
   accessToken: string;
   verifyToken: string;
   appSecret?: string;
-  apiVersion?: string; // defaults to 'v22.0'
+  apiVersion?: string; // defaults to 'v26.0'
 }
 
 export interface InboundWhatsAppMessage {
@@ -50,7 +50,7 @@ export class WhatsAppCloudApiService {
   constructor(config: WhatsAppConfig) {
     this.config = {
       ...config,
-      apiVersion: config.apiVersion || 'v22.0',
+      apiVersion: config.apiVersion || 'v26.0',
     };
     this.baseUrl = `https://graph.facebook.com/${this.config.apiVersion}/${this.config.phoneNumberId}`;
   }

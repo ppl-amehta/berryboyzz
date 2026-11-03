@@ -9,7 +9,7 @@ describe('InstagramGraphApiService', () => {
   const mockConfig: InstagramConfig = {
     instagramAccountId: '17841400012345678',
     accessToken: 'EAAG_MOCK_INSTAGRAM_TOKEN_123',
-    apiVersion: 'v21.0',
+    apiVersion: 'v26.0',
   };
 
   let service: InstagramGraphApiService;
@@ -90,7 +90,7 @@ describe('InstagramGraphApiService', () => {
     ]);
 
     expect(fetchSpy).toHaveBeenCalledWith(
-      'https://graph.facebook.com/v21.0/17841400012345678/messages',
+      'https://graph.facebook.com/v26.0/17841400012345678/messages',
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
@@ -114,7 +114,7 @@ describe('InstagramGraphApiService', () => {
     );
 
     expect(fetchSpy).toHaveBeenCalledWith(
-      'https://graph.facebook.com/v21.0/comment_999888777/replies',
+      'https://graph.facebook.com/v26.0/comment_999888777/replies',
       expect.objectContaining({
         method: 'POST',
         body: expect.stringContaining('Our Primocane yield peaks'),

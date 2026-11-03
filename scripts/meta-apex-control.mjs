@@ -50,7 +50,7 @@ export async function executeCliCommand(command, flags = {}, env = process.env) 
   const appSecret = env.META_APP_SECRET || env.WHATSAPP_APP_SECRET || '';
   const businessId = flags['business-id'] || env.META_BUSINESS_ID || '';
   const systemUserId = flags['system-user-id'] || env.META_SYSTEM_USER_ID || '';
-  const apiVersion = env.META_API_VERSION || 'v21.0';
+  const apiVersion = env.META_API_VERSION || 'v26.0';
 
   switch (command) {
     case 'audit': {
