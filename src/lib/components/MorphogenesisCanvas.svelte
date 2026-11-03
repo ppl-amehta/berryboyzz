@@ -185,14 +185,29 @@
     );
     observer.observe(canvas);
 
-    const render = () => {
+    let lastRenderTime = 0;
+
+    const render = (time = performance.now()) => {
       if (!isVisible) {
         animId = 0;
         return;
       }
+
+      const diff = Math.abs(target.current - current.current);
+      if (diff > 0.0002) {
+        // Active scroll interpolation: buttery 60fps / 120fps motion
+        current.current += (target.current - current.current) * 0.08;
+      } else {
+        current.current = target.current;
+        // Idle ambient rendering: throttle to ~15fps (66ms) to free mobile CPU and stabilize Speed Index
+        if (time - lastRenderTime < 66) {
+          animId = requestAnimationFrame(render);
+          return;
+        }
+      }
+
+      lastRenderTime = time;
       tickCount++;
-      // Smooth lerp on scroll progress for buttery 60fps/120fps motion
-      current.current += (target.current - current.current) * 0.075;
       const p = Math.min(Math.max(current.current, 0), 1);
 
       const isDark = document.documentElement.classList.contains('dark');
