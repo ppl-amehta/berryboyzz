@@ -1,5 +1,5 @@
 {
-  "extends": "./.svelte-kit/tsconfig.json",
+  "extends": "$app/tsconfig",
   "compilerOptions": {
     "target": "ES2022",
     "useDefineForClassFields": true,
@@ -31,6 +31,7 @@
   ],
   "exclude": [
     "node_modules",
-    "scripts"
+    "scripts",
+    "scripts/**/*"
   ]
 }

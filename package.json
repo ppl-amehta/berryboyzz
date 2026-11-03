@@ -3,6 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": "^24.15.0 || >=26.0.0"
+  },
   "imports": {
     "#lib/*": "./src/lib/*",
     "#components/*": "./src/lib/components/*",
@@ -15,6 +18,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
+    "check": "svelte-kit sync && tsc --noEmit",
     "meta:cli": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs",
     "meta:audit": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs audit",
     "meta:simulate": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs simulate",

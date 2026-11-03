@@ -4,7 +4,7 @@
 # ==============================================================================
 
 # STAGE 1: Build & Static Compilation
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 
 WORKDIR /app
 
@@ -23,8 +23,8 @@ FROM nginxinc/nginx-unprivileged:alpine-slim
 # Copy hardened nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy compiled static assets from builder
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy compiled static assets from SvelteKit builder
+COPY --from=builder /app/.svelte-kit/output/client /usr/share/nginx/html
 
 EXPOSE 8080
 

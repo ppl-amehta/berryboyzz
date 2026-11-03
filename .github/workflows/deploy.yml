@@ -28,11 +28,8 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Generate SvelteKit Type Manifests
-        run: npx svelte-kit sync
-
-      - name: Strict TypeScript Verification
-        run: npx tsc --noEmit
+      - name: Strict TypeScript & Type Manifest Verification
+        run: npm run check
 
       - name: Execute Vitest Automated Test Matrix
         run: npm test

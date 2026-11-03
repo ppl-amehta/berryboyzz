@@ -1,5 +1,5 @@
 {
-  "framework": "vite",
+  "framework": "sveltekit",
   "regions": ["bom1"],
   "cleanUrls": true,
   "headers": [
