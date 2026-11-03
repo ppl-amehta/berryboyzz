@@ -27,7 +27,7 @@
 
 ---
 
-## 🛠️ Modern Tech Stack & Architecture
+## 🛠️ Tech Stack & Architecture
 
 - **Core Framework:** SvelteKit 3.1.1 + Svelte 5 Runes (`$state`, `$derived`, `$props`)
 - **Compilation & Bundling:** Vite 8.3.5 with native **Rolldown** Rust bundler
@@ -68,7 +68,7 @@ npm run meta:cli -- audit
 
 ---
 
-## 🧪 Frontier CI/CD Quality Gate
+## 🧪 CI/CD Quality Gate
 
 On every commit to `main` and all pull requests, the `.github/workflows/deploy.yml` pipeline enforces:
 1. **TypeCheck & Manifest Verification:** `npm run check` (`svelte-kit sync` + `tsc --noEmit`).
