@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { WhatsAppCloudApiService } from '$services/whatsapp-cloud-api';
+import { WhatsAppCloudApiService } from '#services/whatsapp-cloud-api';
 
 export const prerender = false;
 
@@ -49,8 +49,9 @@ export const POST: RequestHandler = async ({ request, platform }) => {
             try {
               await whatsappService.generateAutoReply(msg);
               console.log('[WhatsApp AutoReply Sent Successfully to]:', msg.from);
-            } catch (replyErr: any) {
-              console.error('[WhatsApp AutoReply Error]:', replyErr?.message || replyErr);
+            } catch (replyErr) {
+              const errMsg = replyErr instanceof Error ? replyErr.message : String(replyErr);
+              console.error('[WhatsApp AutoReply Error]:', errMsg);
             }
           }
         })();
@@ -60,22 +61,20 @@ export const POST: RequestHandler = async ({ request, platform }) => {
           platform.context.waitUntil(backgroundTask);
         } else {
           // Unblock HTTP response immediately while keeping task attached
-          backgroundTask.catch((err) => console.error('[WhatsApp Unhandled Background Error]:', err));
+          backgroundTask.catch((err) => {
+            const errMsg = err instanceof Error ? err.message : String(err);
+            console.error('[WhatsApp Unhandled Background Error]:', errMsg);
+          });
         }
       }
     }
 
     // Immediately return HTTP 200 to satisfy Meta's 3-second SLA
-    return new Response(JSON.stringify({ status: 'EVENT_RECEIVED' }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (err: any) {
-    console.error('[WhatsApp Webhook Inbound Parse Error]:', err?.message || err);
+    return Response.json({ status: 'EVENT_RECEIVED' });
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error('[WhatsApp Webhook Inbound Parse Error]:', errMsg);
     // Still return 200 to prevent Meta retry floods on bad payload structures
-    return new Response(JSON.stringify({ status: 'EVENT_RECEIVED' }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return Response.json({ status: 'EVENT_RECEIVED' });
   }
 };

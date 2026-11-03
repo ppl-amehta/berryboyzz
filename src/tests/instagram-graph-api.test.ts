@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   InstagramGraphApiService,
-  InstagramConfig,
-  InboundInstagramMessage,
+  type InstagramConfig,
+  type InboundInstagramMessage,
 } from '../services/instagram-graph-api';
 
 describe('InstagramGraphApiService', () => {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { MessageCircle, X, Send, Sparkles, ChevronRight, RefreshCw, UserCheck, PhoneCall, CheckCircle2 } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
 
   interface ChatMessage {
     id: string;

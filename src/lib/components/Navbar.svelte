@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Sprout, Menu, X, MessageCircle, ChevronRight, Phone, Sun, Moon } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
-  import { themeManager } from '$lib/theme.svelte';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
+  import { themeManager } from '#lib/theme.svelte';
 
   let mobileMenuOpen = $state(false);
 

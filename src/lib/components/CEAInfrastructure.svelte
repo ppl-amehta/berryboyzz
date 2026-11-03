@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { COMMERCIAL_MODELS } from '$data/commercialModels';
+  import { COMMERCIAL_MODELS } from '#data/commercialModels';
   import { Warehouse, CheckCircle2, MessageCircle, ArrowRight } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
 </script>
 
 <section id="commercial-models" class="py-24 px-4 sm:px-6 lg:px-8 bg-transparent relative">

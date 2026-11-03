@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Sprout, MessageCircle, MapPin, Phone, Mail, ArrowUpRight } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
 
   const footerWhatsAppUrl = buildWhatsAppUrl({
     leadSource: 'footer_desk',

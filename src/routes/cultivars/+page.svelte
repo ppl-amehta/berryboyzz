@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BERRIES_DATA } from '$data/berriesData';
+  import { BERRIES_DATA } from '#data/berriesData';
   import { ArrowRight, Sprout, Sparkles } from '@lucide/svelte';
 </script>
 

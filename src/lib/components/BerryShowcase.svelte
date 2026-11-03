@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { BERRIES_DATA } from '$data/berriesData';
+  import { BERRIES_DATA } from '#data/berriesData';
   import { ArrowRight, Sparkles, CheckCircle2, MessageCircle } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
 
   let selectedBerryId = $state(BERRIES_DATA[0].id);
   const currentBerry = $derived(BERRIES_DATA.find((b) => b.id === selectedBerryId) || BERRIES_DATA[0]);

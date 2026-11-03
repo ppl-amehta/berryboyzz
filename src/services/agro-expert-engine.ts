@@ -12,7 +12,7 @@
  */
 
 import { randomBytes } from 'node:crypto';
-import { AgroSLMClient, type SLMMessage } from './agro-slm-client.js';
+import { AgroSLMClient, type SLMMessage } from '#services/agro-slm-client';
 import {
   AgroToolsKernel,
   type ROICalculationResult,
@@ -20,7 +20,7 @@ import {
   type CultivarSpecResult,
   type TourReservationResult,
   type HumanEscalationDossier
-} from './agro-tools.js';
+} from '#services/agro-tools';
 
 export type InboundChannel = 'web' | 'whatsapp' | 'instagram';
 export type CustomerArchetype = 'INVESTOR' | 'FARMER' | 'TOURIST' | 'BUYER' | 'GENERAL';

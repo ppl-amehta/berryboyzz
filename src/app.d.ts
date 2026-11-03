@@ -1,4 +1,4 @@
-// See https://kit.svelte.dev/docs/types#app
+// See https://svelte.dev/docs/kit/types#app
 // for information about these interfaces
 declare global {
   namespace App {
@@ -6,7 +6,11 @@ declare global {
     // interface Locals {}
     // interface PageData {}
     // interface PageState {}
-    // interface Platform {}
+    interface Platform {
+      context?: {
+        waitUntil(promise: Promise<unknown>): void;
+      };
+    }
   }
 }
 

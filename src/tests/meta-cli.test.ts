@@ -8,8 +8,8 @@ describe('Meta Apex Control CLI', () => {
     const parsed = parseCliArgs(args);
 
     expect(parsed.command).toBe('audit');
-    expect(parsed.flags['business-id']).toBe('biz_999');
-    expect(parsed.flags['json']).toBe(true);
+    expect((parsed.flags as Record<string, any>)['business-id']).toBe('biz_999');
+    expect((parsed.flags as Record<string, any>)['json']).toBe(true);
   });
 
   it('parses send-wa arguments', () => {
@@ -17,8 +17,8 @@ describe('Meta Apex Control CLI', () => {
     const parsed = parseCliArgs(args);
 
     expect(parsed.command).toBe('send-wa');
-    expect(parsed.flags['to']).toBe('919822188800');
-    expect(parsed.flags['text']).toBe('Hello from Apex CLI');
+    expect((parsed.flags as Record<string, any>)['to']).toBe('919822188800');
+    expect((parsed.flags as Record<string, any>)['text']).toBe('Hello from Apex CLI');
   });
 
   it('executes simulate command locally and generates agent response', async () => {
@@ -28,8 +28,8 @@ describe('Meta Apex Control CLI', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(result.response.intent).toBe('roi_inquiry');
-    expect(result.response.text).toContain('₹53.50 Lakhs/yr');
+    expect(result.response?.intent).toBe('roi_inquiry');
+    expect(result.response?.text).toContain('₹53.50 Lakhs/yr');
   });
 
   it('returns helpful error on unknown command', async () => {

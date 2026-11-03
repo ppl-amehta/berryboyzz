@@ -1,5 +1,5 @@
 /**
- * Meta Instagram Graph API (v21.0) Integration Engine
+ * Meta Instagram Graph API (v22.0) Integration Engine
  * Direct programmatic control for:
  * - Direct Messaging (DMs) with Quick Replies
  * - Automated Comment Moderation & Inline Replies
@@ -54,7 +54,7 @@ export class InstagramGraphApiService {
     this.config = {
       instagramAccountId: config.instagramAccountId || '',
       accessToken: config.accessToken || '',
-      apiVersion: config.apiVersion || 'v21.0',
+      apiVersion: config.apiVersion || 'v22.0',
       appSecret: config.appSecret || '',
     };
     this.baseUrl = `https://graph.facebook.com/${this.config.apiVersion}`;
@@ -165,6 +165,7 @@ export class InstagramGraphApiService {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {
@@ -192,6 +193,7 @@ export class InstagramGraphApiService {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ message: text }),
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {
@@ -226,6 +228,7 @@ export class InstagramGraphApiService {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {
@@ -250,6 +253,7 @@ export class InstagramGraphApiService {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ creation_id: creationId }),
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {
@@ -274,6 +278,7 @@ export class InstagramGraphApiService {
         'Authorization': `Bearer ${this.config.accessToken}`,
         'Accept': 'application/json',
       },
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {

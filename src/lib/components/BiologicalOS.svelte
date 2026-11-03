@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BIOLOGICAL_OS_PILLARS } from '$data/commercialModels';
+  import { BIOLOGICAL_OS_PILLARS } from '#data/commercialModels';
   import { Dna, CheckCircle2 } from '@lucide/svelte';
 </script>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Sprout, MessageCircle, Thermometer, Droplets, Gauge, ShieldCheck, ArrowLeft, CheckCircle2, Utensils } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
 
   let { data } = $props();
   const berry = $derived(data.berry);

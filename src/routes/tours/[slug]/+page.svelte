@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Clock, MapPin, Users, MessageCircle, Calendar, ArrowLeft, CheckCircle2 } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
 
   let { data } = $props();
   const tour = $derived(data.tour);

@@ -1,5 +1,5 @@
 {
-  "extends": "./.svelte-kit/tsconfig.json",
+  "extends": "$app/tsconfig",
   "compilerOptions": {
     "target": "ES2022",
     "useDefineForClassFields": true,
@@ -7,7 +7,6 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "moduleDetection": "force",
@@ -19,7 +18,11 @@
   },
   "include": [
     "src",
-    ".svelte-kit/ambient.d.ts",
-    ".svelte-kit/types/**/$types.d.ts"
+    "test",
+    "*"
+  ],
+  "exclude": [
+    "src/service-worker",
+    "scripts"
   ]
 }

@@ -124,7 +124,9 @@ describe('AgroExpertEngine Idempotency & Turn Resolution', () => {
     expect(result.archetype).toBe('FARMER');
     expect(result.leadToken).toMatch(/^BB-AGRO-[A-Z0-9]+-[A-Z0-9]+$/);
     expect(result.richDataCard?.type).toBe('water_audit');
-    expect(result.richDataCard?.data.bicarbonateRisk).toBe('SEVERE');
+    if (result.richDataCard?.type === 'water_audit') {
+      expect(result.richDataCard.data.bicarbonateRisk).toBe('SEVERE');
+    }
   });
 
   it('triggers human escalation with Chief Agronomist contact when requested and keeps it sticky', async () => {

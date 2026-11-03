@@ -4,7 +4,7 @@ import {
   verifyMetaSignature,
   handleWebhookVerification,
   processMetaWebhookEvent,
-  MetaWebhookConfig,
+  type MetaWebhookConfig,
 } from '../services/meta-webhook-utils';
 
 describe('Meta Webhook Engine', () => {

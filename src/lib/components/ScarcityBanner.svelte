@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Flame, Clock, ArrowRight } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
 
   const bannerWhatsAppUrl = buildWhatsAppUrl({
     leadSource: 'scarcity_banner',

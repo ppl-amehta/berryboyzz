@@ -1,9 +1,18 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vite';
+import adapter from '@sveltejs/adapter-vercel';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [sveltekit(), tailwindcss()],
+  plugins: [
+    sveltekit({
+      adapter: adapter({
+        runtime: 'nodejs22.x',
+        split: true,
+      }),
+    }),
+    tailwindcss(),
+  ],
   server: {
     port: 3000,
     open: false,

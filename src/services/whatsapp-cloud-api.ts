@@ -1,11 +1,11 @@
 /**
- * Meta WhatsApp Cloud API (Graph API v21.0) Integration Engine
+ * Meta WhatsApp Cloud API (Graph API v22.0) Integration Engine
  * Provides end-to-end bidirectional messaging, webhook verification,
  * interactive button/list dispatch, and automated conversational routing.
  */
 
-import { generateLeadCode } from '../utils/whatsapp.ts';
-import { AgroExpertEngine } from './agro-expert-engine.js';
+import { generateLeadCode } from '#utils/whatsapp';
+import { AgroExpertEngine } from '#services/agro-expert-engine';
 
 export interface WhatsAppConfig {
   phoneNumberId: string;
@@ -13,7 +13,7 @@ export interface WhatsAppConfig {
   accessToken: string;
   verifyToken: string;
   appSecret?: string;
-  apiVersion?: string; // defaults to 'v21.0'
+  apiVersion?: string; // defaults to 'v22.0'
 }
 
 export interface InboundWhatsAppMessage {
@@ -50,7 +50,7 @@ export class WhatsAppCloudApiService {
   constructor(config: WhatsAppConfig) {
     this.config = {
       ...config,
-      apiVersion: config.apiVersion || 'v21.0',
+      apiVersion: config.apiVersion || 'v22.0',
     };
     this.baseUrl = `https://graph.facebook.com/${this.config.apiVersion}/${this.config.phoneNumberId}`;
   }
@@ -247,7 +247,7 @@ export class WhatsAppCloudApiService {
         await this.sendInteractiveButtons(
           recipient,
           result.replyText,
-          result.suggestedButtons.map((b) => ({ id: b.id, title: b.title.slice(0, 20) })),
+          result.suggestedButtons.map((b: { id: string; title: string }) => ({ id: b.id, title: b.title.slice(0, 20) })),
           'Berryboyzz™ Precision Agronomy',
           'Pune · Satara · Maharashtra'
         );
@@ -278,6 +278,7 @@ export class WhatsAppCloudApiService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
+        signal: AbortSignal.timeout(10000),
       });
 
       if (!response.ok) {

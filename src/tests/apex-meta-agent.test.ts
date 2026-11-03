@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   ApexMetaAgent,
-  ApexAgentConfig,
-  UnifiedChannelEvent,
+  type ApexAgentConfig,
+  type UnifiedChannelEvent,
 } from '../services/apex-meta-agent';
 
 describe('ApexMetaAgent', () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   MetaSystemUserManager,
-  MetaSystemUserConfig,
+  type MetaSystemUserConfig,
   SYSTEM_USER_ROOT_SCOPES,
 } from '../services/meta-system-user';
 

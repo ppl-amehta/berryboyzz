@@ -12,7 +12,7 @@
  * 6. Deterministic Agro-Intelligence Semantic Knowledge Engine Guardrail
  */
 
-import { AgroToolsKernel } from './agro-tools.js';
+import { AgroToolsKernel } from '#services/agro-tools';
 
 export interface SLMMessage {
   role: 'user' | 'assistant' | 'system';

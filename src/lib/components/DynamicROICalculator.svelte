@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Calculator, MessageCircle, AlertCircle, TrendingUp, ShieldCheck, HelpCircle } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
 
   interface ModelOption {
     id: string;

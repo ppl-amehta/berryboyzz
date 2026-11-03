@@ -1,19 +1,19 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import MorphogenesisCanvas from '$components/MorphogenesisCanvas.svelte';
-  import StoryPhaseOverlay from '$components/StoryPhaseOverlay.svelte';
-  import TelemetryTicker from '$components/TelemetryTicker.svelte';
-  import ScarcityBanner from '$components/ScarcityBanner.svelte';
-  import PostStoryBackdrop from '$components/PostStoryBackdrop.svelte';
-  import BerryShowcase from '$components/BerryShowcase.svelte';
-  import CEAInfrastructure from '$components/CEAInfrastructure.svelte';
-  import DynamicROICalculator from '$components/DynamicROICalculator.svelte';
-  import InvestmentLadder from '$components/InvestmentLadder.svelte';
-  import BiologicalOS from '$components/BiologicalOS.svelte';
-  import FarmTourBooking from '$components/FarmTourBooking.svelte';
-  import AgenticConcierge from '$components/AgenticConcierge.svelte';
+  import MorphogenesisCanvas from '#components/MorphogenesisCanvas.svelte';
+  import StoryPhaseOverlay from '#components/StoryPhaseOverlay.svelte';
+  import TelemetryTicker from '#components/TelemetryTicker.svelte';
+  import ScarcityBanner from '#components/ScarcityBanner.svelte';
+  import PostStoryBackdrop from '#components/PostStoryBackdrop.svelte';
+  import BerryShowcase from '#components/BerryShowcase.svelte';
+  import CEAInfrastructure from '#components/CEAInfrastructure.svelte';
+  import DynamicROICalculator from '#components/DynamicROICalculator.svelte';
+  import InvestmentLadder from '#components/InvestmentLadder.svelte';
+  import BiologicalOS from '#components/BiologicalOS.svelte';
+  import FarmTourBooking from '#components/FarmTourBooking.svelte';
+  import AgenticConcierge from '#components/AgenticConcierge.svelte';
   import { Sprout, ArrowDown, ChevronRight, MessageCircle } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
 
   let scrollProgress = $state(0);
   let currentPhaseIndex = $state(0);

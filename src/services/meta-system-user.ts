@@ -1,6 +1,6 @@
 /**
  * Meta Business Suite — Root-Level System User & Asset Orchestration Engine
- * Graph API v21.0
+ * Graph API v22.0
  * 
  * Manages root programmatic control across:
  * - Permanent System User Access Tokens & scope verification
@@ -73,7 +73,7 @@ export class MetaSystemUserManager {
       appSecret: config.appSecret || '',
       businessId: config.businessId || '',
       systemUserId: config.systemUserId || '',
-      apiVersion: config.apiVersion || 'v21.0',
+      apiVersion: config.apiVersion || 'v22.0',
     };
     this.baseUrl = `https://graph.facebook.com/${this.config.apiVersion}`;
   }
@@ -110,6 +110,7 @@ export class MetaSystemUserManager {
       headers: {
         'Accept': 'application/json',
       },
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {
@@ -148,6 +149,7 @@ export class MetaSystemUserManager {
         'Authorization': `Bearer ${this.config.systemUserToken}`,
         'Accept': 'application/json',
       },
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {
@@ -183,6 +185,7 @@ export class MetaSystemUserManager {
         'Authorization': `Bearer ${this.config.systemUserToken}`,
         'Accept': 'application/json',
       },
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {
@@ -217,6 +220,7 @@ export class MetaSystemUserManager {
         'Authorization': `Bearer ${this.config.systemUserToken}`,
         'Accept': 'application/json',
       },
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {
@@ -239,6 +243,7 @@ export class MetaSystemUserManager {
         'Authorization': `Bearer ${this.config.systemUserToken}`,
         'Content-Type': 'application/json',
       },
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {
@@ -267,6 +272,7 @@ export class MetaSystemUserManager {
       body: JSON.stringify({
         subscribed_fields: subscribedFields,
       }),
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { INVESTMENT_TIERS } from '$data/commercialModels';
+  import { INVESTMENT_TIERS } from '#data/commercialModels';
   import { ShieldCheck, MessageCircle, ArrowRight, CheckCircle2 } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
 </script>
 
 <section id="investment-tiers" class="py-24 px-4 sm:px-6 lg:px-8 bg-transparent relative">

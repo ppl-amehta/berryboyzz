@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { TOUR_PACKAGES } from '$data/tourPackages';
+  import { TOUR_PACKAGES } from '#data/tourPackages';
   import { Clock, MapPin, MessageCircle, ArrowRight, CheckCircle2 } from '@lucide/svelte';
-  import { buildWhatsAppUrl } from '$utils/whatsapp';
+  import { buildWhatsAppUrl } from '#utils/whatsapp';
 
   const harvestTour = TOUR_PACKAGES.find((t) => t.id === 'harvest-visit') || TOUR_PACKAGES[0];
   const studyTour = TOUR_PACKAGES.find((t) => t.id === 'study-tour') || TOUR_PACKAGES[1];

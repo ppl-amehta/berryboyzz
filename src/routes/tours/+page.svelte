@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { TOUR_PACKAGES } from '$data/tourPackages';
+  import { TOUR_PACKAGES } from '#data/tourPackages';
   import { Clock, MapPin, ArrowRight, Compass, Users } from '@lucide/svelte';
 </script>
 

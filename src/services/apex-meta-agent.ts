@@ -12,12 +12,12 @@
  * - Channel-specific response rendering
  */
 
-import { generateLeadCode } from '../utils/whatsapp.ts';
-import { AgroToolsKernel } from './agro-tools.js';
-import { AgroExpertEngine } from './agro-expert-engine.js';
-import { WhatsAppCloudApiService, type WhatsAppConfig } from './whatsapp-cloud-api.ts';
-import { InstagramGraphApiService, type InstagramConfig } from './instagram-graph-api.ts';
-import { MetaSystemUserManager, type MetaSystemUserConfig } from './meta-system-user.ts';
+import { generateLeadCode } from '#utils/whatsapp';
+import { AgroToolsKernel } from '#services/agro-tools';
+import { AgroExpertEngine } from '#services/agro-expert-engine';
+import { WhatsAppCloudApiService, type WhatsAppConfig } from '#services/whatsapp-cloud-api';
+import { InstagramGraphApiService, type InstagramConfig } from '#services/instagram-graph-api';
+import { MetaSystemUserManager, type MetaSystemUserConfig } from '#services/meta-system-user';
 
 export type ChannelType = 'whatsapp' | 'instagram';
 export type PersonaType = 'investor' | 'grower' | 'connoisseur';
