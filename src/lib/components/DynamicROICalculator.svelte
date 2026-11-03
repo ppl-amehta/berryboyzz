@@ -206,10 +206,12 @@
               40% subsidy on eligible CEA capital expenditures (capped at ₹40L)
             </span>
           </div>
-          <label class="relative inline-flex items-center cursor-pointer">
+          <label for="nhb-subsidy-toggle" class="relative inline-flex items-center cursor-pointer">
             <input
+              id="nhb-subsidy-toggle"
               type="checkbox"
               bind:checked={includeSubsidy}
+              aria-label="Include 40% National Horticulture Board (NHB) Subsidy"
               class="sr-only peer"
             />
             <div class="w-11 h-6 bg-[#D8D3CA] dark:bg-[#38332E] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-800"></div>

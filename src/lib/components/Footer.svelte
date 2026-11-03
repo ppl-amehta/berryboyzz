@@ -115,7 +115,7 @@
     <div class="pt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[11px] text-[#6B6661] dark:text-[#9E9689]">
       <div class="space-y-1">
         <p>© 2026 Berryboyzz Agro-Ventures LLP. All rights reserved.</p>
-        <p class="text-[#8C867E] dark:text-[#7A746D]">
+        <p class="text-[#575049] dark:text-[#A8A196]">
           * Mandatory Disclosure: Cold chain logistics & SLM charges not included in baseline capex. Projected 16–18 month break-even timelines are modeled upon standard horticultural protocols.
         </p>
       </div>

@@ -71,7 +71,7 @@
 
           <!-- Action Button -->
           <div class="pt-6 mt-6 border-t border-white/60 dark:border-white/10 space-y-2">
-            <span class="text-[10px] text-[#7A746D] dark:text-[#8C867E] block text-center">
+            <span class="text-[10px] text-[#575049] dark:text-[#A8A196] block text-center">
               * Cold chain logistics & SLM not included
             </span>
             <a

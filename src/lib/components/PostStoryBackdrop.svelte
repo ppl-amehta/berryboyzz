@@ -67,14 +67,21 @@
     <div
       class="absolute inset-0 transition-opacity duration-1000 ease-in-out {isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
     >
-      <!-- Rich High-Resolution Photographic Canvas (Vivid, Not Bleached or Washed Out) -->
-      <img
-        src={bd.image}
-        alt={bd.alt}
-        class="w-full h-full object-cover object-center filter saturate-[1.12] contrast-[1.06] brightness-[0.98] dark:brightness-[0.72]"
-        loading="lazy"
-        decoding="async"
-      />
+      <!-- Rich High-Resolution Photographic Canvas (Vivid, Next-Gen Formats) -->
+      <picture>
+        <source srcset={bd.image.replace('.jpg', '.avif')} type="image/avif" />
+        <source srcset={bd.image.replace('.jpg', '.webp')} type="image/webp" />
+        <img
+          src={bd.image}
+          alt={bd.alt}
+          class="w-full h-full object-cover object-center filter saturate-[1.12] contrast-[1.06] brightness-[0.98] dark:brightness-[0.72]"
+          loading="lazy"
+          decoding="async"
+          fetchpriority="low"
+          width="1376"
+          height="768"
+        />
+      </picture>
 
       <!-- Subtle Ambient Lighting Film (Adds Atmospheric Depth Without Washing Out Details) -->
       <div class="absolute inset-0 bg-black/10 dark:bg-black/35 pointer-events-none"></div>

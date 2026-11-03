@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     sveltekit({
       adapter: adapter({
-        runtime: 'nodejs22.x',
+        runtime: 'nodejs26.x',
         split: true,
       }),
     }),

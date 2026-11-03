@@ -72,6 +72,7 @@
           href="tel:+918888681136"
           class="p-2.5 rounded-xl border border-[#E8E4DC] dark:border-[#2E2A27] bg-white dark:bg-[#181513] text-[#4A4643] dark:text-[#D4CEBF] hover:text-[#1A1615] dark:hover:text-white hover:border-[#D4CEBF] dark:hover:border-[#443E38] transition-all"
           title="Direct Agronomy Desk"
+          aria-label="Call Direct Agronomy Desk"
         >
           <Phone class="w-4 h-4" />
         </a>

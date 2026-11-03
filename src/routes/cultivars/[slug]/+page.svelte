@@ -226,7 +226,7 @@
       <p class="text-xs text-[#6B6661] dark:text-[#9E9689]">
         Certified tissue-culture saplings, automated fertigation charts, and guaranteed B2B off-take support.
       </p>
-      <span class="text-[11px] text-[#8C867E] dark:text-[#7A746D] block pt-1">
+      <span class="text-[11px] text-[#575049] dark:text-[#A8A196] block pt-1">
         * Cold chain logistics & SLM charges not included.
       </span>
     </div>

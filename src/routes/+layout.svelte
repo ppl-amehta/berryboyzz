@@ -2,13 +2,13 @@
   import '../app.css';
   import Navbar from '#components/Navbar.svelte';
   import Footer from '#components/Footer.svelte';
-  import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+  import { injectSpeedInsights } from '@vercel/speed-insights';
   import { onMount } from 'svelte';
   
   let { children } = $props();
 
   onMount(() => {
-    injectSpeedInsights();
+    injectSpeedInsights({ framework: 'sveltekit' });
   });
 </script>
 

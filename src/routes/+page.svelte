@@ -22,19 +22,30 @@
 
   onMount(() => {
     let ticking = false;
+    let cachedStoryTop = 0;
+    let cachedStoryHeight = 0;
+    let cachedWindowHeight = window.innerHeight;
+
+    const measureStory = () => {
+      if (storyContainer) {
+        cachedStoryTop = storyContainer.offsetTop;
+        cachedStoryHeight = storyContainer.offsetHeight;
+        cachedWindowHeight = window.innerHeight;
+      }
+    };
+
+    measureStory();
+    window.addEventListener('resize', measureStory, { passive: true });
 
     const onScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          if (storyContainer) {
-            const rect = storyContainer.getBoundingClientRect();
-            const totalScrollable = storyContainer.offsetHeight - window.innerHeight;
-            if (totalScrollable > 0) {
-              const currentScrolled = -rect.top;
-              const p = Math.min(Math.max(currentScrolled / totalScrollable, 0), 1);
-              scrollProgress = p;
-              currentPhaseIndex = Math.min(Math.floor(p * 7), 6);
-            }
+          const totalScrollable = cachedStoryHeight - cachedWindowHeight;
+          if (totalScrollable > 0) {
+            const currentScrolled = window.scrollY - cachedStoryTop;
+            const p = Math.min(Math.max(currentScrolled / totalScrollable, 0), 1);
+            scrollProgress = p;
+            currentPhaseIndex = Math.min(Math.floor(p * 7), 6);
           }
           ticking = false;
         });
@@ -75,6 +86,7 @@
 
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', measureStory);
       observer.disconnect();
     };
   });

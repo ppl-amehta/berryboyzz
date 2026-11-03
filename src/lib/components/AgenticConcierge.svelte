@@ -162,7 +162,7 @@
     <button
       onclick={() => (isOpen = true)}
       class="estate-card flex items-center gap-2.5 px-4 py-3 rounded-full bg-emerald-800 text-white shadow-xl hover:bg-emerald-900 transition-all cursor-pointer group hover:scale-105"
-      aria-label="Open Agronomy Concierge"
+      aria-label="AI Agronomy Desk — Open Concierge"
     >
       <MessageCircle class="w-5 h-5 text-emerald-200" />
       <span class="text-xs font-bold uppercase tracking-wider">
@@ -328,6 +328,7 @@
             bind:value={inputMessage}
             onkeydown={handleKeyDown}
             placeholder="Ask Dr. Berryboy about capex, TDS, tours..."
+            aria-label="Ask Dr. Berryboy about capex, TDS, or tours"
             disabled={isSending}
             class="flex-1 bg-white/70 dark:bg-[#1A1715]/70 border border-[#E8E4DC] dark:border-[#282420] rounded-xl px-3 py-2 text-xs text-[#1A1615] dark:text-[#FAF9F6] focus:outline-hidden focus:ring-1 focus:ring-emerald-700"
           />

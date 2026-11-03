@@ -18,7 +18,7 @@
   const FRAMES: StoryFrame[] = [
     {
       id: 'seed',
-      src: '/story/frame-1-seed.jpg',
+      src: '/story/frame-1-seed.webp',
       title: 'Genetic Meristem Clone',
       stage: 'Phase 01 / 07',
       metric: '99.8% Clonal Purity',
@@ -28,7 +28,7 @@
     },
     {
       id: 'sprout',
-      src: '/story/frame-2-sprout.jpg',
+      src: '/story/frame-2-sprout.webp',
       title: 'Rhizosphere Inoculation',
       stage: 'Phase 02 / 07',
       metric: '5.8 pH · 1.6 EC Substrate',
@@ -38,7 +38,7 @@
     },
     {
       id: 'canopy',
-      src: '/story/frame-3-canopy.jpg',
+      src: '/story/frame-3-canopy.webp',
       title: 'High-Wire Trellis Canopy',
       stage: 'Phase 03 / 07',
       metric: '4,500 Canes / Acre · 360° PAR',
@@ -48,7 +48,7 @@
     },
     {
       id: 'bloom',
-      src: '/story/frame-4-bloom.jpg',
+      src: '/story/frame-4-bloom.webp',
       title: 'Synchronized Blossom',
       stage: 'Phase 04 / 07',
       metric: '100% Conical Drupelet Shape',
@@ -58,7 +58,7 @@
     },
     {
       id: 'ripening',
-      src: '/story/frame-5-ripening.jpg',
+      src: '/story/frame-5-ripening.webp',
       title: 'Anthocyanin Accumulation',
       stage: 'Phase 05 / 07',
       metric: '18.5° Brix · Deep Anthocyanin',
@@ -68,7 +68,7 @@
     },
     {
       id: 'harvest',
-      src: '/story/frame-6-harvest.jpg',
+      src: '/story/frame-6-harvest.webp',
       title: 'Dawn Harvest & Cooling',
       stage: 'Phase 06 / 07',
       metric: '2°C–4°C Forced-Air Pre-Cooling',
@@ -78,7 +78,7 @@
     },
     {
       id: 'punnet',
-      src: '/story/frame-7-punnet.jpg',
+      src: '/story/frame-7-punnet.webp',
       title: 'Luxury Retail & Export Punnet',
       stage: 'Phase 07 / 07',
       metric: '₹2,500 / kg Wholesale · 125g Punnet',
@@ -115,15 +115,29 @@
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    // Preload all 7 high-res master frames
+    // Preload initial frame immediately; defer remaining frames to idle
     const loadedImages: HTMLImageElement[] = [];
-    FRAMES.forEach((frame, idx) => {
-      const img = new Image();
-      img.src = frame.src;
-      img.onload = () => {
-        loadedImages[idx] = img;
-      };
-    });
+    const img0 = new Image();
+    img0.src = FRAMES[0].src;
+    img0.onload = () => {
+      loadedImages[0] = img0;
+    };
+
+    const loadRemainingFrames = () => {
+      FRAMES.slice(1).forEach((frame, idx) => {
+        const img = new Image();
+        img.src = frame.src;
+        img.onload = () => {
+          loadedImages[idx + 1] = img;
+        };
+      });
+    };
+
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(loadRemainingFrames, { timeout: 2500 });
+    } else {
+      setTimeout(loadRemainingFrames, 300);
+    }
 
     // Initialize 28 atmospheric ambient spore / mist particles
     const particles: Particle[] = Array.from({ length: 28 }, () => ({
@@ -146,16 +160,36 @@
       canvas.height = height * dpr;
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
     };
 
     handleResize();
     window.addEventListener('resize', handleResize, { passive: true });
 
-    let animId: number;
+    let animId = 0;
     let tickCount = 0;
+    let isVisible = true;
+
+    // Viewport intersection observer: immediately pause animation when canvas is scrolled out of view
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          isVisible = entry.isIntersecting;
+          if (isVisible && !animId) {
+            animId = requestAnimationFrame(render);
+          }
+        }
+      },
+      { rootMargin: '100px' }
+    );
+    observer.observe(canvas);
 
     const render = () => {
+      if (!isVisible) {
+        animId = 0;
+        return;
+      }
       tickCount++;
       // Smooth lerp on scroll progress for buttery 60fps/120fps motion
       current.current += (target.current - current.current) * 0.075;
@@ -231,7 +265,8 @@
     animId = requestAnimationFrame(render);
 
     return () => {
-      cancelAnimationFrame(animId);
+      if (animId) cancelAnimationFrame(animId);
+      observer.disconnect();
       window.removeEventListener('resize', handleResize);
     };
   });
