@@ -9,6 +9,8 @@ export default defineConfig({
       adapter: adapter({
         runtime: 'nodejs26.x',
         split: true,
+        maxDuration: 60,
+        memory: 1024,
       }),
     }),
     tailwindcss(),

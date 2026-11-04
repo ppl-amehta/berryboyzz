@@ -2,6 +2,10 @@ import type { RequestHandler } from './$types';
 import { AgroExpertEngine } from '#services/agro-expert-engine';
 
 export const prerender = false;
+export const config = {
+  maxDuration: 60,
+  runtime: 'nodejs26.x',
+};
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

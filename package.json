@@ -30,12 +30,13 @@
     "vercel:prod": "vercel deploy --prebuilt --prod"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.3.0-canary",
     "@vercel/speed-insights": "^2.1.0-canary",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
-    "@lucide/svelte": "^1.67.0",
+    "@lucide/svelte": "^1.68.0",
     "@sveltejs/adapter-vercel": "^7.0.2",
     "@sveltejs/kit": "^3.1.1",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",

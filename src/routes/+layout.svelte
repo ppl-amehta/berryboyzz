@@ -3,6 +3,7 @@
   import Navbar from '#components/Navbar.svelte';
   import Footer from '#components/Footer.svelte';
   import { injectSpeedInsights } from '@vercel/speed-insights';
+  import { inject as injectAnalytics } from '@vercel/analytics';
   import { onMount } from 'svelte';
   import { scheduleBackgroundTask } from '#utils/scheduler';
   
@@ -11,6 +12,7 @@
   onMount(() => {
     scheduleBackgroundTask(() => {
       injectSpeedInsights({ framework: 'sveltekit' });
+      injectAnalytics();
     });
   });
 </script>

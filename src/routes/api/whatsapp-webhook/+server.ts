@@ -2,6 +2,10 @@ import type { RequestHandler } from './$types';
 import { WhatsAppCloudApiService } from '#services/whatsapp-cloud-api';
 
 export const prerender = false;
+export const config = {
+  maxDuration: 60,
+  runtime: 'nodejs26.x',
+};
 
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'berryboyzz_webhook_verify_token_2026';
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID || '1127117767143751';
