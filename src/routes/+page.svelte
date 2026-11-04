@@ -34,7 +34,10 @@
       }
     };
 
-    measureStory();
+    // Asynchronously measure dimensions after initial frame paint to prevent forced synchronous reflow
+    requestAnimationFrame(() => {
+      measureStory();
+    });
     window.addEventListener('resize', measureStory, { passive: true });
 
     const onScroll = () => {

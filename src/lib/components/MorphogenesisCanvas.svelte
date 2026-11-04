@@ -113,8 +113,8 @@
     const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
     if (!ctx) return;
 
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    let width = window.innerWidth;
+    let height = window.innerHeight;
 
     // Asynchronously decode initial frame off main thread for instant, hitch-free LCP
     const loadedImages: HTMLImageElement[] = [];
@@ -197,8 +197,8 @@
         current.current += (target.current - current.current) * 0.08;
       } else {
         current.current = target.current;
-        // Idle ambient rendering: throttle to ~15fps (66ms) to free mobile CPU and stabilize Speed Index
-        if (time - lastRenderTime < 66) {
+        // Idle ambient rendering: throttle to ~10fps (100ms) to free mobile CPU and stabilize Speed Index & TTI
+        if (time - lastRenderTime < 100) {
           animId = requestAnimationFrame(render);
           return;
         }
@@ -320,13 +320,7 @@
     const offsetX = (w - drawW) * 0.5 + panX;
     const offsetY = (h - drawH) * 0.5 + panY;
 
-    // In dark mode, slightly balance brightness for deep obsidian ambiance
-    if (isDark) {
-      ctx.filter = 'brightness(0.88) contrast(1.08) saturate(1.15)';
-    } else {
-      ctx.filter = 'brightness(1.0) contrast(1.04) saturate(1.12)';
-    }
-
+    // Hardware-accelerated blit without software ctx.filter overhead (handled via CSS compositor filter on canvas element)
     ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
     ctx.restore();
   }
@@ -553,6 +547,6 @@
 
 <canvas
   bind:this={canvas}
-  class="fixed inset-0 pointer-events-none z-0 w-full h-full"
+  class="fixed inset-0 pointer-events-none z-0 w-full h-full filter saturate-[1.12] contrast-[1.04] brightness-[1.0] dark:brightness-[0.88] dark:contrast-[1.08] dark:saturate-[1.15]"
   aria-hidden="true"
 ></canvas>
