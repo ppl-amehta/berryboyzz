@@ -8,7 +8,7 @@
   });
 </script>
 
-<footer class="bg-white dark:bg-[#100E0D] border-t border-[#E8E4DC] dark:border-[#282420] text-[#1A1615] dark:text-[#FAF9F6] pt-16 pb-12 mt-24 transition-colors duration-300">
+<footer class="bg-white dark:bg-[#100E0D] border-t border-[#E8E4DC] dark:border-[#282420] text-[#1A1615] dark:text-[#FAF9F6] pt-16 pb-12 mt-24">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-[#E8E4DC] dark:border-[#282420]">
       <!-- Brand & Mission -->

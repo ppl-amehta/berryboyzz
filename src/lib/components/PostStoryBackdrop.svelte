@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
-  let { activeSection = 'cultivars' } = $props<{ activeSection?: string }>();
+  let { activeSection = '' } = $props<{ activeSection?: string }>();
 
   interface SectionBackdrop {
     id: string;
@@ -55,6 +53,16 @@
       darkTint: 'from-rose-950/20 via-amber-950/20 to-transparent',
     },
   ];
+
+  // JIT progressive backdrop instantiation: only loads high-resolution backdrop assets
+  // when the user scrolls into the corresponding section, zeroing initial network saturation.
+  let loadedSections = $state<Record<string, boolean>>({});
+
+  $effect(() => {
+    if (activeSection && !loadedSections[activeSection]) {
+      loadedSections[activeSection] = true;
+    }
+  });
 </script>
 
 <!-- Sticky Atmospheric Viewport Background Engine -->
@@ -67,21 +75,23 @@
     <div
       class="absolute inset-0 transition-opacity duration-1000 ease-in-out {isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
     >
-      <!-- Rich High-Resolution Photographic Canvas (Vivid, Next-Gen Formats) -->
-      <picture>
-        <source srcset={bd.image.replace('.jpg', '.avif')} type="image/avif" />
-        <source srcset={bd.image.replace('.jpg', '.webp')} type="image/webp" />
-        <img
-          src={bd.image}
-          alt={bd.alt}
-          class="w-full h-full object-cover object-center filter saturate-[1.12] contrast-[1.06] brightness-[0.98] dark:brightness-[0.72]"
-          loading="lazy"
-          decoding="async"
-          fetchpriority="low"
-          width="1376"
-          height="768"
-        />
-      </picture>
+      <!-- Rich High-Resolution Photographic Canvas (JIT instantiated on scroll) -->
+      {#if loadedSections[bd.id]}
+        <picture>
+          <source srcset={bd.image.replace('.jpg', '.avif')} type="image/avif" />
+          <source srcset={bd.image.replace('.jpg', '.webp')} type="image/webp" />
+          <img
+            src={bd.image}
+            alt={bd.alt}
+            class="w-full h-full object-cover object-center filter saturate-[1.12] contrast-[1.06] brightness-[0.98] dark:brightness-[0.72]"
+            loading="lazy"
+            decoding="async"
+            fetchpriority="low"
+            width="1376"
+            height="768"
+          />
+        </picture>
+      {/if}
 
       <!-- Subtle Ambient Lighting Film (Adds Atmospheric Depth Without Washing Out Details) -->
       <div class="absolute inset-0 bg-black/10 dark:bg-black/35 pointer-events-none"></div>
@@ -91,7 +101,7 @@
 
       <!-- Top & Bottom Feathering (Seamless Entry from Morphogenesis Canvas & Exit to Footer) -->
       <div
-        class="absolute inset-0 bg-gradient-to-b from-[#FAF9F6] via-transparent via-15% via-85% to-[#FAF9F6] dark:from-[#0C0A09] dark:via-transparent dark:to-[#0C0A09] opacity-95 pointer-events-none transition-colors duration-500"
+        class="absolute inset-0 bg-gradient-to-b from-[#FAF9F6] via-transparent via-15% via-85% to-[#FAF9F6] dark:from-[#0C0A09] dark:via-transparent dark:to-[#0C0A09] opacity-95 pointer-events-none"
       ></div>
 
       <!-- Cinematic Vignette for Depth -->

@@ -17,7 +17,7 @@
 
   let scrollProgress = $state(0);
   let currentPhaseIndex = $state(0);
-  let activeSectionId = $state('cultivars');
+  let activeSectionId = $state('');
   let storyContainer: HTMLDivElement | null = $state(null);
 
   onMount(() => {
