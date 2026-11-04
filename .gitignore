@@ -41,4 +41,8 @@ dist-ssr
 .env*
 !.env.example
 
+# Raw uncompressed media source folder
+media/
+
+
 

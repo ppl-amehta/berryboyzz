@@ -10,6 +10,7 @@
   import DynamicROICalculator from '#components/DynamicROICalculator.svelte';
   import InvestmentLadder from '#components/InvestmentLadder.svelte';
   import BiologicalOS from '#components/BiologicalOS.svelte';
+  import MediaGallery from '#components/MediaGallery.svelte';
   import FarmTourBooking from '#components/FarmTourBooking.svelte';
   import AgenticConcierge from '#components/AgenticConcierge.svelte';
   import { Sprout, ArrowDown, ChevronRight, MessageCircle } from '@lucide/svelte';
@@ -65,6 +66,7 @@
       'roi-calculator',
       'investment-tiers',
       'biological-os',
+      'field-gallery',
       'farm-tours',
     ];
 
@@ -186,6 +188,11 @@
   <!-- 6-Pillar Biological OS -->
   <div class="content-auto">
     <BiologicalOS />
+  </div>
+
+  <!-- Operational CEA Living Gallery -->
+  <div class="content-auto">
+    <MediaGallery />
   </div>
 
   <!-- Farm Tour Bookings & Masterclasses -->

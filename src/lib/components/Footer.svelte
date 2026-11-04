@@ -122,6 +122,7 @@
       <div class="flex items-center gap-4 text-xs font-medium">
         <a href="/#commercial-models" class="hover:underline">Investment Terms</a>
         <a href="/#biological-os" class="hover:underline">Biological OS</a>
+        <a href="/#field-gallery" class="hover:underline">Field Gallery</a>
         <a href="/tours/" class="hover:underline">Farm Visits</a>
       </div>
     </div>

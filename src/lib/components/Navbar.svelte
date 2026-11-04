@@ -50,6 +50,9 @@
         <a href="/#biological-os" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors py-1">
           Biological OS
         </a>
+        <a href="/#field-gallery" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors py-1">
+          Gallery
+        </a>
       </nav>
 
       <!-- Action Buttons -->
@@ -158,6 +161,14 @@
           class="px-3 py-2.5 rounded-lg hover:bg-[#F5F2EB] dark:hover:bg-[#201D1A] flex items-center justify-between"
         >
           <span>6-Pillar Biological OS</span>
+          <ChevronRight class="w-4 h-4 text-[#6B6661] dark:text-[#9E9689]" />
+        </a>
+        <a
+          href="/#field-gallery"
+          onclick={() => (mobileMenuOpen = false)}
+          class="px-3 py-2.5 rounded-lg hover:bg-[#F5F2EB] dark:hover:bg-[#201D1A] flex items-center justify-between"
+        >
+          <span>Living Field Gallery</span>
           <ChevronRight class="w-4 h-4 text-[#6B6661] dark:text-[#9E9689]" />
         </a>
       </nav>
