@@ -107,7 +107,7 @@
 <ScarcityBanner />
 
 <!-- Scrollytelling Hero Container -->
-<div bind:this={storyContainer} class="relative h-[450vh] bg-[#FAF9F6] dark:bg-[#0C0A09] transition-colors duration-500">
+<div bind:this={storyContainer} class="relative h-[450vh] bg-[#FAF9F6] dark:bg-[#0C0A09]">
   <!-- Fixed Procedural Canvas Engine -->
   {#if scrollProgress < 0.98}
     <MorphogenesisCanvas progress={scrollProgress} />
@@ -150,7 +150,7 @@
         </a>
       </div>
 
-      <div class="pt-12 text-[#6B6661] dark:text-[#9E9689] text-xs flex items-center justify-center gap-2 animate-bounce">
+      <div class="pt-12 text-[#6B6661] dark:text-[#9E9689] text-xs flex items-center justify-center gap-2 animate-bounce will-change-transform">
         <ArrowDown class="w-3.5 h-3.5 text-emerald-800 dark:text-emerald-400" />
         <span class="uppercase tracking-widest font-semibold text-[10px]">Scroll Down to Witness 7-Phase Living Morphogenesis</span>
       </div>

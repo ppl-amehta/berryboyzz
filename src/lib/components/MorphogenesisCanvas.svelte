@@ -116,26 +116,23 @@
     let width = window.innerWidth;
     let height = window.innerHeight;
 
-    // Asynchronously decode initial frame off main thread for instant, hitch-free LCP
+    // Just-in-Time Progressive Frame Decoder: Loads frames purely on-demand as user scrolls,
+    // eliminating initial page-load bandwidth contention and zeroing Total Blocking Time (TBT).
     const loadedImages: HTMLImageElement[] = [];
-    asyncDecodeImage(FRAMES[0].src)
-      .then((img) => {
-        loadedImages[0] = img;
-      })
-      .catch(() => {});
+    const requestedFrames = new Set<number>();
 
-    // Defer remaining frames sequentially in background cycles, yielding to prevent Long Tasks
-    scheduleBackgroundTask(async () => {
-      for (let i = 1; i < FRAMES.length; i++) {
-        try {
-          const img = await asyncDecodeImage(FRAMES[i].src);
-          loadedImages[i] = img;
-        } catch {
-          // Graceful fallback
-        }
-        await yieldToMain();
-      }
-    });
+    function requestFrame(index: number) {
+      if (index < 0 || index >= FRAMES.length || requestedFrames.has(index)) return;
+      requestedFrames.add(index);
+      asyncDecodeImage(FRAMES[index].src)
+        .then((img) => {
+          loadedImages[index] = img;
+        })
+        .catch(() => {});
+    }
+
+    // Load initial frame 0 immediately for instant zero-jank initial paint
+    requestFrame(0);
 
     // Initialize 28 atmospheric ambient spore / mist particles
     const particles: Particle[] = Array.from({ length: 28 }, () => ({
@@ -221,6 +218,15 @@
 
       // S-curve smoothstep for seamless cross-dissolve
       const easeFrac = segFrac * segFrac * (3 - 2 * segFrac);
+
+      // Just-in-time load required frames and prefetch adjacent frame on active scroll
+      requestFrame(indexA);
+      if (easeFrac > 0.001) {
+        requestFrame(indexB);
+      }
+      if (diff > 0.0002 && indexB + 1 < FRAMES.length) {
+        requestFrame(indexB + 1);
+      }
 
       // Continuous camera motion: subtle push-in zoom and micro-drift
       const zoomA = 1.0 + segFrac * 0.07;

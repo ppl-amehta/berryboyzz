@@ -54,7 +54,7 @@ export function scheduleBackgroundTask(task: () => void | Promise<void>): void {
   if (typeof requestIdleCallback !== 'undefined') {
     requestIdleCallback(() => {
       task();
-    }, { timeout: 2000 });
+    }, { timeout: 10000 });
     return;
   }
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { Calculator, MessageCircle, AlertCircle, TrendingUp, ShieldCheck, HelpCircle } from '@lucide/svelte';
   import { buildWhatsAppUrl } from '#utils/whatsapp';
   import { computeFinancialModel, type CalculationOutput } from '#lib/workers/agro-calculator.worker';
@@ -68,7 +67,6 @@
   const model = $derived(MODELS.find((m) => m.id === selectedModelId) || MODELS[0]);
   const berry = $derived(BERRY_PRICING[selectedBerryKey] || BERRY_PRICING.raspberry);
 
-  let worker: Worker | null = null;
   let calculations = $state<CalculationOutput>(
     computeFinancialModel({
       acreage: 2.5,
@@ -82,22 +80,6 @@
     })
   );
 
-  onMount(() => {
-    if (typeof window !== 'undefined' && window.Worker) {
-      try {
-        worker = new Worker(new URL('../workers/agro-calculator.worker.ts', import.meta.url), { type: 'module' });
-        worker.onmessage = (e: MessageEvent<CalculationOutput>) => {
-          calculations = e.data;
-        };
-      } catch {
-        // Fallback to inline compute if workers blocked
-      }
-    }
-    return () => {
-      worker?.terminate();
-    };
-  });
-
   $effect(() => {
     const input = {
       acreage,
@@ -110,11 +92,7 @@
       includeSubsidy,
     };
 
-    if (worker) {
-      worker.postMessage(input);
-    } else {
-      calculations = computeFinancialModel(input);
-    }
+    calculations = computeFinancialModel(input);
   });
 
   const whatsappUrl = $derived(

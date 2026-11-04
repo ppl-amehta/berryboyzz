@@ -8,7 +8,7 @@
   });
 </script>
 
-<div class="bg-[#FBF8EF] dark:bg-[#1A1408] border-y border-[#EADBBD] dark:border-[#3E3218] py-3.5 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+<div class="bg-[#FBF8EF] dark:bg-[#1A1408] border-y border-[#EADBBD] dark:border-[#3E3218] py-3.5 px-4 sm:px-6 lg:px-8">
   <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
     <div class="flex items-center gap-3">
       <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800/60">

@@ -168,7 +168,7 @@
       <span class="text-xs font-bold uppercase tracking-wider">
         AI Agronomy Desk
       </span>
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse will-change-[opacity] translate-z-0"></span>
     </button>
   {:else}
     <!-- Expanded Interactive Chat Drawer (Pareto Liquid Glass Material) -->

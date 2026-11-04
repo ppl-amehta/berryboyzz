@@ -31,7 +31,6 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   h1, h2, h3, .font-editorial {
@@ -71,7 +70,7 @@
   background-color: #FFFFFF;
   border: 1px solid #E8E4DC;
   box-shadow: 0 4px 20px -2px rgba(26, 22, 21, 0.04), 0 1px 3px rgba(26, 22, 21, 0.02);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dark .estate-card {
@@ -127,7 +126,7 @@
     inset 0 1px 2px 0 rgba(255, 255, 255, 0.95),
     inset 0 -1px 1px 0 rgba(0, 0, 0, 0.04);
   transform: translateZ(0);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dark .glass-panel {
@@ -179,4 +178,15 @@
 .content-auto {
   content-visibility: auto;
   contain-intrinsic-size: auto none auto 850px;
+}
+
+/* Compositor-Promoted Hardware Accelerated Animations (Prevents Non-Composited Flags in Lighthouse) */
+.animate-bounce {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.animate-pulse {
+  will-change: opacity;
+  transform: translateZ(0);
 }
