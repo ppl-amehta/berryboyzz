@@ -68,13 +68,38 @@ npm run meta:cli -- audit
 
 ---
 
-## 🧪 CI/CD Quality Gate
+## 🧪 CI/CD Quality Gate & GitOps Continuous Deployment
 
-On every commit to `main` and all pull requests, the `.github/workflows/deploy.yml` pipeline enforces:
+The `.github/workflows/deploy.yml` pipeline implements an automated GitOps deployment lifecycle decoupled from all developer machines:
+
+### Automated Pipeline Stages:
 1. **TypeCheck & Manifest Verification:** `npm run check` (`svelte-kit sync` + `tsc --noEmit`).
-2. **Vitest Automated Test Matrix:** 100% test pass rate across all 68 unit, agronomic, API, and webhook integration suites.
-3. **Production Compilation:** `npm run build` using Rolldown SSR + Prerendering + `@sveltejs/adapter-vercel`.
-4. **Traceable DevOps Deployment:** Continuous Vercel deployment synced with verified GitHub commits.
+2. **Vitest Automated Test Matrix:** 100% test pass rate across all 69 unit, agronomic, API, and webhook integration suites.
+3. **Deterministic Production Compilation:** `npm run build` using Rolldown SSR + Prerendering + `@sveltejs/adapter-vercel`.
+4. **Ephemeral Preview Deployments (Pull Requests):**
+   - Automatically pulls preview environment variables via Vercel CLI using `VERCEL_TOKEN`.
+   - Compiles immutable build artifacts with `vercel build`.
+   - Deploys prebuilt preview (`vercel deploy --prebuilt`).
+   - Automatically posts the live preview URL as a comment on the PR.
+5. **Zero-Downtime Production Releases (`main` push):**
+   - Pulls production environment variables.
+   - Compiles with `--prod` flag.
+   - Deploys immutable prebuilt artifacts directly to the edge network (`bom1` Mumbai region).
+
+### GitHub Secrets Configuration:
+Configure these three secrets in **GitHub Repository $\rightarrow$ Settings $\rightarrow$ Secrets and variables $\rightarrow$ Actions**:
+- `VERCEL_TOKEN`: Vercel Personal/Machine Access Token.
+- `VERCEL_ORG_ID`: `team_bm3YcarbVS0iXhALfg9ysiZi`
+- `VERCEL_PROJECT_ID`: `prj_47ijuZlhC4AwCG1rfUbxiYwPJwsK`
+
+---
+
+## 🔒 Zero-Local-Coupling Architecture
+
+- **No Developer Machine Reliance:** Deploys are executed purely by GitHub Actions runners using `--prebuilt` bundles; developer laptops never touch production deploy endpoints.
+- **Stateless Environment Injection:** All runtime secrets are managed centrally in Vercel Project Settings and injected dynamically at the edge into serverless routes (`/api/whatsapp-webhook`, `/api/chat`).
+- **Reproducible Toolchain:** Locked strictly to Node.js 24/26, Vite 8 Rolldown, TypeScript 6/7, and Svelte 5 Runes.
+
 
 ---
 

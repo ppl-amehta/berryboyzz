@@ -19,10 +19,15 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && tsc --noEmit",
-    "meta:cli": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs",
-    "meta:audit": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs audit",
-    "meta:simulate": "node --experimental-strip-types --env-file=.env scripts/meta-apex-control.mjs simulate",
-    "test": "vitest run"
+    "ci:verify": "svelte-kit sync && tsc --noEmit && vitest run",
+    "meta:cli": "node --experimental-strip-types --env-file-if-exists=.env scripts/meta-apex-control.mjs",
+    "meta:audit": "node --experimental-strip-types --env-file-if-exists=.env scripts/meta-apex-control.mjs audit",
+    "meta:simulate": "node --experimental-strip-types --env-file-if-exists=.env scripts/meta-apex-control.mjs simulate",
+    "test": "vitest run",
+    "vercel:pull": "vercel pull",
+    "vercel:build": "vercel build",
+    "vercel:deploy": "vercel deploy --prebuilt",
+    "vercel:prod": "vercel deploy --prebuilt --prod"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.1.0-canary",

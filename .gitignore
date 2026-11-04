@@ -33,9 +33,12 @@ dist-ssr
 .env.test.local
 .env.production.local
 
-# Local agent/tool configs
+# Local agent, IDE & tool configs
 .gemini/
-.vercel
+.agents/
+.vercel/
+.svelte-kit/
 .env*
-.svelte-kit
+!.env.example
+
 
