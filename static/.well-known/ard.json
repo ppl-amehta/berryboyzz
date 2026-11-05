@@ -1,0 +1,116 @@
+{
+  "$schema": "https://agentic-resource-discovery.org/schema/v1/ard.json",
+  "ard_version": "1.0",
+  "entity": {
+    "name": "Berryboyzz Agro-Ventures LLP",
+    "legal_name": "Berryboyzz Agro-Ventures Limited Liability Partnership",
+    "domain": "berryboyzz.in",
+    "description": "Institutional Controlled Environment Agriculture (CEA) superfruit agro-asset management platform operating commercial polyhouses, high-density substrate grow-bays, and certified nurseries across Pune & Satara, Maharashtra, India.",
+    "jurisdiction": "IN-MH",
+    "industry_category": "Controlled Environment Agriculture & Agro-Assets",
+    "primary_estate": {
+      "address": "Satara-Mahabaleshwar CEA Corridor, Satara, Maharashtra 415001, India",
+      "coordinates": {
+        "latitude": 17.6805,
+        "longitude": 73.9905
+      }
+    },
+    "contacts": {
+      "hotline": "+91 88886 81136",
+      "whatsapp": "https://wa.me/918888681136",
+      "email": "agro@berryboyzz.com"
+    }
+  },
+  "manifests": {
+    "llms_txt": "https://berryboyzz.in/llms.txt",
+    "llms_full_txt": "https://berryboyzz.in/llms-full.txt",
+    "sitemap_xml": "https://berryboyzz.in/sitemap.xml",
+    "webmcp": "https://berryboyzz.in/.well-known/webmcp.json"
+  },
+  "resources": [
+    {
+      "id": "homepage",
+      "name": "Berryboyzz Portal",
+      "uri": "https://berryboyzz.in/",
+      "content_type": "text/html",
+      "supports_markdown": true
+    },
+    {
+      "id": "cultivars-catalog",
+      "name": "Commercial Berry Cultivars",
+      "description": "Certified tissue-culture varieties of raspberries, blackberries, blueberries, and day-neutral strawberries.",
+      "uri": "https://berryboyzz.in/cultivars/",
+      "content_type": "text/html",
+      "supports_markdown": true
+    },
+    {
+      "id": "inbound-lead-api",
+      "name": "Inbound Lead & CEA Triage API",
+      "description": "Structured programmatic triage endpoint for commercial investors, landowners, and institutional off-take buyers.",
+      "uri": "https://berryboyzz.in/api/inbound-lead",
+      "method": "POST",
+      "content_type": "application/json",
+      "supports_markdown": true
+    },
+    {
+      "id": "public-roi-calculator",
+      "name": "Public Berry ROI Calculator Widget",
+      "description": "Embeddable interactive model for capital expenditure, MIDH subsidy allocations, and EBITDA payback horizons.",
+      "uri": "https://berryboyzz.in/embed/calculator/",
+      "content_type": "text/html",
+      "embeddable": true
+    },
+    {
+      "id": "farm-tours",
+      "name": "Agronomy Farm Tours & Masterclasses",
+      "description": "Educational delegations, polyhouse engineering masterclasses, and fresh harvest visits.",
+      "uri": "https://berryboyzz.in/tours/",
+      "content_type": "text/html",
+      "supports_markdown": true
+    }
+  ],
+  "tools": [
+    {
+      "name": "submit_lead",
+      "description": "Programmatically submit a qualified commercial inquiry, capital investment proposal, land partnership offer, or institutional berry off-take order to the Berryboyzz Agronomy Desk.",
+      "endpoint": "https://berryboyzz.in/api/inbound-lead",
+      "method": "POST",
+      "parameters": {
+        "type": "object",
+        "required": ["role", "name", "phone"],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["investor", "landowner", "buyer", "tour", "other"],
+            "description": "The category of inbound interest"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full legal name or authorized representative"
+          },
+          "organization": {
+            "type": "string",
+            "description": "Firm, family office, hotel chain, or estate name"
+          },
+          "phone": {
+            "type": "string",
+            "description": "WhatsApp or mobile contact number with country code"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Official email address"
+          },
+          "details": {
+            "type": "object",
+            "description": "Role-specific parameters such as capitalBracket, acres, volumePerWeek, deliveryHub, or tourTrack"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Specific project objectives or timeline requirements"
+          }
+        }
+      }
+    }
+  ]
+}

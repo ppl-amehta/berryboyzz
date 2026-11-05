@@ -12,42 +12,32 @@
   import BiologicalOS from '#components/BiologicalOS.svelte';
   import MediaGallery from '#components/MediaGallery.svelte';
   import FarmTourBooking from '#components/FarmTourBooking.svelte';
-  import AgenticConcierge from '#components/AgenticConcierge.svelte';
+  import InboundLeadEngine from '#components/InboundLeadEngine.svelte';
   import { Sprout, ArrowDown, ChevronRight, MessageCircle } from '@lucide/svelte';
   import { buildWhatsAppUrl } from '#utils/whatsapp';
+  import { scheduleBackgroundTask } from '#utils/scheduler';
 
   let scrollProgress = $state(0);
   let currentPhaseIndex = $state(0);
   let activeSectionId = $state('');
-  let storyContainer: HTMLDivElement | null = $state(null);
+  let AgenticConciergeComponent = $state<any>(null);
 
   onMount(() => {
     let ticking = false;
-    let cachedStoryTop = 0;
-    let cachedStoryHeight = 0;
     let cachedWindowHeight = window.innerHeight;
 
-    const measureStory = () => {
-      if (storyContainer) {
-        cachedStoryTop = storyContainer.offsetTop;
-        cachedStoryHeight = storyContainer.offsetHeight;
-        cachedWindowHeight = window.innerHeight;
-      }
+    const onResize = () => {
+      cachedWindowHeight = window.innerHeight;
     };
-
-    // Asynchronously measure dimensions after initial frame paint to prevent forced synchronous reflow
-    requestAnimationFrame(() => {
-      measureStory();
-    });
-    window.addEventListener('resize', measureStory, { passive: true });
+    window.addEventListener('resize', onResize, { passive: true });
 
     const onScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          const totalScrollable = cachedStoryHeight - cachedWindowHeight;
+          // Total scrollable height for 450vh story sequence without forced synchronous reflow DOM queries
+          const totalScrollable = cachedWindowHeight * 3.5;
           if (totalScrollable > 0) {
-            const currentScrolled = window.scrollY - cachedStoryTop;
-            const p = Math.min(Math.max(currentScrolled / totalScrollable, 0), 1);
+            const p = Math.min(Math.max(window.scrollY / totalScrollable, 0), 1);
             scrollProgress = p;
             currentPhaseIndex = Math.min(Math.floor(p * 7), 6);
           }
@@ -68,6 +58,7 @@
       'biological-os',
       'field-gallery',
       'farm-tours',
+      'inbound-engine',
     ];
 
     const observer = new IntersectionObserver(
@@ -89,9 +80,15 @@
       if (el) observer.observe(el);
     });
 
+    // Defer non-critical floating concierge loading to background idle cycles
+    scheduleBackgroundTask(async () => {
+      const mod = await import('#components/AgenticConcierge.svelte');
+      AgenticConciergeComponent = mod.default;
+    });
+
     return () => {
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', measureStory);
+      window.removeEventListener('resize', onResize);
       observer.disconnect();
     };
   });
@@ -109,7 +106,7 @@
 <ScarcityBanner />
 
 <!-- Scrollytelling Hero Container -->
-<div bind:this={storyContainer} class="relative h-[450vh] bg-[#FAF9F6] dark:bg-[#0C0A09]">
+<div class="relative h-[450vh] bg-[#FAF9F6] dark:bg-[#0C0A09]">
   <!-- Intro Hero Billboard (First Screen) -->
   <div class="h-screen flex items-center justify-center px-4 relative z-10 pointer-events-none">
     <div class="max-w-3xl text-center space-y-6 pointer-events-auto">
@@ -197,10 +194,15 @@
   <div class="content-auto">
     <FarmTourBooking />
   </div>
+
+  <!-- Frontier Inbound Triage & Engagement Engine -->
+  <InboundLeadEngine />
 </div>
 
 <!-- Telemetry Bottom Bar -->
 <TelemetryTicker />
 
-<!-- Floating Agronomy Concierge -->
-<AgenticConcierge />
+<!-- Floating Agronomy Concierge (Hydrated on background idle) -->
+{#if AgenticConciergeComponent}
+  <AgenticConciergeComponent />
+{/if}

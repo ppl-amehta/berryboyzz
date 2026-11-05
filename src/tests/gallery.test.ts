@@ -74,7 +74,7 @@ describe('Media Gallery Architecture & Asset Verification', () => {
 		expect(content).toContain('function teleport(node: HTMLElement)');
 		expect(content).toContain('document.body.appendChild(node)');
 		expect(content).toContain('use:teleport');
-		expect(content).toContain('z-[100]');
+		expect(content).toContain('z-[9999]');
 
 		// Frosted glass & Blur styling
 		expect(content).toContain('backdrop-blur-2xl');

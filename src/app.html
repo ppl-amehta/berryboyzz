@@ -8,6 +8,15 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://berryboyzz.in/" />
 
+    <!-- Agentic Resource Discovery (ARD) & WebMCP Manifests -->
+    <link rel="ard" href="/.well-known/ard.json" />
+    <link rel="webmcp" href="/.well-known/webmcp.json" />
+
+    <!-- Performance: Critical Origin Preconnect Hints (Under 4 origins) -->
+    <link rel="preconnect" href="https://berryboyzz.in" />
+    <link rel="preconnect" href="https://vitals.vercel-insights.com" crossorigin />
+    <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
+
     <!-- Search Engine & Entity Discovery Metadata -->
     <meta name="keywords" content="commercial berry farming India, strawberry farming Maharashtra, raspberry polyhouse setup, blueberry hydroponics India, blackberry cultivation Satara, berry farm ROI calculator, precision fertigation CEA" />
     <meta name="author" content="Berryboyzz Agro-Ventures LLP" />
@@ -90,11 +99,23 @@
           "url": "https://berryboyzz.in",
           "name": "Berryboyzz",
           "publisher": { "@id": "https://berryboyzz.in/#organization" },
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://berryboyzz.in/cultivars/?search={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
+          "potentialAction": [
+            {
+              "@type": "SearchAction",
+              "target": "https://berryboyzz.in/cultivars/?search={search_term_string}",
+              "query-input": "required name=search_term_string"
+            },
+            {
+              "@type": "ContactAction",
+              "name": "Submit Inbound Lead & Triage",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://berryboyzz.in/api/inbound-lead",
+                "httpMethod": "POST",
+                "encodingType": "application/json"
+              }
+            }
+          ]
         },
         {
           "@type": "Service",

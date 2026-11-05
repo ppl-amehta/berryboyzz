@@ -492,7 +492,7 @@
 	{#if isLightboxOpen}
 		<div
 			use:teleport
-			class="fixed inset-0 z-[100] flex flex-col justify-between overflow-hidden bg-black/85 backdrop-blur-2xl select-none animate-lightbox-fade focus:outline-none"
+			class="fixed inset-0 z-[9999] flex flex-col justify-between overflow-hidden bg-black/85 backdrop-blur-2xl select-none animate-lightbox-fade focus:outline-none"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="spotlight-dialog-title"
