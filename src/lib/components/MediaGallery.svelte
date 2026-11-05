@@ -27,6 +27,7 @@
 	let isAutoplayActive = $state<boolean>(false);
 	let autoplayTimer: ReturnType<typeof setInterval> | null = null;
 	let touchStartX = $state<number>(0);
+	let dialogRef = $state<HTMLDialogElement | null>(null);
 
 	// Derived filtered items
 	const filteredItems = $derived(
@@ -58,12 +59,29 @@
 	function openLightbox(index: number) {
 		activeIndex = index;
 		isLightboxOpen = true;
-		document.body.style.overflow = 'hidden';
+		if (dialogRef && !dialogRef.open) {
+			dialogRef.showModal();
+		}
 	}
 
 	function closeLightbox() {
 		isLightboxOpen = false;
-		document.body.style.overflow = '';
+		stopAutoplay();
+		if (dialogRef && dialogRef.open) {
+			dialogRef.close();
+		}
+	}
+
+	function handleDialogClick(e: MouseEvent) {
+		// Dismiss when clicking directly on the backdrop (outside the inner content)
+		if (e.target === dialogRef) {
+			closeLightbox();
+		}
+	}
+
+	function handleDialogCancel(e: Event) {
+		e.preventDefault();
+		closeLightbox();
 	}
 
 	function toggleAutoplay() {
@@ -137,7 +155,6 @@
 		stopAutoplay();
 		if (typeof window !== 'undefined') {
 			window.removeEventListener('keydown', handleKeydown);
-			document.body.style.overflow = '';
 		}
 	});
 </script>
@@ -331,7 +348,7 @@
 				{/each}
 			</div>
 
-		<!-- VIEW 2: SPOTLIGHT CAROUSEL MODE -->
+		<!-- VIEW 2: IN-PAGE SPOTLIGHT CAROUSEL MODE -->
 		{:else}
 			<div
 				class="bg-white dark:bg-[#151210] rounded-3xl border border-[#E8E4DC] dark:border-[#282420] p-4 sm:p-6 shadow-xl relative"
@@ -345,19 +362,21 @@
 				<div
 					class="relative rounded-2xl overflow-hidden bg-black aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] max-h-[640px] flex items-center justify-center group"
 				>
-					<picture class="w-full h-full block">
-						<source srcset={activeItem.full.avif} type="image/avif" />
-						<source srcset={activeItem.full.webp} type="image/webp" />
-						<img
-							src={activeItem.full.webp}
-							alt={activeItem.title}
-							loading="lazy"
-							decoding="async"
-							width={activeItem.full.width}
-							height={activeItem.full.height}
-							class="w-full h-full object-contain sm:object-cover object-center transition-all duration-300"
-						/>
-					</picture>
+					{#key activeItem.id}
+						<picture class="w-full h-full block animate-slide-crossfade">
+							<source srcset={activeItem.full.avif} type="image/avif" />
+							<source srcset={activeItem.full.webp} type="image/webp" />
+							<img
+								src={activeItem.full.webp}
+								alt={activeItem.title}
+								loading="lazy"
+								decoding="async"
+								width={activeItem.full.width}
+								height={activeItem.full.height}
+								class="w-full h-full object-contain sm:object-cover object-center transition-all duration-300"
+							/>
+						</picture>
+					{/key}
 
 					<!-- Prev / Next Navigation Arrows -->
 					<button
@@ -460,24 +479,32 @@
 		{/if}
 	</div>
 
-	<!-- VIEW 3: FULLSCREEN SPOTLIGHT LIGHTBOX DIALOG -->
-	{#if isLightboxOpen}
+	<!-- VIEW 3: NATIVE TOP-LAYER SPOTLIGHT MODAL DIALOG -->
+	<dialog
+		bind:this={dialogRef}
+		class="spotlight-dialog"
+		closedby="any"
+		onclick={handleDialogClick}
+		oncancel={handleDialogCancel}
+		aria-labelledby="spotlight-dialog-title"
+	>
 		<div
-			class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col justify-between p-4 sm:p-8 transition-opacity duration-300"
-			role="dialog"
-			tabindex="-1"
-			aria-modal="true"
-			aria-label="Fullscreen Gallery Spotlight"
+			class="w-full h-full flex flex-col justify-between p-4 sm:p-6 md:p-8 pointer-events-none select-none"
+			role="region"
+			aria-roledescription="carousel"
+			aria-label="Fullscreen Gallery Stage"
 			ontouchstart={handleTouchStart}
 			ontouchend={handleTouchEnd}
 		>
-			<!-- Top Bar: Navigation & Close -->
-			<div class="flex items-center justify-between text-white z-20 pb-4">
-				<div class="flex items-center gap-3">
-					<span class="font-mono text-xs px-2.5 py-1 rounded-lg bg-white/10 border border-white/10">
+			<!-- Top Bar: Navigation & Close Controls -->
+			<div class="flex items-center justify-between text-white z-20 pb-3 pointer-events-auto">
+				<div class="flex items-center gap-2 sm:gap-3">
+					<span
+						class="font-mono text-xs px-2.5 py-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 shadow-sm"
+					>
 						{String(activeIndex + 1).padStart(2, '0')} / {String(filteredItems.length).padStart(2, '0')}
 					</span>
-					<span class="text-xs font-mono text-emerald-400 uppercase tracking-wider">
+					<span class="text-xs font-mono text-emerald-400 uppercase tracking-wider hidden sm:inline">
 						{activeItem.category} // {activeItem.location}
 					</span>
 				</div>
@@ -486,21 +513,21 @@
 					<button
 						type="button"
 						onclick={toggleAutoplay}
-						class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+						class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer backdrop-blur-md border border-white/15 shadow-sm"
 					>
 						{#if isAutoplayActive}
 							<Pause class="w-3.5 h-3.5 text-emerald-400" />
 							<span>Pause</span>
 						{:else}
 							<Play class="w-3.5 h-3.5 text-emerald-400" />
-							<span>Auto</span>
+							<span>Auto-Cycle</span>
 						{/if}
 					</button>
 
 					<button
 						type="button"
 						onclick={closeLightbox}
-						class="p-2.5 rounded-xl bg-white/10 hover:bg-rose-900/40 text-white hover:text-rose-300 transition-colors cursor-pointer"
+						class="p-2.5 rounded-xl bg-white/10 hover:bg-rose-900/60 text-white hover:text-rose-200 transition-colors cursor-pointer backdrop-blur-md border border-white/15 shadow-sm"
 						aria-label="Close Spotlight"
 					>
 						<X class="w-5 h-5" />
@@ -508,50 +535,150 @@
 				</div>
 			</div>
 
-			<!-- Main Fullscreen Stage -->
-			<div class="relative flex-1 flex items-center justify-center overflow-hidden my-auto">
-				<!-- Lightbox Nav Buttons -->
+			<!-- Main Center Stage: Viewport-Constrained Image Container -->
+			<div class="relative flex-1 flex items-center justify-center min-h-0 my-auto pointer-events-none">
+				<!-- Prev Navigation Button -->
 				<button
 					type="button"
 					onclick={prevSlide}
-					class="absolute left-2 sm:left-4 p-3.5 rounded-2xl bg-black/60 hover:bg-emerald-800 text-white backdrop-blur-md border border-white/20 transition-all cursor-pointer z-30 shadow-xl"
-					aria-label="Previous item"
+					class="absolute left-2 sm:left-4 p-3.5 rounded-2xl bg-black/60 hover:bg-emerald-800 text-white backdrop-blur-md border border-white/20 transition-all cursor-pointer z-30 shadow-xl pointer-events-auto"
+					aria-label="Previous image"
 				>
 					<ChevronLeft class="w-6 h-6" />
 				</button>
 
+				<!-- Next Navigation Button -->
 				<button
 					type="button"
 					onclick={nextSlide}
-					class="absolute right-2 sm:right-4 p-3.5 rounded-2xl bg-black/60 hover:bg-emerald-800 text-white backdrop-blur-md border border-white/20 transition-all cursor-pointer z-30 shadow-xl"
-					aria-label="Next item"
+					class="absolute right-2 sm:right-4 p-3.5 rounded-2xl bg-black/60 hover:bg-emerald-800 text-white backdrop-blur-md border border-white/20 transition-all cursor-pointer z-30 shadow-xl pointer-events-auto"
+					aria-label="Next image"
 				>
 					<ChevronRight class="w-6 h-6" />
 				</button>
 
-				<!-- Ultra-Sharp Fullscreen Picture -->
-				<picture class="max-h-[75vh] max-w-[90vw] flex items-center justify-center">
-					<source srcset={activeItem.full.avif} type="image/avif" />
-					<source srcset={activeItem.full.webp} type="image/webp" />
-					<img
-						src={activeItem.full.webp}
-						alt={activeItem.title}
-						width={activeItem.full.width}
-						height={activeItem.full.height}
-						class="max-h-[75vh] max-w-[90vw] object-contain rounded-xl shadow-2xl transition-all duration-300"
-					/>
-				</picture>
+				<!-- Ultra-Sharp Image Display with Crossfade -->
+				{#key activeItem.id}
+					<picture class="max-h-[72dvh] max-w-[92vw] flex items-center justify-center animate-slide-crossfade pointer-events-auto">
+						<source srcset={activeItem.full.avif} type="image/avif" />
+						<source srcset={activeItem.full.webp} type="image/webp" />
+						<img
+							src={activeItem.full.webp}
+							alt={activeItem.title}
+							width={activeItem.full.width}
+							height={activeItem.full.height}
+							class="max-h-[72dvh] max-w-[92vw] w-auto h-auto object-contain rounded-2xl shadow-2xl border border-white/10"
+						/>
+					</picture>
+				{/key}
 			</div>
 
-			<!-- Bottom Details Tray -->
-			<div class="max-w-4xl mx-auto w-full pt-4 text-center text-white z-20 space-y-1">
-				<h3 class="text-base sm:text-xl font-serif font-bold tracking-tight">
+			<!-- Bottom Details Tray: Metadata, Cultivar & Metrics -->
+			<div class="max-w-4xl mx-auto w-full pt-3 text-center text-white z-20 space-y-1 pointer-events-auto">
+				<h3 id="spotlight-dialog-title" class="text-base sm:text-xl font-serif font-bold tracking-tight">
 					{activeItem.title}
 				</h3>
 				<p class="text-xs sm:text-sm text-stone-300">
-					{activeItem.subtitle} • <span class="text-emerald-400 font-mono">{activeItem.metric}</span>
+					{activeItem.subtitle} • <span class="text-emerald-400 font-mono font-semibold">{activeItem.metric}</span>
 				</p>
 			</div>
 		</div>
-	{/if}
+	</dialog>
 </section>
+
+<style>
+	/* Native Top-Layer Dialog & Hardware-Accelerated Backdrop Blur */
+	dialog.spotlight-dialog {
+		position: fixed;
+		inset: 0;
+		border: none;
+		padding: 0;
+		margin: 0;
+		max-width: 100vw;
+		max-height: 100dvh;
+		width: 100vw;
+		height: 100dvh;
+		background: transparent;
+		color: white;
+		overflow: hidden;
+		opacity: 0;
+		transform: scale(0.97);
+		transition:
+			opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+			overlay 0.28s allow-discrete,
+			display 0.28s allow-discrete;
+		overscroll-behavior: contain;
+	}
+
+	dialog.spotlight-dialog[open] {
+		opacity: 1;
+		transform: scale(1);
+		display: flex;
+	}
+
+	@starting-style {
+		dialog.spotlight-dialog[open] {
+			opacity: 0;
+			transform: scale(0.97);
+		}
+	}
+
+	/* Whole-Screen Frosted Glass Backdrop Blur */
+	dialog.spotlight-dialog::backdrop {
+		background-color: rgba(5, 4, 3, 0);
+		backdrop-filter: blur(0px);
+		-webkit-backdrop-filter: blur(0px);
+		transition:
+			background-color 0.28s ease-out,
+			backdrop-filter 0.28s ease-out,
+			-webkit-backdrop-filter 0.28s ease-out,
+			overlay 0.28s allow-discrete,
+			display 0.28s allow-discrete;
+		overflow: hidden;
+		overscroll-behavior: contain;
+	}
+
+	dialog.spotlight-dialog[open]::backdrop {
+		background-color: rgba(6, 5, 4, 0.92);
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+	}
+
+	@starting-style {
+		dialog.spotlight-dialog[open]::backdrop {
+			background-color: rgba(5, 4, 3, 0);
+			backdrop-filter: blur(0px);
+			-webkit-backdrop-filter: blur(0px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		dialog.spotlight-dialog,
+		dialog.spotlight-dialog::backdrop {
+			transition-duration: 0.05s;
+			transform: none;
+		}
+		@starting-style {
+			dialog.spotlight-dialog[open] {
+				transform: none;
+			}
+		}
+	}
+
+	/* Slide Crossfade & Smooth Scale Transition */
+	@keyframes fadeInSlide {
+		from {
+			opacity: 0.15;
+			transform: scale(0.985);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	.animate-slide-crossfade {
+		animation: fadeInSlide 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
+</style>
