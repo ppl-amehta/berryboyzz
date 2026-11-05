@@ -33,16 +33,11 @@
 - Modify: `src/lib/spatial/spatial-nodes.ts`
 - Test: `src/tests/spatial-domain-graph.test.ts`
 
-- [ ] **Step 1.1: Write failing unit test for expanded spatial domain topology**
-  Define tests verifying all 7 enterprise domains (`overview`, `cultivars`, `satara-skid`, `bio-os`, `roi-engine`, `gallery`, `lead-engine`) and 5 cultivar orbitals exist with valid 3D coordinates, color tokens, and frequency chords.
-- [ ] **Step 1.2: Run test to confirm failure**
-  Run `npm test src/tests/spatial-domain-graph.test.ts` to ensure it fails before implementation.
-- [ ] **Step 1.3: Implement expanded spatial domain graph**
-  Update `src/lib/spatial/spatial-nodes.ts` to export `SPATIAL_DOMAINS`, coordinate lookups, and helper functions.
-- [ ] **Step 1.4: Verify tests pass**
-  Run `npm test src/tests/spatial-domain-graph.test.ts` and verify 100% green.
-- [ ] **Step 1.5: Commit changes**
-  Commit Task 1 changes with git.
+- [x] **Step 1.1: Write failing unit test for expanded spatial domain topology**
+- [x] **Step 1.2: Run test to confirm failure**
+- [x] **Step 1.3: Implement expanded spatial domain graph**
+- [x] **Step 1.4: Verify tests pass**
+- [x] **Step 1.5: Commit changes**
 
 ---
 
@@ -52,16 +47,11 @@
 - Modify: `src/lib/workers/spatial-engine.worker.ts`
 - Test: `src/tests/spatial-engine-viewport.test.ts`
 
-- [ ] **Step 2.1: Write failing unit test for worker message protocol & projection math**
-  Create test asserting viewport resize handling, camera spline flight commands, and domain docking message protocol.
-- [ ] **Step 2.2: Run test to confirm failure**
-  Run `npm test src/tests/spatial-engine-viewport.test.ts`.
-- [ ] **Step 2.3: Upgrade worker engine for full-viewport spatial rendering**
-  Implement smooth 3D spline flight, depth sorting, curl-noise particle dynamics, and interactive node reticle rendering.
-- [ ] **Step 2.4: Verify tests pass**
-  Run `npm test src/tests/spatial-engine-viewport.test.ts`.
-- [ ] **Step 2.5: Commit changes**
-  Commit Task 2 changes with git.
+- [x] **Step 2.1: Write failing unit test for worker message protocol & projection math**
+- [x] **Step 2.2: Run test to confirm failure**
+- [x] **Step 2.3: Upgrade worker engine for full-viewport spatial rendering**
+- [x] **Step 2.4: Verify tests pass**
+- [x] **Step 2.5: Commit changes**
 
 ---
 
@@ -72,16 +62,11 @@
 - Create: `src/lib/components/SpatialDock.svelte`
 - Test: `src/tests/spatial-ui-components.test.ts`
 
-- [ ] **Step 3.1: Write failing test for SpatialHUD and SpatialDock**
-  Create unit test checking HUD telemetry rendering, bio-acoustic toggle, reader mode switch, and dock keyboard shortcut handlers.
-- [ ] **Step 3.2: Run test to confirm failure**
-  Run `npm test src/tests/spatial-ui-components.test.ts`.
-- [ ] **Step 3.3: Implement SpatialHUD and SpatialDock**
-  Build `SpatialHUD.svelte` with frosted glass styling, telemetry pills, soundscape toggle, and reader mode toggle. Build `SpatialDock.svelte` with 7 coordinate buttons and keyboard listeners.
-- [ ] **Step 3.4: Verify tests pass**
-  Run `npm test src/tests/spatial-ui-components.test.ts`.
-- [ ] **Step 3.5: Commit changes**
-  Commit Task 3 changes with git.
+- [x] **Step 3.1: Write failing test for SpatialHUD and SpatialDock**
+- [x] **Step 3.2: Run test to confirm failure**
+- [x] **Step 3.3: Implement SpatialHUD and SpatialDock**
+- [x] **Step 3.4: Verify tests pass**
+- [x] **Step 3.5: Commit changes**
 
 ---
 
@@ -91,16 +76,11 @@
 - Create: `src/lib/components/SpatialIslandStage.svelte`
 - Test: `src/tests/spatial-island-stage.test.ts`
 
-- [ ] **Step 4.1: Write failing test for SpatialIslandStage**
-  Test mounting of active domain panels (`cultivars`, `satara-skid`, `roi-engine`, `lead-engine`), minimize/maximize state, and deep link synchronization.
-- [ ] **Step 4.2: Run test to confirm failure**
-  Run `npm test src/tests/spatial-island-stage.test.ts`.
-- [ ] **Step 4.3: Implement SpatialIslandStage**
-  Build the frosted-glass morphing stage component connecting to `BerryShowcase`, `CEAInfrastructure`, `DynamicROICalculator`, `InvestmentLadder`, `BiologicalOS`, `MediaGallery`, and `InboundLeadEngine`.
-- [ ] **Step 4.4: Verify tests pass**
-  Run `npm test src/tests/spatial-island-stage.test.ts`.
-- [ ] **Step 4.5: Commit changes**
-  Commit Task 4 changes with git.
+- [x] **Step 4.1: Write failing test for SpatialIslandStage**
+- [x] **Step 4.2: Run test to confirm failure**
+- [x] **Step 4.3: Implement SpatialIslandStage**
+- [x] **Step 4.4: Verify tests pass**
+- [x] **Step 4.5: Commit changes**
 
 ---
 
@@ -110,16 +90,11 @@
 - Modify: `src/routes/+page.svelte`
 - Test: `src/tests/spatial-page-integration.test.ts`
 
-- [ ] **Step 5.1: Write failing integration test for +page.svelte**
-  Verify elimination of 450vh scroll container, presence of full-viewport spatial canvas engine, HUD, Dock, Island Stage, and SEO semantic fallback deck.
-- [ ] **Step 5.2: Run test to confirm failure**
-  Run `npm test src/tests/spatial-page-integration.test.ts`.
-- [ ] **Step 5.3: Rewrite +page.svelte with the Unified Spatial Architecture**
-  Replace linear scroll structure with the persistent Spatial Viewport, Web Worker engine, reactive bio-synthesizer, and reader mode deck.
-- [ ] **Step 5.4: Verify tests pass**
-  Run `npm test` across all suites.
-- [ ] **Step 5.5: Commit changes**
-  Commit Task 5 changes with git.
+- [x] **Step 5.1: Write failing integration test for +page.svelte**
+- [x] **Step 5.2: Run test to confirm failure**
+- [x] **Step 5.3: Rewrite +page.svelte with the Unified Spatial Architecture**
+- [x] **Step 5.4: Verify tests pass**
+- [x] **Step 5.5: Commit changes**
 
 ---
 
@@ -128,13 +103,8 @@
 **Files:**
 - Workspace-wide verification
 
-- [ ] **Step 6.1: Run full strict TypeScript check**
-  Execute `npm run check`.
-- [ ] **Step 6.2: Run complete automated test suite**
-  Execute `npm test`.
-- [ ] **Step 6.3: Run full production prerender build**
-  Execute `npm run build`.
-- [ ] **Step 6.4: Push to origin on `feat/frontier-spatial-experience`**
-  Push feature branch to GitHub to trigger the Vercel Ephemeral Preview deployment.
-- [ ] **Step 6.5: Verify live preview and report side-by-side comparison instructions**
-  Provide clear comparison instructions between `main` and `feat/frontier-spatial-experience`.
+- [x] **Step 6.1: Run full strict TypeScript check**
+- [x] **Step 6.2: Run complete automated test suite**
+- [x] **Step 6.3: Run full production prerender build**
+- [x] **Step 6.4: Push to origin on `feat/frontier-spatial-experience`**
+- [x] **Step 6.5: Verify live preview and report side-by-side comparison instructions**
