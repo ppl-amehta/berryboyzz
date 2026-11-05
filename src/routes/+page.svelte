@@ -191,9 +191,7 @@
   </div>
 
   <!-- Operational CEA Living Gallery -->
-  <div class="content-auto">
-    <MediaGallery />
-  </div>
+  <MediaGallery />
 
   <!-- Farm Tour Bookings & Masterclasses -->
   <div class="content-auto">

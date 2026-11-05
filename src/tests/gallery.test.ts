@@ -65,4 +65,31 @@ describe('Media Gallery Architecture & Asset Verification', () => {
 			expect(fs.statSync(fullAvifPath).size).toBeGreaterThan(1000);
 		}
 	});
+
+	it('should guarantee lightbox modal architecture, body teleportation, and frosted glass transitions', () => {
+		const componentPath = path.resolve(process.cwd(), 'src/lib/components/MediaGallery.svelte');
+		const content = fs.readFileSync(componentPath, 'utf-8');
+
+		// Stacking context & Teleportation integrity
+		expect(content).toContain('function teleport(node: HTMLElement)');
+		expect(content).toContain('document.body.appendChild(node)');
+		expect(content).toContain('use:teleport');
+		expect(content).toContain('z-[100]');
+
+		// Frosted glass & Blur styling
+		expect(content).toContain('backdrop-blur-2xl');
+		expect(content).toContain('animate-lightbox-fade');
+		expect(content).toContain('animate-slide-crossfade');
+
+		// Full-viewport constraint & zero overflow
+		expect(content).toContain('max-h-[72vh]');
+		expect(content).toContain('object-contain');
+
+		// Accessibility & keyboard trap
+		expect(content).toContain('role="dialog"');
+		expect(content).toContain('aria-modal="true"');
+		expect(content).toContain('tabindex="-1"');
+		expect(content).toContain('onkeydown={handleKeydown}');
+		expect(content).toContain('document.body.style.overflow = \'hidden\'');
+	});
 });
