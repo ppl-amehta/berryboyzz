@@ -1,0 +1,82 @@
+# ==============================================================================
+# Berryboyzz Precision Agro-Ventures - Frontier Crawler Directives
+# Canonical Domain: https://berryboyzz.in
+# ==============================================================================
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_app/
+
+# ------------------------------------------------------------------------------
+# Frontier AI Search & Agentic Retrieval Engines (Explicitly Permitted)
+# Permitted to crawl, index, and cite berryboyzz.in across all LLM search tools
+# ------------------------------------------------------------------------------
+
+# OpenAI / ChatGPT Search & Citations
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Perplexity AI Live Search & Indexing
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Anthropic Claude & Claude Search
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+# Google Search & Gemini Extended Training/Grounding
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta AI
+User-agent: meta-externalagent
+Allow: /
+
+# Microsoft Bing & Copilot
+User-agent: Bingbot
+Allow: /
+
+# Common Crawl & Amazon
+User-agent: CCBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+# Rate-limit high-frequency bots
+User-agent: Bytespider
+Crawl-delay: 5
+
+# ------------------------------------------------------------------------------
+# Sitemaps & LLM Context Endpoints
+# ------------------------------------------------------------------------------
+Sitemap: https://berryboyzz.in/sitemap.xml

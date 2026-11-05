@@ -110,12 +110,6 @@
 
 <!-- Scrollytelling Hero Container -->
 <div bind:this={storyContainer} class="relative h-[450vh] bg-[#FAF9F6] dark:bg-[#0C0A09]">
-  <!-- Fixed Procedural Canvas Engine -->
-  {#if scrollProgress < 0.98}
-    <MorphogenesisCanvas progress={scrollProgress} />
-    <StoryPhaseOverlay {currentPhaseIndex} progress={scrollProgress} />
-  {/if}
-
   <!-- Intro Hero Billboard (First Screen) -->
   <div class="h-screen flex items-center justify-center px-4 relative z-10 pointer-events-none">
     <div class="max-w-3xl text-center space-y-6 pointer-events-auto">
@@ -158,6 +152,12 @@
       </div>
     </div>
   </div>
+
+  <!-- Fixed Procedural Canvas Engine -->
+  {#if scrollProgress < 0.98}
+    <MorphogenesisCanvas progress={scrollProgress} />
+    <StoryPhaseOverlay {currentPhaseIndex} progress={scrollProgress} />
+  {/if}
 </div>
 
 <!-- Main Section Deck with PostStoryBackdrop -->

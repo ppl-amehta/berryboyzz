@@ -119,11 +119,14 @@
           * Mandatory Disclosure: Cold chain logistics & SLM charges not included in baseline capex. Projected 16–18 month break-even timelines are modeled upon standard horticultural protocols.
         </p>
       </div>
-      <div class="flex items-center gap-4 text-xs font-medium">
+      <div class="flex items-center flex-wrap gap-4 text-xs font-medium">
+        <a href="/about/" class="hover:underline">About Us</a>
+        <a href="/contact/" class="hover:underline">Contact Desk</a>
+        <a href="/privacy/" class="hover:underline">Privacy Charter</a>
         <a href="/#commercial-models" class="hover:underline">Investment Terms</a>
-        <a href="/#biological-os" class="hover:underline">Biological OS</a>
         <a href="/#field-gallery" class="hover:underline">Field Gallery</a>
         <a href="/tours/" class="hover:underline">Farm Visits</a>
+        <a href="/llms.txt" class="hover:underline text-emerald-800 dark:text-emerald-400 font-mono">llms.txt</a>
       </div>
     </div>
   </div>

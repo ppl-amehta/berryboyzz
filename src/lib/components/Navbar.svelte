@@ -34,7 +34,7 @@
       </a>
 
       <!-- Desktop Navigation Links -->
-      <nav class="hidden md:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-[#4A4643] dark:text-[#A8A196]">
+      <nav class="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-[#4A4643] dark:text-[#A8A196]">
         <a href="/cultivars/" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors py-1">
           Cultivars
         </a>
@@ -47,8 +47,11 @@
         <a href="/tours/" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors py-1">
           Farm Tours
         </a>
-        <a href="/#biological-os" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors py-1">
-          Biological OS
+        <a href="/about/" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors py-1">
+          About
+        </a>
+        <a href="/contact/" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors py-1">
+          Contact
         </a>
         <a href="/#field-gallery" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors py-1">
           Gallery
@@ -161,6 +164,22 @@
           class="px-3 py-2.5 rounded-lg hover:bg-[#F5F2EB] dark:hover:bg-[#201D1A] flex items-center justify-between"
         >
           <span>6-Pillar Biological OS</span>
+          <ChevronRight class="w-4 h-4 text-[#6B6661] dark:text-[#9E9689]" />
+        </a>
+        <a
+          href="/about/"
+          onclick={() => (mobileMenuOpen = false)}
+          class="px-3 py-2.5 rounded-lg hover:bg-[#F5F2EB] dark:hover:bg-[#201D1A] flex items-center justify-between"
+        >
+          <span>About Berryboyzz</span>
+          <ChevronRight class="w-4 h-4 text-[#6B6661] dark:text-[#9E9689]" />
+        </a>
+        <a
+          href="/contact/"
+          onclick={() => (mobileMenuOpen = false)}
+          class="px-3 py-2.5 rounded-lg hover:bg-[#F5F2EB] dark:hover:bg-[#201D1A] flex items-center justify-between"
+        >
+          <span>Contact Agronomy Desk</span>
           <ChevronRight class="w-4 h-4 text-[#6B6661] dark:text-[#9E9689]" />
         </a>
         <a

@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@vercel/analytics": "^2.3.0-canary",
+    "@vercel/functions": "^3.10.6",
     "@vercel/speed-insights": "^2.1.0-canary",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.7.0"

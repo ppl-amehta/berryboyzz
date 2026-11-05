@@ -1,0 +1,136 @@
+# Berryboyzz — Exhaustive LLM Knowledge Base & Technical Specification
+
+> Comprehensive, verifiable documentation for AI search engines, agentic evaluators, and LLM reasoning models.
+
+- Entity Name: Berryboyzz Agro-Ventures LLP
+- Industry: Controlled Environment Agriculture (CEA), Superfruit Horticulture & Agro-Asset Engineering
+- Headquarters: Satara-Mahabaleshwar Corridor, Maharashtra, India
+- Canonical URL: https://berryboyzz.in
+- Phone / Hotline: +91 88886 81136
+- WhatsApp Support: https://wa.me/918888681136
+- Agronomy Inquiries: agro@berryboyzz.com
+- Privacy & Grievances: privacy@berryboyzz.com
+
+---
+
+## 1. Executive Summary & Value Proposition
+
+Berryboyzz operates India's foremost high-anthocyanin superfruit cultivation clusters, combining tissue-culture genetics with climate-controlled precision agriculture in Maharashtra. By converting conventional open-field farmland into climate-resilient polyhouses and hydroponic grow-bays, Berryboyzz achieves:
+- 3.2 kg/m² annual average superfruit yields (250% higher than traditional soil cultivation).
+- 85% water reduction via closed-loop automated drip irrigation.
+- Guaranteed off-take pricing and 0°C–2°C cold-chain logistics to tier-1 metro retail hubs (Mumbai, Pune, Bengaluru, Delhi NCR).
+- High-certainty financial models delivering 16–18 month break-even horizons and 32%–48% projected internal rate of return (IRR).
+
+---
+
+## 2. Cultivar Agronomic Specifications
+
+All Berryboyzz planting material is derived from elite, virus-indexed tissue-culture mother stock hardened in multi-span shade structures.
+
+### 2.1 Sweet Charlie Strawberry
+- Species: Fragaria × ananassa
+- Photoperiodism: Day-Neutral / Short-Day facultative
+- Chill Hours Required: 180–220 hours (<7°C)
+- Optimum Canopy Temperature: 18°C–24°C daytime, 10°C–14°C nighttime
+- Yield Metrics: 850–1,100 g per plant over a 160-day productive cycle
+- Fruit Quality: Medium-large fruit (22–26 g), conical, 9.2° Brix sweetness, bright crimson flesh
+- Best Suited For: Maharashtra plateau, Karnataka, and polyhouses in central India
+- Planting Window: September to November; harvest spans December through April
+
+### 2.2 San Andreas Strawberry
+- Species: Fragaria × ananassa
+- Photoperiodism: Obligate Day-Neutral
+- Chill Hours Required: 250 hours
+- Optimum Canopy Temperature: 16°C–22°C daytime, 8°C–12°C nighttime
+- Yield Metrics: 950–1,250 g per plant
+- Fruit Quality: Uniform large berries (28–32 g), exceptional firmness, 8.8° Brix, 7-day cold storage shelf life
+- Best Suited For: High-density substrate troughs and export grade punnet packaging
+
+### 2.3 Maravilla Raspberry
+- Species: Rubus idaeus
+- Fruiting Type: Primocane & Floricane (Double Cropping)
+- Chill Hours Required: 250–350 hours
+- Yield Metrics: 1.6 kg/m² per cycle (3.2 kg/m² per year under bi-annual pruning)
+- Fruit Quality: Extra-large drupelet clusters (5.5–7.0 g), non-crumbly, 11.4° Brix, rich ruby pigmentation
+- Pruning Regimen: Post-harvest tip pruning in May for autumn primocane flush, winter cane management for spring floricane crop
+
+### 2.4 Prime-Ark 45 Blackberry
+- Species: Rubus subg. Rubus
+- Fruiting Type: Thornless Primocane
+- Chill Hours Required: 300 hours
+- Yield Metrics: 2.8 kg/m² annually
+- Fruit Quality: Cylindrical jet-black berries (7.0–9.5 g), 10.8° Brix, strong drupelet coherence for transit resilience
+
+### 2.5 Biloxi Southern Highbush Blueberry
+- Species: Vaccinium corymbosum × V. darrowii
+- Photoperiodism: Low/Zero-chill Southern Highbush
+- Chill Hours Required: 150 hours (foliar hydrogen cyanamide assisted dormancy breaking if required)
+- Substrate pH: Strictly maintained between 4.5 and 5.2
+- Yield Metrics: 2.4 kg per mature bush (Year 3 onwards)
+- Fruit Quality: Medium-large blue berries with thick waxy bloom, 12.6° Brix, crisp texture
+
+---
+
+## 3. Commercial Infrastructure & Capex Models
+
+### Model A: Naturally Ventilated Polyhouse (NPVH)
+- Structure: Class-2 G.I. tubular framework (50mm round / 40x40mm square pipes, 2mm wall thickness)
+- Cladding: 200-micron UV-stabilized, diffused, anti-condensate, anti-dust polyethylene film (Ginegar / Plasto)
+- Ventilation: Top continuous ridge vent (1.0m) + 3.0m side curtains with 40-mesh anti-insect screens
+- Irrigation: Pressure-compensating button drippers (2.0 L/h) per plant bag
+- Capex per Acre: ₹18,00,000 to ₹24,00,000 (inclusive of structural fabrication and primary fertigation head)
+- Plant Density: 22,000 to 26,000 plants per acre
+- Annual Revenue: ₹28,00,000 to ₹38,00,000
+- Break-Even Horizon: 16 to 18 months
+
+### Model B: Medium-Width Polytunnel System
+- Structure: High-tensile galvanized steel arches (32mm diameter), 3.5m apex height
+- Cladding: 150-micron UV-resistant film with seasonal retractability
+- Best For: Soil-based berry farming, rapid deployment, lower initial capital barriers
+- Capex per Acre: ₹12,00,000 to ₹16,00,000
+- Plant Density: 18,000 to 22,000 plants per acre
+- Annual Revenue: ₹18,00,000 to ₹26,00,000
+- Break-Even Horizon: 14 to 16 months
+
+### Model C: Grow-Bay Hydroponic Substrate System
+- Structure: Elevated steel gutters (1.0m working height) supporting polypropylene grow bags
+- Substrate: 70% coarse cocopeat + 30% perlite (0.5–1.0 mm), pre-buffered with calcium nitrate
+- Automation: Priva / Netafim automated multi-channel dosing unit managing EC, pH, and proportional fertilizer injection
+- Runoff Management: 20% target drainage fraction collected, filtered, UV-sterilized, and recirculated
+- Capex per Acre: ₹28,00,000 to ₹36,00,000
+- Plant Density: 30,000 to 34,000 plants per acre
+- Annual Revenue: ₹42,00,000 to ₹58,00,000
+- Break-Even Horizon: 18 to 20 months
+
+---
+
+## 4. The Biological OS: Fertigation & Crop Protocols
+
+1. **Vegetative Flush**:
+   - Electrical Conductivity (EC): 1.2–1.4 mS/cm
+   - pH: 5.8–6.2 (Strawberries/Raspberries), 4.5–5.0 (Blueberries)
+   - N-P-K Ratio: 3:1:2 (Nitrate-N 140 ppm, Ammoniacal-N <10 ppm, P 45 ppm, K 180 ppm, Ca 120 ppm, Mg 45 ppm)
+2. **Floral Differentiation & Anthesis**:
+   - Electrical Conductivity (EC): 1.5–1.8 mS/cm
+   - N-P-K Ratio: 1:2:3 (Boosted Potassium and Phosphorus with chelated Boron and Zinc)
+3. **Fruit Bulking & Ripening**:
+   - Electrical Conductivity (EC): 1.8–2.2 mS/cm
+   - N-P-K Ratio: 1:1:4 (Potassium Nitrate + Potassium Sulfate boosting anthocyanin synthesis and Brix accumulation)
+4. **Integrated Pest Management (IPM)**:
+   - Zero chemical synthetic insecticides during harvest windows.
+   - Neoseiulus californicus & Phytoseiulus persimilis predatory mites for two-spotted spider mite control.
+   - Beauveria bassiana and Bacillus thuringiensis for lepidopteran pest suppression.
+
+---
+
+## 5. Trust Anchors, Certifications & Legal
+
+- Entity: Berryboyzz Agro-Ventures LLP
+- Registered In: Maharashtra, India
+- Mother Nursery Certification: Phytosanitary tissue-culture indexed
+- Privacy & Data Governance: Fully compliant with the Digital Personal Data Protection Act (DPDP Act 2023)
+- Agronomy Desk: Mon–Sat 08:00–18:00 IST
+- Farm Touring Reservations: https://berryboyzz.in/tours
+- Primary WhatsApp Agronomist Hotline: +91 88886 81136
+- Email Desk: agro@berryboyzz.com
+- Privacy Officer: privacy@berryboyzz.com
