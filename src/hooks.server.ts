@@ -67,7 +67,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 
 		// Nonexistent paths or probes requested via Accept: text/markdown
-		const validPrefixes = ['/cultivars', '/tours', '/about', '/contact', '/privacy', '/healthz'];
+		const validPrefixes = ['/cultivars', '/tours', '/about', '/contact', '/privacy', '/healthz', '/farming', '/embed'];
 		const isValid = validPrefixes.some(prefix => pathname.startsWith(prefix));
 
 		if (!isValid) {

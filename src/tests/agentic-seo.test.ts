@@ -130,4 +130,24 @@ describe('Frontier Agentic & Search Engine Optimization Matrix', () => {
 		const resHtml = await middleware(reqHtml);
 		expect(resHtml.headers.get('vary')).toBe('Accept');
 	});
+
+	it('should verify programmatic SEO dataset and embed calculator route integrity', async () => {
+		const { PROGRAMMATIC_PAGES } = await import('../data/programmaticSeoData');
+		expect(PROGRAMMATIC_PAGES.length).toBeGreaterThanOrEqual(8);
+
+		for (const page of PROGRAMMATIC_PAGES) {
+			expect(page.h1).toBeTruthy();
+			expect(page.capexPerAcreINR).toBeGreaterThan(1000000);
+			expect(page.breakevenMonths).toBeGreaterThanOrEqual(12);
+			expect(page.expectedAnnualYieldKg).toBeGreaterThan(1000);
+			expect(page.faqs.length).toBeGreaterThanOrEqual(1);
+			expect(page.infrastructureSpecs.length).toBeGreaterThanOrEqual(2);
+		}
+
+		// Verify embed calculator page
+		const embedPageTs = path.resolve(process.cwd(), 'src/routes/embed/calculator/+page.ts');
+		expect(fs.existsSync(embedPageTs)).toBe(true);
+		const embedContent = fs.readFileSync(embedPageTs, 'utf-8');
+		expect(embedContent).toContain('export const prerender = true');
+	});
 });

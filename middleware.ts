@@ -72,7 +72,7 @@ export default function middleware(request: Request) {
       });
     }
 
-    const validPrefixes = ['/cultivars', '/tours', '/about', '/contact', '/privacy', '/healthz'];
+    const validPrefixes = ['/cultivars', '/tours', '/about', '/contact', '/privacy', '/healthz', '/farming', '/embed'];
     const isValid = validPrefixes.some(prefix => pathname.startsWith(prefix));
 
     if (!isValid) {

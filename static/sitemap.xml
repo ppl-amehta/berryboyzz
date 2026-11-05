@@ -150,4 +150,61 @@
     <priority>0.6</priority>
   </url>
 
+  <!-- High-Intent Programmatic Commercial Guides (Tier 1) -->
+  <url>
+    <loc>https://berryboyzz.in/farming/raspberry/polyhouse/satara/capex-roi/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://berryboyzz.in/farming/strawberry/polyhouse/pune/subsidy-guide/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://berryboyzz.in/farming/blueberry/grow-bay/satara/capex-roi/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://berryboyzz.in/farming/strawberry/polytunnel/mahabaleshwar/capex-roi/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://berryboyzz.in/farming/blackberry/polyhouse/satara/farming-setup/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://berryboyzz.in/farming/raspberry/grow-bay/pune/farming-setup/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://berryboyzz.in/farming/strawberry/polyhouse/wai/farming-setup/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://berryboyzz.in/farming/blueberry/grow-bay/pune/capex-roi/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
 </urlset>
