@@ -13,7 +13,8 @@
   import MediaGallery from '#components/MediaGallery.svelte';
   import FarmTourBooking from '#components/FarmTourBooking.svelte';
   import InboundLeadEngine from '#components/InboundLeadEngine.svelte';
-  import { Sprout, ArrowDown, ChevronRight, MessageCircle } from '@lucide/svelte';
+  import SpatialViewport from '#components/SpatialViewport.svelte';
+  import { Sprout, ArrowDown, ChevronRight, MessageCircle, Compass, Sparkles } from '@lucide/svelte';
   import { buildWhatsAppUrl } from '#utils/whatsapp';
   import { scheduleBackgroundTask } from '#utils/scheduler';
 
@@ -135,17 +136,17 @@
         </a>
 
         <a
-          href="#cultivars"
-          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-wider bg-white/90 dark:bg-[#1C1816]/90 hover:bg-[#F5F2EB] dark:hover:bg-[#28221D] text-[#1A1615] dark:text-[#FAF9F6] border border-[#E8E4DC] dark:border-[#332D28] backdrop-blur-md transition-all"
+          href="#spatial-map"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-xs font-bold uppercase tracking-wider bg-white/90 dark:bg-[#1C1816]/90 hover:bg-[#F5F2EB] dark:hover:bg-[#28221D] text-[#1A1615] dark:text-[#FAF9F6] border border-[#E8E4DC] dark:border-[#332D28] backdrop-blur-md transition-all shadow-sm"
         >
-          <span>Explore 5 Cultivars</span>
-          <ChevronRight class="w-4 h-4" />
+          <span>Explore 3D Spatial Map</span>
+          <Compass class="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
         </a>
       </div>
 
       <div class="pt-12 text-[#6B6661] dark:text-[#9E9689] text-xs flex items-center justify-center gap-2 animate-bounce will-change-transform">
         <ArrowDown class="w-3.5 h-3.5 text-emerald-800 dark:text-emerald-400" />
-        <span class="uppercase tracking-widest font-semibold text-[10px]">Scroll Down to Witness 7-Phase Living Morphogenesis</span>
+        <span class="uppercase tracking-widest font-semibold text-[10px]">Scroll Down or Navigate via Spatial Node Graph</span>
       </div>
     </div>
   </div>
@@ -161,6 +162,24 @@
 <div class="relative z-10 bg-transparent">
   <!-- Crossfading Sticky Background Engine -->
   <PostStoryBackdrop activeSection={activeSectionId} />
+
+  <!-- Non-Linear Spatial Agro-Asset Map & Runtime Environment -->
+  <section id="spatial-map" class="py-12 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
+    <div class="mb-8 max-w-3xl space-y-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-800/10 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-800/20 dark:border-emerald-500/20">
+        <Sparkles class="w-3.5 h-3.5" />
+        <span>Frontier Spatial Web & Runtime Data Environment</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-serif text-[#1A1615] dark:text-[#FAF9F6] tracking-tight leading-[1.15]">
+        Multidirectional Spatial Map: Soil to Supermarket
+      </h2>
+      <p class="text-sm sm:text-base text-[#6B6661] dark:text-[#A89F91] leading-relaxed">
+        Interact with Berryboyzz’s Maharashtra operations through our isolated Web Worker runtime. Explore 4 core facilities and 5 cultivar orbitals in 3D coordinate space with procedural bio-acoustic feedback.
+      </p>
+    </div>
+
+    <SpatialViewport />
+  </section>
 
   <!-- Cultivar Showcase -->
   <div class="content-auto">
