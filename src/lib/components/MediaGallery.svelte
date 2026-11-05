@@ -492,7 +492,7 @@
 	{#if isLightboxOpen}
 		<div
 			use:teleport
-			class="fixed inset-0 z-[9999] flex flex-col justify-between overflow-hidden bg-black/85 backdrop-blur-2xl select-none animate-lightbox-fade focus:outline-none"
+			class="fixed inset-0 z-[9999] flex flex-col justify-between overflow-hidden bg-black/75 dark:bg-[#070605]/80 backdrop-blur-2xl select-none animate-lightbox-fade focus:outline-none"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="spotlight-dialog-title"
@@ -508,6 +508,16 @@
 				aria-label="Dismiss Spotlight Lightbox"
 				onclick={closeLightbox}
 			></button>
+
+			<!-- Ambient Color Glow Canvas (Softly illuminates behind active image) -->
+			<div
+				class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden"
+				aria-hidden="true"
+			>
+				<div
+					class="w-[70vw] max-w-4xl h-[70vh] rounded-full blur-[120px] opacity-30 dark:opacity-40 bg-gradient-to-tr from-emerald-600/30 via-rose-600/25 to-amber-500/20 transition-all duration-700 pointer-events-none"
+				></div>
+			</div>
 
 			<!-- Top Bar: Navigation, Autoplay & Close Controls -->
 			<div class="relative z-20 flex items-center justify-between px-4 sm:px-8 pt-4 pb-2 w-full text-white pointer-events-auto">
@@ -550,7 +560,7 @@
 
 			<!-- Main Center Stage: Viewport-Constrained Centered Image Container -->
 			<div
-				class="relative z-10 flex-1 flex items-center justify-center min-h-0 w-full px-4 sm:px-14 md:px-20 my-auto overflow-hidden pointer-events-none"
+				class="relative z-10 flex-1 flex items-center justify-center min-h-0 w-full px-4 sm:px-14 md:px-20 py-1 overflow-hidden pointer-events-none"
 			>
 				<!-- Prev Navigation Button -->
 				<button
@@ -574,14 +584,16 @@
 
 				<!-- Ultra-Sharp Image Display with Crossfade -->
 				{#key activeItem.id}
-					<div class="pointer-events-auto max-h-[72vh] sm:max-h-[78vh] max-w-full flex items-center justify-center animate-slide-crossfade">
-						<picture class="max-h-[72vh] sm:max-h-[78vh] max-w-full flex items-center justify-center">
+					<div class="pointer-events-auto spotlight-stage-image max-h-[72vh] max-w-full flex items-center justify-center animate-slide-crossfade">
+						<picture class="spotlight-stage-image max-h-[72vh] max-w-full flex items-center justify-center">
 							<source srcset={activeItem.full.avif} type="image/avif" />
 							<source srcset={activeItem.full.webp} type="image/webp" />
 							<img
 								src={activeItem.full.webp}
 								alt={activeItem.title}
-								class="max-h-[72vh] sm:max-h-[78vh] max-w-[88vw] md:max-w-5xl w-auto h-auto object-contain rounded-2xl shadow-2xl ring-1 ring-white/15"
+								width={activeItem.full.width}
+								height={activeItem.full.height}
+								class="spotlight-stage-image max-h-[72vh] max-w-[88vw] md:max-w-5xl w-auto h-auto object-contain rounded-2xl shadow-2xl ring-1 ring-white/15"
 							/>
 						</picture>
 					</div>
@@ -589,12 +601,15 @@
 			</div>
 
 			<!-- Bottom Details Tray: Metadata, Cultivar & Metrics -->
-			<div class="relative z-20 max-w-3xl mx-auto w-full px-4 pt-2 pb-5 text-center text-white space-y-1">
-				<h3 id="spotlight-dialog-title" class="text-base sm:text-xl font-serif font-bold tracking-tight">
+			<div class="relative z-20 max-w-3xl mx-auto w-full px-4 pt-1 sm:pt-2 pb-3 sm:pb-5 text-center text-white space-y-0.5 sm:space-y-1 pointer-events-auto">
+				<h3 id="spotlight-dialog-title" class="text-sm sm:text-xl font-serif font-bold tracking-tight">
 					{activeItem.title}
 				</h3>
-				<p class="text-xs sm:text-sm text-stone-300">
+				<p class="text-[11px] sm:text-sm text-stone-300">
 					{activeItem.subtitle} • <span class="text-emerald-400 font-mono font-semibold">{activeItem.metric}</span>
+				</p>
+				<p class="text-[10px] sm:text-[11px] text-stone-400/80 font-mono hidden sm:block pt-0.5">
+					← → keys to navigate · Space to cycle · Esc to dismiss
 				</p>
 			</div>
 		</div>
@@ -602,30 +617,16 @@
 </section>
 
 <style>
+	/* Viewport-Adaptive Image Stage Max Height */
+	.spotlight-stage-image {
+		max-height: min(72vh, calc(100dvh - 175px));
+	}
+
 	/* Frosted Glass Hardware-Accelerated Fade-in Animation */
 	@keyframes lightboxFadeIn {
 		0% {
 			opacity: 0;
-			backdrop-filter: blur(0px);
-			-webkit-backdrop-filter: blur(0px);
-		}
-		100% {
-			opacity: 1;
-			backdrop-filter: blur(24px);
-			-webkit-backdrop-filter: blur(24px);
-		}
-	}
-
-	.animate-lightbox-fade {
-		animation: lightboxFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-		will-change: opacity, backdrop-filter;
-	}
-
-	/* Slide Crossfade & Smooth Micro-Scale Transition */
-	@keyframes imageCrossfade {
-		0% {
-			opacity: 0.2;
-			transform: scale(0.98);
+			transform: scale(0.985);
 		}
 		100% {
 			opacity: 1;
@@ -633,9 +634,30 @@
 		}
 	}
 
-	.animate-slide-crossfade {
-		animation: imageCrossfade 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	.animate-lightbox-fade {
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+		animation: lightboxFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 		will-change: opacity, transform;
+	}
+
+	/* Slide Crossfade & Smooth Micro-Scale Transition */
+	@keyframes imageCrossfade {
+		0% {
+			opacity: 0;
+			transform: scale(0.97);
+			filter: blur(4px);
+		}
+		100% {
+			opacity: 1;
+			transform: scale(1);
+			filter: blur(0px);
+		}
+	}
+
+	.animate-slide-crossfade {
+		animation: imageCrossfade 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		will-change: opacity, transform, filter;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
