@@ -35,10 +35,6 @@
 
       <!-- Desktop Navigation Links -->
       <nav class="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-[#4A4643] dark:text-[#A8A196]">
-        <a href="/#spatial-map" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors py-1 flex items-center gap-1.5 text-emerald-800 dark:text-emerald-400">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Spatial Map</span>
-        </a>
         <a href="/cultivars/" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors py-1">
           Cultivars
         </a>
@@ -130,17 +126,6 @@
   {#if mobileMenuOpen}
     <div class="md:hidden bg-white dark:bg-[#141210] border-b border-[#E8E4DC] dark:border-[#282420] px-4 pt-3 pb-6 space-y-3 shadow-xl">
       <nav class="flex flex-col space-y-2 text-sm font-medium text-[#1A1615] dark:text-[#FAF9F6]">
-        <a
-          href="/#spatial-map"
-          onclick={() => (mobileMenuOpen = false)}
-          class="px-3 py-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 font-semibold flex items-center justify-between"
-        >
-          <span class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>3D Spatial Agro-Map</span>
-          </span>
-          <ChevronRight class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-        </a>
         <a
           href="/cultivars/"
           onclick={() => (mobileMenuOpen = false)}
