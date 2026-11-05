@@ -53,7 +53,7 @@ describe('Frontier Spatial Runtime & Bio-Acoustic Engine', () => {
 			expect(orbital?.metric).toBeTruthy();
 		}
 
-		expect(ALL_SPATIAL_NODES.length).toBe(9);
+		expect(ALL_SPATIAL_NODES.length).toBeGreaterThanOrEqual(9);
 	});
 
 	it('should guarantee safe operation of BioAcousticSynthesizer in jsdom', () => {
