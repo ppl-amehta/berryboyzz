@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { SPATIAL_DOMAINS, type SpatialDomain } from '$lib/spatial/spatial-nodes';
+	import { SPATIAL_DOMAINS, type SpatialDomain } from '#lib/spatial/spatial-nodes';
 	import { Compass, Sparkles } from '@lucide/svelte';
 
 	interface Props {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SpatialDomain } from '$lib/spatial/spatial-nodes';
+	import type { SpatialDomain } from '#lib/spatial/spatial-nodes';
 	import {
 		Minimize2,
 		Maximize2,

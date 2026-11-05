@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SpatialDomain } from '$lib/spatial/spatial-nodes';
+	import type { SpatialDomain } from '#lib/spatial/spatial-nodes';
 	import { Volume2, VolumeX, Compass, BookOpen, Activity, Cpu, Sparkles } from '@lucide/svelte';
 
 	interface Props {

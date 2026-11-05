@@ -112,13 +112,13 @@ describe('Frontier Spatial Runtime & Bio-Acoustic Engine', () => {
 		expect(content).toContain('SPATIAL_CULTIVAR_ORBITALS');
 	});
 
-	it('should verify homepage integration of spatial map section', () => {
+	it('should verify homepage integration of unified bottom-up spatial operating system', () => {
 		const pagePath = path.resolve(process.cwd(), 'src/routes/+page.svelte');
 		const content = fs.readFileSync(pagePath, 'utf-8');
 
-		expect(content).toContain('import SpatialViewport from \'#components/SpatialViewport.svelte\'');
-		expect(content).toContain('id="spatial-map"');
-		expect(content).toContain('<SpatialViewport />');
-		expect(content).toContain('href="#spatial-map"');
+		expect(content).toContain('SpatialHUD');
+		expect(content).toContain('SpatialDock');
+		expect(content).toContain('SpatialIslandStage');
+		expect(content).toContain('spatial-engine.worker');
 	});
 });
