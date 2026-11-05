@@ -54,42 +54,57 @@ Please refer to the following documentation and verified index endpoints:
 `;
 
 export default function middleware(request: Request) {
+  const url = new URL(request.url);
+  const pathname = url.pathname;
   const accept = request.headers.get('accept') || '';
   const isMarkdownRequest = accept.includes('text/markdown');
 
-  if (isMarkdownRequest) {
-    const url = new URL(request.url);
-    const pathname = url.pathname;
+  const isEmbed = pathname.startsWith('/embed');
+  const cspHeader = isEmbed
+    ? 'frame-ancestors *'
+    : "frame-ancestors 'self'; object-src 'none'; base-uri 'self'";
 
+  const securityHeaders: Record<string, string> = {
+    'Strict-Transport-Security': 'max-age=31536000',
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    'Content-Security-Policy': cspHeader,
+    'Vary': 'Accept',
+  };
+
+  if (!isEmbed) {
+    securityHeaders['X-Frame-Options'] = 'SAMEORIGIN';
+  }
+
+  if (isMarkdownRequest) {
     if (pathname === '/' || pathname === '/index.html') {
       return new Response(HOMEPAGE_MARKDOWN, {
         status: 200,
         headers: {
+          ...securityHeaders,
           'Content-Type': 'text/markdown; charset=utf-8',
-          'Vary': 'Accept',
-          'Cache-Control': 'public, max-age=3600, s-maxage=86400'
-        }
+          'Cache-Control': 'public, max-age=3600, s-maxage=86400',
+        },
       });
     }
 
-    const validPrefixes = ['/cultivars', '/tours', '/about', '/contact', '/privacy', '/healthz', '/farming', '/embed'];
-    const isValid = validPrefixes.some(prefix => pathname.startsWith(prefix));
+    const validPrefixes = ['/cultivars', '/tours', '/about', '/contact', '/privacy', '/healthz', '/farming', '/embed', '/api'];
+    const isValid = validPrefixes.some((prefix) => pathname.startsWith(prefix));
 
     if (!isValid) {
       return new Response(NOT_FOUND_MARKDOWN, {
         status: 404,
         headers: {
+          ...securityHeaders,
           'Content-Type': 'text/markdown; charset=utf-8',
-          'Vary': 'Accept',
-          'Cache-Control': 'no-cache'
-        }
+          'Cache-Control': 'no-cache',
+        },
       });
     }
   }
 
   return next({
-    headers: {
-      'Vary': 'Accept'
-    }
+    headers: securityHeaders,
   });
 }
