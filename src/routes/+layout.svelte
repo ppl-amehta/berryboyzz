@@ -7,14 +7,12 @@
   import { inject as injectAnalytics } from '@vercel/analytics';
   import { onMount } from 'svelte';
   import { scheduleBackgroundTask } from '#utils/scheduler';
-  import { initWebMCP } from '#utils/webmcp';
   
   let { children } = $props();
 
   const isEmbed = $derived(page.url.pathname.startsWith('/embed'));
 
   onMount(() => {
-    initWebMCP();
     scheduleBackgroundTask(() => {
       injectSpeedInsights({ framework: 'sveltekit' });
       injectAnalytics();

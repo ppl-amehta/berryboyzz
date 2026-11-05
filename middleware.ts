@@ -27,10 +27,7 @@ Berryboyzz transforms rural Maharashtra into India's premier controlled-environm
 ## Machine-Readable Resources for AI Agents
 - [LLM Documentation & Fact Sheet](https://berryboyzz.in/llms.txt)
 - [Full Technical Specification](https://berryboyzz.in/llms-full.txt)
-- [Agentic Resource Discovery (ARD)](https://berryboyzz.in/.well-known/ard.json)
-- [WebMCP Tool Manifest](https://berryboyzz.in/.well-known/webmcp.json)
 - [XML Sitemap](https://berryboyzz.in/sitemap.xml)
-- [Inbound Lead & Triage API](https://berryboyzz.in/api/inbound-lead)
 - [Cultivars Collection](https://berryboyzz.in/cultivars/)
 - [Farm Tours & Masterclasses](https://berryboyzz.in/tours/)
 - [About Berryboyzz](https://berryboyzz.in/about/)
@@ -50,7 +47,6 @@ The requested resource does not exist on Berryboyzz (\`https://berryboyzz.in\`).
 Please refer to the following documentation and verified index endpoints:
 - [Berryboyzz Homepage](https://berryboyzz.in/)
 - [Certified Cultivars](https://berryboyzz.in/cultivars/)
-- [Agentic Resource Discovery](https://berryboyzz.in/.well-known/ard.json)
 - [Machine-Readable Documentation (llms.txt)](https://berryboyzz.in/llms.txt)
 - [Full Technical Specification (llms-full.txt)](https://berryboyzz.in/llms-full.txt)
 - [XML Sitemap](https://berryboyzz.in/sitemap.xml)
@@ -58,68 +54,42 @@ Please refer to the following documentation and verified index endpoints:
 `;
 
 export default function middleware(request: Request) {
-  const url = new URL(request.url);
-  const pathname = url.pathname;
   const accept = request.headers.get('accept') || '';
   const isMarkdownRequest = accept.includes('text/markdown');
 
-  const isEmbed = pathname.startsWith('/embed');
-  const cspHeader = isEmbed
-    ? 'frame-ancestors *; upgrade-insecure-requests'
-    : "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests";
-
-  const securityHeaders: Record<string, string> = {
-    'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
-    'X-Content-Type-Options': 'nosniff',
-    'Referrer-Policy': 'strict-origin-when-cross-origin',
-    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-    'Content-Security-Policy': cspHeader,
-    'Vary': 'Accept',
-  };
-
-  if (!isEmbed) {
-    securityHeaders['X-Frame-Options'] = 'SAMEORIGIN';
-  }
-
   if (isMarkdownRequest) {
+    const url = new URL(request.url);
+    const pathname = url.pathname;
+
     if (pathname === '/' || pathname === '/index.html') {
       return new Response(HOMEPAGE_MARKDOWN, {
         status: 200,
         headers: {
-          ...securityHeaders,
           'Content-Type': 'text/markdown; charset=utf-8',
-          'Cache-Control': 'public, max-age=3600, s-maxage=86400',
-        },
+          'Vary': 'Accept',
+          'Cache-Control': 'public, max-age=3600, s-maxage=86400'
+        }
       });
     }
 
-    const validPrefixes = [
-      '/cultivars',
-      '/tours',
-      '/about',
-      '/contact',
-      '/privacy',
-      '/healthz',
-      '/farming',
-      '/embed',
-      '/api',
-      '/.well-known',
-    ];
-    const isValid = validPrefixes.some((prefix) => pathname.startsWith(prefix));
+    const validPrefixes = ['/cultivars', '/tours', '/about', '/contact', '/privacy', '/healthz', '/farming', '/embed'];
+    const isValid = validPrefixes.some(prefix => pathname.startsWith(prefix));
 
     if (!isValid) {
       return new Response(NOT_FOUND_MARKDOWN, {
         status: 404,
         headers: {
-          ...securityHeaders,
           'Content-Type': 'text/markdown; charset=utf-8',
-          'Cache-Control': 'no-cache',
-        },
+          'Vary': 'Accept',
+          'Cache-Control': 'no-cache'
+        }
       });
     }
   }
 
   return next({
-    headers: securityHeaders,
+    headers: {
+      'Vary': 'Accept'
+    }
   });
 }

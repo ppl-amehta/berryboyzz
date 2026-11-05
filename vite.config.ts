@@ -15,17 +15,6 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules/@lucide/svelte')) {
-            return 'lucide-icons';
-          }
-        },
-      },
-    },
-  },
   server: {
     port: 3000,
     open: false,
