@@ -150,6 +150,54 @@ class SpatialEngine {
 		this.camera.y += dy * 0.15;
 	}
 
+	public orbitDrag(dx: number, dy: number): void {
+		// Non-linear spatial orbit: rotate camera offset around current lookAt
+		const sensitivity = 0.0035;
+		const cx = this.camera.x - this.lookAt.x;
+		const cz = this.camera.z - this.lookAt.z;
+
+		const angle = -dx * sensitivity;
+		const cosA = Math.cos(angle);
+		const sinA = Math.sin(angle);
+
+		const newX = cx * cosA - cz * sinA;
+		const newZ = cx * sinA + cz * cosA;
+
+		this.camera.x = this.lookAt.x + newX;
+		this.camera.z = this.lookAt.z + newZ;
+		this.camera.y = Math.max(Math.min(this.camera.y + dy * 0.35, 600), -300);
+
+		// Also update targetCamera so damping doesn't snap back immediately
+		this.targetCamera.x = this.camera.x;
+		this.targetCamera.y = this.camera.y;
+		this.targetCamera.z = this.camera.z;
+	}
+
+	public findNodeAtPoint(screenX: number, screenY: number): void {
+		// Find closest projected node within touch/click radius
+		let closestNode: SpatialNode | null = null;
+		let minDistance = 36; // 36px threshold
+
+		for (const node of this.allNodes) {
+			const proj = this.project3D(node.coordinates);
+			if (!proj.visible) continue;
+
+			const dist = Math.hypot(proj.sx - screenX, proj.sy - screenY);
+			if (dist < minDistance) {
+				minDistance = dist;
+				closestNode = node;
+			}
+		}
+
+		if (closestNode) {
+			this.setTargetNode(closestNode);
+			self.postMessage({
+				type: 'NODE_CLICKED',
+				node: closestNode
+			});
+		}
+	}
+
 	private initParticles(): void {
 		this.particles = [];
 		const colors = ['#10B981', '#34D399', '#F43F5E', '#F59E0B', '#06B6D4'];
@@ -287,10 +335,12 @@ class SpatialEngine {
 
 			for (let j = i + 1; j < this.allNodes.length; j++) {
 				const n2 = this.allNodes[j];
-				// Only connect if related or facilities
+				// Connect domains in logical constellation and connect cultivars to cultivars node
 				const shouldConnect =
+					(n1.category === 'domain' && n2.category === 'domain') ||
 					(n1.category === 'facility' && n2.category === 'facility') ||
-					(n2.category === 'cultivar-orbital' && n1.id === 'satara-canopy');
+					(n1.id === 'cultivars' && n2.category === 'cultivar-orbital') ||
+					(n1.id === 'satara-skid' && n2.id === 'satara-canopy');
 
 				if (!shouldConnect) continue;
 
@@ -410,6 +460,12 @@ self.onmessage = (e: MessageEvent) => {
 			break;
 		case 'POINTER_VELOCITY':
 			engine.injectPointerVelocity(msg.dx, msg.dy);
+			break;
+		case 'ORBIT_DRAG':
+			engine.orbitDrag(msg.dx, msg.dy);
+			break;
+		case 'FIND_NODE_AT_POINT':
+			engine.findNodeAtPoint(msg.x, msg.y);
 			break;
 		case 'DESTROY':
 			engine.destroy();
