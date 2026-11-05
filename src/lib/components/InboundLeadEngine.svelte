@@ -212,7 +212,11 @@
         <!-- Form Body with WebMCP & Semantic Schema Attributes -->
         <form
           aria-label="Berryboyzz Inbound Lead & CEA Triage Engine"
-          data-webmcp-tool="submit_lead"
+          toolname="submit_inbound_lead"
+          tooldescription="Submits an inbound investment, land partnership, or bulk berry off-take procurement dossier to Berryboyzz and receives a priority lead token."
+          data-toolname="submit_inbound_lead"
+          data-tooldescription="Submits an inbound investment, land partnership, or bulk berry off-take procurement dossier to Berryboyzz and receives a priority lead token."
+          data-webmcp-tool="submit_inbound_lead"
           data-webmcp-target="/api/inbound-lead"
           onsubmit={handleSubmit}
           class="space-y-8"

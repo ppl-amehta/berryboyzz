@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -120,20 +121,48 @@ describe('Frontier Inbound Lead Triage Engine & Agentic Protocols', () => {
     expect(text).toContain('wa.me');
   });
 
-  it('should verify physical presence and JSON validity of Agentic Resource Discovery (.well-known/ard.json)', () => {
+  it('should verify physical presence and JSON validity of Agentic Resource Discovery (.well-known/ard.json) with required entries array', () => {
     const ardPath = path.resolve(process.cwd(), 'static/.well-known/ard.json');
     expect(fs.existsSync(ardPath)).toBe(true);
 
     const content = fs.readFileSync(ardPath, 'utf-8');
     const json = JSON.parse(content);
 
-    expect(json.ard_version).toBe('1.0');
-    expect(json.entity.name).toBe('Berryboyzz Agro-Ventures LLP');
-    expect(json.entity.domain).toBe('berryboyzz.in');
-    expect(json.manifests.webmcp).toBe('https://berryboyzz.in/.well-known/webmcp.json');
-    expect(json.manifests.llms_txt).toBe('https://berryboyzz.in/llms.txt');
-    expect(json.tools).toBeInstanceOf(Array);
-    expect(json.tools.some((t: any) => t.name === 'submit_lead')).toBe(true);
+    // Root must contain required 'entries' array per ARD specification
+    expect(json.entries).toBeInstanceOf(Array);
+    expect(json.entries.length).toBeGreaterThan(0);
+
+    for (const entry of json.entries) {
+      expect(entry.identifier).toMatch(/^urn:air:berryboyzz\.in:[a-z0-9-]+$/);
+      expect(entry.displayName).toBeTruthy();
+      expect(entry.type).toBeTruthy();
+      // Mutex rule: exactly one of url or data
+      expect(Boolean(entry.url) !== Boolean(entry.data)).toBe(true);
+      expect(entry.representativeQueries).toBeInstanceOf(Array);
+      expect(entry.representativeQueries.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('should verify WebMCP browser runtime registration and guarantee non-blank tool discovery', async () => {
+    const { initWebMCP } = await import('../utils/webmcp');
+    initWebMCP();
+
+    expect((document as any).modelContext).toBeDefined();
+    expect(typeof (document as any).modelContext.getTools).toBe('function');
+
+    const tools = await (document as any).modelContext.getTools();
+    expect(tools).toBeInstanceOf(Array);
+    expect(tools.length).toBeGreaterThanOrEqual(2);
+
+    const toolNames = tools.map((t: any) => t.name);
+    expect(toolNames).toContain('submit_inbound_lead');
+    expect(toolNames).toContain('get_roi_estimate');
+
+    // Verify tool execution
+    const roiTool = tools.find((t: any) => t.name === 'get_roi_estimate');
+    const roiResult: any = await roiTool.execute({ acres: 2, crop: 'strawberry' });
+    expect(roiResult.totalCapexInr).toBe(8400000);
+    expect(roiResult.netOutlayInr).toBe(5040000);
   });
 
   it('should verify physical presence and JSON validity of WebMCP Manifest (.well-known/webmcp.json)', () => {
