@@ -13,6 +13,7 @@
   import MediaGallery from '#components/MediaGallery.svelte';
   import FarmTourBooking from '#components/FarmTourBooking.svelte';
   import AgenticConcierge from '#components/AgenticConcierge.svelte';
+  import InboundTriageForm from '#components/InboundTriageForm.svelte';
   import { Sprout, ArrowDown, ChevronRight, MessageCircle } from '@lucide/svelte';
   import { buildWhatsAppUrl } from '#utils/whatsapp';
 
@@ -196,6 +197,11 @@
   <!-- Farm Tour Bookings & Masterclasses -->
   <div class="content-auto">
     <FarmTourBooking />
+  </div>
+
+  <!-- Commercial Triage & Lead Intake Desk -->
+  <div class="content-auto">
+    <InboundTriageForm />
   </div>
 </div>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Phone, Mail, MapPin, MessageCircle, Clock, Calendar, CheckCircle2, Sprout } from '@lucide/svelte';
   import { buildWhatsAppUrl } from '#utils/whatsapp';
+  import InboundTriageForm from '#components/InboundTriageForm.svelte';
 </script>
 
 <svelte:head>
@@ -125,6 +126,11 @@
         <span>Mon–Sat: 08:00 – 18:00 IST</span>
       </div>
     </div>
+  </div>
+
+  <!-- Commercial Triage & Lead Intake Engine -->
+  <div class="mb-16">
+    <InboundTriageForm />
   </div>
 
   <!-- Visiting & Farm Protocol Guidelines -->
