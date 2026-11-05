@@ -32,11 +32,11 @@
 - Modify: `middleware.ts`
 - Test: `src/tests/security-headers.test.ts`
 
-- [ ] **Step 1.1: Write failing unit test for security headers and embed framing rules**
-- [ ] **Step 1.2: Run test to confirm failure**
-- [ ] **Step 1.3: Update vercel.json and middleware.ts with standard security headers**
-- [ ] **Step 1.4: Verify security header tests pass**
-- [ ] **Step 1.5: Commit Task 1**
+- [x] **Step 1.1: Write failing unit test for security headers and embed framing rules**
+- [x] **Step 1.2: Run test to confirm failure**
+- [x] **Step 1.3: Update vercel.json and middleware.ts with standard security headers**
+- [x] **Step 1.4: Verify security header tests pass**
+- [x] **Step 1.5: Commit Task 1**
 
 ---
 
@@ -47,11 +47,11 @@
 - Modify: `src/app.html`
 - Test: `src/tests/agentic-ard-manifest.test.ts`
 
-- [ ] **Step 2.1: Write failing test verifying ARD manifest schema compliance**
-- [ ] **Step 2.2: Run test to confirm failure**
-- [ ] **Step 2.3: Create compliant static .well-known/ard.json and add head link in src/app.html**
-- [ ] **Step 2.4: Verify ARD manifest tests pass**
-- [ ] **Step 2.5: Commit Task 2**
+- [x] **Step 2.1: Write failing test verifying ARD manifest schema compliance**
+- [x] **Step 2.2: Run test to confirm failure**
+- [x] **Step 2.3: Create compliant static .well-known/ard.json and add head link in src/app.html**
+- [x] **Step 2.4: Verify ARD manifest tests pass**
+- [x] **Step 2.5: Commit Task 2**
 
 ---
 
@@ -61,11 +61,11 @@
 - Create: `src/routes/api/triage/+server.ts`
 - Test: `src/tests/inbound-triage-api.test.ts`
 
-- [ ] **Step 3.1: Write failing unit test for triage API validation, scoring, and response format**
-- [ ] **Step 3.2: Run test to confirm failure**
-- [ ] **Step 3.3: Implement /api/triage/+server.ts with strict input validation and priority tier calculation**
-- [ ] **Step 3.4: Verify triage API tests pass**
-- [ ] **Step 3.5: Commit Task 3**
+- [x] **Step 3.1: Write failing unit test for triage API validation, scoring, and response format**
+- [x] **Step 3.2: Run test to confirm failure**
+- [x] **Step 3.3: Implement /api/triage/+server.ts with strict input validation and priority tier calculation**
+- [x] **Step 3.4: Verify triage API tests pass**
+- [x] **Step 3.5: Commit Task 3**
 
 ---
 
@@ -77,12 +77,12 @@
 - Modify: `src/routes/contact/+page.svelte`
 - Test: `src/tests/inbound-triage-ui.test.ts`
 
-- [ ] **Step 4.1: Write failing test for InboundTriageForm component integration**
-- [ ] **Step 4.2: Run test to confirm failure**
-- [ ] **Step 4.3: Implement InboundTriageForm.svelte with 4 role categories and zero reflows**
-- [ ] **Step 4.4: Mount InboundTriageForm in +page.svelte and contact/+page.svelte**
-- [ ] **Step 4.5: Verify UI integration tests pass**
-- [ ] **Step 4.6: Commit Task 4**
+- [x] **Step 4.1: Write failing test for InboundTriageForm component integration**
+- [x] **Step 4.2: Run test to confirm failure**
+- [x] **Step 4.3: Implement InboundTriageForm.svelte with 4 role categories and zero reflows**
+- [x] **Step 4.4: Mount InboundTriageForm in +page.svelte and contact/+page.svelte**
+- [x] **Step 4.5: Verify UI integration tests pass**
+- [x] **Step 4.6: Commit Task 4**
 
 ---
 
@@ -91,8 +91,8 @@
 **Files:**
 - Workspace-wide verification
 
-- [ ] **Step 5.1: Run strict TypeScript check (npm run check)**
-- [ ] **Step 5.2: Run complete automated test matrix (npm test)**
-- [ ] **Step 5.3: Run full production build (npm run build)**
+- [x] **Step 5.1: Run strict TypeScript check (npm run check)**
+- [x] **Step 5.2: Run complete automated test matrix (npm test)**
+- [x] **Step 5.3: Run full production build (npm run build)**
 - [ ] **Step 5.4: Push to origin main and verify GitHub Actions deployment**
 - [ ] **Step 5.5: Verify live endpoints and headers**
