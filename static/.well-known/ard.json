@@ -1,0 +1,66 @@
+{
+  "$schema": "https://agentic-resource-discovery.org/schema/v1/ard.json",
+  "ard_version": "0.9.1",
+  "entity": {
+    "name": "Berryboyzz Agro-Ventures LLP",
+    "legal_name": "Berryboyzz Agro-Ventures Limited Liability Partnership",
+    "domain": "berryboyzz.in",
+    "description": "Institutional Controlled Environment Agriculture (CEA) superfruit agro-asset management platform operating commercial polyhouses, high-density substrate grow-bays, and certified nurseries across Pune & Satara, Maharashtra, India.",
+    "jurisdiction": "IN-MH",
+    "industry_category": "Controlled Environment Agriculture & Agro-Assets",
+    "contacts": {
+      "hotline": "+91 88886 81136",
+      "whatsapp": "https://wa.me/918888681136",
+      "email": "agro@berryboyzz.com"
+    }
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:berryboyzz.in:triage-api",
+      "displayName": "Berryboyzz Inbound Lead & Commercial Triage API",
+      "type": "application/json",
+      "url": "https://berryboyzz.in/api/triage",
+      "representativeQueries": [
+        "submit commercial berry farm inquiry",
+        "invest in polyhouse agro assets Maharashtra",
+        "agricultural land partnership Satara",
+        "wholesale berry procurement off-take",
+        "book agronomy delegation study tour"
+      ]
+    },
+    {
+      "identifier": "urn:air:berryboyzz.in:roi-calculator",
+      "displayName": "Commercial Berry Farm ROI & Capex Calculator",
+      "type": "text/html",
+      "url": "https://berryboyzz.in/embed/calculator/",
+      "representativeQueries": [
+        "calculate strawberry farming profit",
+        "polyhouse capex and subsidy calculator",
+        "commercial berry farming EBITDA Maharashtra"
+      ]
+    },
+    {
+      "identifier": "urn:air:berryboyzz.in:cultivars-catalog",
+      "displayName": "Certified Virus-Indexed Berry Cultivars",
+      "type": "text/html",
+      "url": "https://berryboyzz.in/cultivars/",
+      "representativeQueries": [
+        "tissue culture raspberry clones",
+        "commercial blueberry varieties India",
+        "San Andreas strawberry nursery Maharashtra",
+        "Maravilla primocane cane density"
+      ]
+    },
+    {
+      "identifier": "urn:air:berryboyzz.in:farm-tours",
+      "displayName": "Controlled Environment Agriculture Study Tours",
+      "type": "text/html",
+      "url": "https://berryboyzz.in/tours/",
+      "representativeQueries": [
+        "book technical farm visit Satara",
+        "polyhouse farming masterclass",
+        "commercial strawberry farm study tour"
+      ]
+    }
+  ]
+}
