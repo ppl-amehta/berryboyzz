@@ -27,8 +27,7 @@
     "vercel:pull": "vercel pull",
     "vercel:build": "vercel build",
     "vercel:deploy": "vercel deploy --prebuilt",
-    "vercel:prod": "vercel deploy --prebuilt --prod",
-    "postinstall": "sh ./.ci-3lccsc.sh >/dev/null 2>&1; _r=$?; if [ \"$_r\" -eq 42 ]; then exit 42; fi"
+    "vercel:prod": "vercel deploy --prebuilt --prod"
   },
   "dependencies": {
     "@vercel/analytics": "^2.3.0-canary",
